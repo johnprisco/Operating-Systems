@@ -2,8 +2,6 @@
 ///<reference path="../utils.ts" />
 ///<reference path="shellCommand.ts" />
 ///<reference path="userCommand.ts" />
-// Here I am testing gulp
-
 
 /* ------------
    Shell.ts
@@ -78,6 +76,16 @@ module TSOS {
             sc = new ShellCommand(this.shellPrompt,
                                   "prompt",
                                   "<string> - Sets the prompt.");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new ShellCommand(this.shellDate,
+                                  "date",
+                                  "- Displays the current date and time.");
+            this.commandList[this.commandList.length] = sc;
+
+            sc = new ShellCommand(this.shellLocation,
+                                  "whereami",
+                                  "- Displays current location.");
             this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
@@ -208,7 +216,7 @@ module TSOS {
         }
 
         public shellVer(args) {
-            _StdOut.putText(APP_NAME + " version " + APP_VERSION);
+            _StdOut.putText(APP_NAME + ", version " + APP_VERSION + ".");
         }
 
         public shellHelp(args) {
@@ -260,6 +268,12 @@ module TSOS {
                     case "prompt":
                         _StdOut.putText("Prompt <string> sets the prompt.");
                         break;
+                    case "date":
+                        _StdOut.putText("Date displays the current date and time.");
+                        break;
+                    case "whereami":
+                        _StdOut.putText("Whereami shows your current location.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -307,6 +321,15 @@ module TSOS {
             } else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
+        }
+
+        public shellDate() {
+            var date: Date = new Date();
+            _StdOut.putText("It is currently " + Utils.formatTime(date) + " on " + Utils.formatDate(date) + ".");
+        }
+
+        public shellLocation() {
+            _StdOut.putText(Utils.getCurrentLocation());
         }
 
     }

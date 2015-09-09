@@ -2,7 +2,6 @@
 ///<reference path="../utils.ts" />
 ///<reference path="shellCommand.ts" />
 ///<reference path="userCommand.ts" />
-// Here I am testing gulp
 /* ------------
    Shell.ts
 
@@ -49,6 +48,10 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
             // prompt <string>
             sc = new TSOS.ShellCommand(this.shellPrompt, "prompt", "<string> - Sets the prompt.");
+            this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellDate, "date", "- Displays the current date and time.");
+            this.commandList[this.commandList.length] = sc;
+            sc = new TSOS.ShellCommand(this.shellLocation, "whereami", "- Displays current location.");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -170,7 +173,7 @@ var TSOS;
             }
         };
         Shell.prototype.shellVer = function (args) {
-            _StdOut.putText(APP_NAME + " version " + APP_VERSION);
+            _StdOut.putText(APP_NAME + ", version " + APP_VERSION + ".");
         };
         Shell.prototype.shellHelp = function (args) {
             _StdOut.putText("Commands:");
@@ -217,6 +220,12 @@ var TSOS;
                         break;
                     case "prompt":
                         _StdOut.putText("Prompt <string> sets the prompt.");
+                        break;
+                    case "date":
+                        _StdOut.putText("Date displays the current date and time.");
+                        break;
+                    case "whereami":
+                        _StdOut.putText("Whereami shows your current location.");
                         break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
@@ -267,6 +276,13 @@ var TSOS;
             else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
+        };
+        Shell.prototype.shellDate = function () {
+            var date = new Date();
+            _StdOut.putText("It is currently " + TSOS.Utils.formatTime(date) + " on " + TSOS.Utils.formatDate(date) + ".");
+        };
+        Shell.prototype.shellLocation = function () {
+            _StdOut.putText(TSOS.Utils.getCurrentLocation());
         };
         return Shell;
     })();
