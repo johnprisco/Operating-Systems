@@ -11,6 +11,8 @@
 //
 // Global CONSTANTS (TypeScript 1.5 introduced const. Very cool.)
 //
+// TESTING
+//
 const APP_NAME: string    = "TSOS";   // 'cause Bob and I were at a loss for a better name.
 const APP_VERSION: string = "0.07";   // What did you expect?
 
