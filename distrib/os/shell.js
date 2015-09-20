@@ -61,6 +61,9 @@ var TSOS;
             // status
             sc = new TSOS.ShellCommand(this.shellStatus, "status", "- Updates the host status.");
             this.commandList[this.commandList.length] = sc;
+            // load
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Checks user-submitted text if it contains valid hex characters.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -238,6 +241,12 @@ var TSOS;
                     case "browser":
                         _StdOut.putText("Browser displays information about the browser this OS is running in.");
                         break;
+                    case "status":
+                        _StdOut.putText("Status updates the status in the client.");
+                        break;
+                    case "load":
+                        _StdOut.putText("Load checks if user-submitted text contains valid hex characters.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -324,6 +333,23 @@ var TSOS;
         };
         Shell.prototype.shellStatus = function (args) {
             TSOS.Utils.updateStatus(args);
+        };
+        Shell.prototype.shellLoad = function () {
+            var textArea = document.getElementById('taProgramInput');
+            var input = textArea.value;
+            if (input == "") {
+                _StdOut.putText("Put some text in the User Program Input field first.");
+                return;
+            }
+            console.log("taProgramInput: " + input);
+            var regex = /[0-9A-F\s]/i;
+            for (var i = 0; i < input.length; i++) {
+                if (regex.test(input.charAt(i)) === false) {
+                    _StdOut.putText("There are non-hexadecimal characters inputted.");
+                    return;
+                }
+            }
+            _StdOut.putText("Congrats! You only typed hex characters!");
         };
         return Shell;
     })();

@@ -64,9 +64,6 @@ module TSOS {
             setInterval(function() {
                 Utils.updateDateTime();
             }, 1000);
-
-
-
         }
 
         public static hostLog(msg: string, source: string = "?"): void {

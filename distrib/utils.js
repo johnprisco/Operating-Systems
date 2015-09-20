@@ -51,28 +51,36 @@ var TSOS;
             return formattedString;
         };
         Utils.formatTime = function (date) {
-            var formattedString = date.getHours() + ":" + date.getMinutes();
-            return formattedString;
-        };
-        Utils.getCurrentLocation = function () {
-            var lat = 0;
-            var long = 0;
-            var formattedString = "";
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    lat = position.coords.latitude;
-                    long = position.coords.longitude;
-                    console.log("Your current coordinates are " + lat + ", " + long);
-                    formattedString = "Your current coordinates are " + lat + ", " + long;
-                }, function () {
-                    formattedString = "Sorry, there was an error";
-                });
+            var minuteString;
+            var minutes = date.getMinutes();
+            if (minutes < 10) {
+                minuteString = "0" + minutes;
             }
             else {
-                formattedString = "Sorry, there was an error.";
+                minuteString = minutes.toString();
             }
+            var formattedString = date.getHours() + ":" + minuteString;
             return formattedString;
         };
+        //public static getCurrentLocation():string {
+        //    var lat: number = 0;
+        //    var long: number = 0;
+        //    var formattedString: string = "";
+        //
+        //    if (navigator.geolocation) {
+        //        navigator.geolocation.getCurrentPosition((position) => {
+        //            lat = position.coords.latitude;
+        //            long = position.coords.longitude;
+        //            formattedString = "Your current coordinates are " + lat + ", " + long;
+        //        }, () => {
+        //            formattedString = "Sorry, there was an error";
+        //        });
+        //    } else {
+        //        formattedString = "Sorry, there was an error.";
+        //    }
+        //
+        //    return formattedString;
+        //}
         Utils.updateDateTime = function () {
             var date = new Date();
             _Datetime.innerText = "It's " + Utils.formatTime(date) + " on " + Utils.formatDate(date) + ".";
@@ -83,6 +91,58 @@ var TSOS;
                 status += args[i] + " ";
             }
             _Status.innerText = status;
+        };
+        Utils.getPunctuation = function (keyCode) {
+            var table = {
+                '186': ';',
+                '187': '=',
+                '188': ',',
+                '189': '-',
+                '190': '.',
+                '191': '/',
+                '192': '`',
+                '219': '[',
+                '220': '\\',
+                '221': ']',
+                '222': '\''
+            };
+            return table[keyCode];
+        };
+        Utils.getShiftedPunctuation = function (keyCode) {
+            var table = {
+                '186': ':',
+                '187': '+',
+                '188': '<',
+                '189': '_',
+                '190': '>',
+                '191': '?',
+                '192': '~',
+                '219': '{',
+                '220': '|',
+                '221': '}',
+                '222': '\"'
+            };
+            return table[keyCode];
+        };
+        Utils.getShiftedDigit = function (keyCode) {
+            var table = {
+                '48': ')',
+                '49': '!',
+                '50': '@',
+                '51': '#',
+                '52': '$',
+                '53': '%',
+                '54': '^',
+                '55': '&',
+                '56': '*',
+                '57': '('
+            };
+            return table[keyCode];
+        };
+        Utils.setPrompt = function (str) {
+            for (var i = 0; i < str.length; i++) {
+                _KernelInputQueue.enqueue(str.charAt(i));
+            }
         };
         return Utils;
     })();

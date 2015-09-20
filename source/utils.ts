@@ -54,30 +54,38 @@ module TSOS {
         }
 
         public static formatTime(date:Date):string {
-            var formattedString:string = date.getHours() + ":" + date.getMinutes();
-            return formattedString;
-        }
+            var minuteString: string;
+            var minutes: number = date.getMinutes();
 
-        public static getCurrentLocation():string {
-            var lat: number = 0;
-            var long: number = 0;
-            var formattedString: string = "";
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((position) => {
-                    lat = position.coords.latitude;
-                    long = position.coords.longitude;
-                    console.log("Your current coordinates are " + lat + ", " + long);
-                    formattedString = "Your current coordinates are " + lat + ", " + long;
-                }, () => {
-                    formattedString = "Sorry, there was an error";
-                });
+            if (minutes < 10) {
+                minuteString = "0" + minutes;
             } else {
-                formattedString = "Sorry, there was an error.";
+                minuteString = minutes.toString();
             }
 
+            var formattedString:string = date.getHours() + ":" + minuteString;
             return formattedString;
         }
+
+        //public static getCurrentLocation():string {
+        //    var lat: number = 0;
+        //    var long: number = 0;
+        //    var formattedString: string = "";
+        //
+        //    if (navigator.geolocation) {
+        //        navigator.geolocation.getCurrentPosition((position) => {
+        //            lat = position.coords.latitude;
+        //            long = position.coords.longitude;
+        //            formattedString = "Your current coordinates are " + lat + ", " + long;
+        //        }, () => {
+        //            formattedString = "Sorry, there was an error";
+        //        });
+        //    } else {
+        //        formattedString = "Sorry, there was an error.";
+        //    }
+        //
+        //    return formattedString;
+        //}
 
         public static updateDateTime(): void {
             var date:Date = new Date();
@@ -90,6 +98,62 @@ module TSOS {
                 status += args[i] + " ";
             }
             _Status.innerText = status;
+        }
+
+        public static getPunctuation(keyCode: number): string {
+            var table = {
+                '186' : ';',
+                '187' : '=',
+                '188' : ',',
+                '189' : '-',
+                '190' : '.',
+                '191' : '/',
+                '192' : '`',
+                '219' : '[',
+                '220' : '\\',
+                '221' : ']',
+                '222' : '\''
+            };
+            return table[keyCode];
+        }
+
+        public static getShiftedPunctuation(keyCode: number): string {
+            var table = {
+                '186' : ':',
+                '187' : '+',
+                '188' : '<',
+                '189' : '_',
+                '190' : '>',
+                '191' : '?',
+                '192' : '~',
+                '219' : '{',
+                '220' : '|',
+                '221' : '}',
+                '222' : '\"'
+            };
+            return table[keyCode];
+        }
+
+        public static getShiftedDigit(keyCode: number): string {
+            var table = {
+                '48' : ')',
+                '49' : '!',
+                '50' : '@',
+                '51' : '#',
+                '52' : '$',
+                '53' : '%',
+                '54' : '^',
+                '55' : '&',
+                '56' : '*',
+                '57' : '('
+            };
+            return table[keyCode];
+        }
+
+        public static setPrompt(str: string): void {
+            for (var i = 0; i < str.length; i++) {
+                _KernelInputQueue.enqueue(str.charAt(i));
+            }
         }
     }
 }

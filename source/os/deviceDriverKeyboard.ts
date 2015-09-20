@@ -43,12 +43,59 @@ module TSOS {
                 }
                 // TODO: Check for caps-lock and handle as shifted if so.
                 _KernelInputQueue.enqueue(chr);
-            } else if (((keyCode >= 48) && (keyCode <= 57)) ||   // digits
-                        (keyCode == 32)                     ||   // space
-                        (keyCode == 13)) {                       // enter
+            } else if ((keyCode == 32)                     ||   // space
+                       (keyCode == 13)) {                       // enter
                 chr = String.fromCharCode(keyCode);
                 _KernelInputQueue.enqueue(chr);
+
+            } else if ((keyCode >= 48) && (keyCode <= 57)) {    // Digits
+                if (isShifted) {
+                    chr = Utils.getShiftedDigit(keyCode);
+                } else {
+                    chr = String.fromCharCode(keyCode);
+                }
+                _KernelInputQueue.enqueue(chr);
+
+            } else if (keyCode == 8) {                          // Backspace
+                if (_Console.buffer != "") {
+                    var characterToBackspace = _Console.buffer.charAt(_Console.buffer.length - 1);
+                    _Console.backspace(characterToBackspace);
+                }
+
+            } else if (((keyCode >= 186) && (keyCode <= 192)) ||
+                       ((keyCode >= 219) && (keyCode <= 222))) { // Punctuation
+                if (isShifted) {
+                    chr = Utils.getShiftedPunctuation(keyCode);
+                } else {
+                    chr = Utils.getPunctuation(keyCode);
+                }
+                _KernelInputQueue.enqueue(chr);
+            } else if (keyCode == 40) {
+                _Console.deleteLine();
+                _Console.buffer = "";
+                _Console.historyIndex += 1;
+
+                if (_Console.commandHistory[_Console.historyIndex]) {
+                    Utils.setPrompt(_Console.commandHistory[_Console.historyIndex]);
+                } else if (_Console.historyIndex < 0) {
+                    _Console.historyIndex = -1;
+                } else if (_Console.historyIndex >= _Console.commandHistory.length) {
+                    _Console.historyIndex = _Console.commandHistory.length;
+                }
+            } else if (keyCode == 38) {
+                _Console.deleteLine();
+                _Console.buffer = "";
+                _Console.historyIndex -= 1;
+
+                if (_Console.commandHistory[_Console.historyIndex]) {
+                    Utils.setPrompt(_Console.commandHistory[_Console.historyIndex]);
+                } else if (_Console.historyIndex < 0) {
+                    _Console.historyIndex = -1;
+                } else if (_Console.historyIndex >= _Console.commandHistory.length) {
+                    _Console.historyIndex = _Console.commandHistory.length;
+                }
             }
+
         }
     }
 }

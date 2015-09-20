@@ -17,7 +17,9 @@ module TSOS {
                     public currentFontSize = _DefaultFontSize,
                     public currentXPosition = 0,
                     public currentYPosition = _DefaultFontSize,
-                    public buffer = "") {
+                    public buffer = "",
+                    public commandHistory = [],
+                    public historyIndex = 0) {
         }
 
         public init(): void {
@@ -41,8 +43,10 @@ module TSOS {
                 // Check to see if it's "special" (enter or ctrl-c) or "normal" (anything else that the keyboard device driver gave us).
                 if (chr === String.fromCharCode(13)) { //     Enter key
                     // The enter key marks the end of a console command, so ...
-                    // ... tell the shell ...
+                    // ... tell the shell, add it to command history ...
                     _OsShell.handleInput(this.buffer);
+                    this.commandHistory.push(this.buffer);
+                    this.historyIndex = this.commandHistory.length;
                     // ... and reset our buffer.
                     this.buffer = "";
                 } else {
@@ -85,7 +89,34 @@ module TSOS {
                                      _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
                                      _FontHeightMargin;
 
-            // TODO: Handle scrolling. (iProject 1)
+            // Vertical scrolling implementation
+            if (this.currentYPosition >= _Canvas.height) {
+                var currentCanvas: ImageData = _DrawingContext.getImageData(0, this.currentFontSize + 5, _Canvas.width, _Canvas.height);
+                _DrawingContext.putImageData(currentCanvas, 0, 0);
+                this.currentYPosition = _Canvas.height - this.currentFontSize;
+            }
         }
+
+        public deleteLine(): void {
+            var startX: number = this.currentXPosition
+            var startY: number = this.currentYPosition - _DefaultFontSize - 1;
+
+            for (var i = 0; i < this.buffer.length; i++) {
+                startX -= _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(i));
+            }
+
+            _DrawingContext.clearRect(startX, startY, this.currentXPosition, this.currentYPosition);
+            this.currentXPosition = startX;
+        }
+
+        public backspace(chr): void {
+            var width: number = _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
+            var height: number = _DefaultFontSize + _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) + _FontHeightMargin;
+            this.currentXPosition -= width;
+            _DrawingContext.clearRect(this.currentXPosition, this.currentYPosition - height, width, 25);
+            _Console.buffer = _Console.buffer.slice(0, -1);
+        }
+
+
     }
  }
