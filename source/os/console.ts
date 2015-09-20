@@ -113,7 +113,7 @@ module TSOS {
             var width: number = _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
             var height: number = _DefaultFontSize + _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) + _FontHeightMargin;
             this.currentXPosition -= width;
-            _DrawingContext.clearRect(this.currentXPosition, this.currentYPosition - height, width, 25);
+            _DrawingContext.clearRect(this.currentXPosition, this.currentYPosition - height, width, _DefaultFontSize + height + 1);
             _Console.buffer = _Console.buffer.slice(0, -1);
         }
 
