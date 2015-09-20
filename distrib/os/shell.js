@@ -49,9 +49,17 @@ var TSOS;
             // prompt <string>
             sc = new TSOS.ShellCommand(this.shellPrompt, "prompt", "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
+            // date
             sc = new TSOS.ShellCommand(this.shellDate, "date", "- Displays the current date and time.");
             this.commandList[this.commandList.length] = sc;
+            // whereami
             sc = new TSOS.ShellCommand(this.shellLocation, "whereami", "- Displays current location.");
+            this.commandList[this.commandList.length] = sc;
+            // browser
+            sc = new TSOS.ShellCommand(this.shellBrowser, "browser", "- Displays information about your browser. Specifically that its a liar.");
+            this.commandList[this.commandList.length] = sc;
+            // status
+            sc = new TSOS.ShellCommand(this.shellStatus, "status", "- Updates the host status.");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -309,6 +317,13 @@ var TSOS;
             }
         };
         Shell.prototype.shellBrowser = function () {
+            _StdOut.putText("You're viewing this in " + navigator.appName + ". ");
+            if (navigator.appName == "Netscape") {
+                _StdOut.putText("Browsers lie.");
+            }
+        };
+        Shell.prototype.shellStatus = function (args) {
+            TSOS.Utils.updateStatus(args);
         };
         return Shell;
     })();

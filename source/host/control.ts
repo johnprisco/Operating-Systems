@@ -55,6 +55,18 @@ module TSOS {
                 _GLaDOS = new Glados();
                 _GLaDOS.init();
             }
+
+            // Initializing datetime and status element.
+            _Datetime = <HTMLSpanElement>document.getElementById('info-datetime');
+            _Status = <HTMLSpanElement>document.getElementById('info-status');
+
+            Utils.updateDateTime();
+            setInterval(function() {
+                Utils.updateDateTime();
+            }, 1000);
+
+
+
         }
 
         public static hostLog(msg: string, source: string = "?"): void {

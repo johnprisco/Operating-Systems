@@ -48,6 +48,13 @@ var TSOS;
                 _GLaDOS = new Glados();
                 _GLaDOS.init();
             }
+            // Initializing datetime and status element.
+            _Datetime = document.getElementById('info-datetime');
+            _Status = document.getElementById('info-status');
+            TSOS.Utils.updateDateTime();
+            setInterval(function () {
+                TSOS.Utils.updateDateTime();
+            }, 1000);
         };
         Control.hostLog = function (msg, source) {
             if (source === void 0) { source = "?"; }

@@ -78,5 +78,18 @@ module TSOS {
 
             return formattedString;
         }
+
+        public static updateDateTime(): void {
+            var date:Date = new Date();
+            _Datetime.innerText = "It's " + Utils.formatTime(date) + " on " + Utils.formatDate(date) + ".";
+        }
+
+        public static updateStatus(args: string): void {
+            var status: string = "";
+            for (var i: number = 0; i < args.length; i++) {
+                status += args[i] + " ";
+            }
+            _Status.innerText = status;
+        }
     }
 }

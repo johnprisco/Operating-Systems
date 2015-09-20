@@ -73,6 +73,17 @@ var TSOS;
             }
             return formattedString;
         };
+        Utils.updateDateTime = function () {
+            var date = new Date();
+            _Datetime.innerText = "It's " + Utils.formatTime(date) + " on " + Utils.formatDate(date) + ".";
+        };
+        Utils.updateStatus = function (args) {
+            var status = "";
+            for (var i = 0; i < args.length; i++) {
+                status += args[i] + " ";
+            }
+            _Status.innerText = status;
+        };
         return Utils;
     })();
     TSOS.Utils = Utils;

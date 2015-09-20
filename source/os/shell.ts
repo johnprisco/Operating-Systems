@@ -78,14 +78,28 @@ module TSOS {
                                   "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
 
+            // date
             sc = new ShellCommand(this.shellDate,
                                   "date",
                                   "- Displays the current date and time.");
             this.commandList[this.commandList.length] = sc;
 
+            // whereami
             sc = new ShellCommand(this.shellLocation,
                                   "whereami",
                                   "- Displays current location.");
+            this.commandList[this.commandList.length] = sc;
+
+            // browser
+            sc = new ShellCommand(this.shellBrowser,
+                                  "browser",
+                                  "- Displays information about your browser. Specifically that its a liar.");
+            this.commandList[this.commandList.length] = sc;
+
+            // status
+            sc = new ShellCommand(this.shellStatus,
+                                  "status",
+                                  "- Updates the host status.");
             this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
@@ -358,7 +372,14 @@ module TSOS {
     }
 
         public shellBrowser() {
+            _StdOut.putText("You're viewing this in " + navigator.appName + ". ");
+            if (navigator.appName == "Netscape") {
+                _StdOut.putText("Browsers lie.");
+            }
+        }
 
+        public shellStatus(args) {
+            Utils.updateStatus(args);
         }
 
     }
