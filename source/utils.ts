@@ -61,7 +61,7 @@ module TSOS {
         public static getCurrentLocation():string {
             var lat: number = 0;
             var long: number = 0;
-            var formattedString: string;
+            var formattedString: string = "";
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((position) => {

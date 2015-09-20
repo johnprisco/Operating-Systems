@@ -227,6 +227,9 @@ var TSOS;
                     case "whereami":
                         _StdOut.putText("Whereami shows your current location.");
                         break;
+                    case "browser":
+                        _StdOut.putText("Browser displays information about the browser this OS is running in.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -282,7 +285,30 @@ var TSOS;
             _StdOut.putText("It is currently " + TSOS.Utils.formatTime(date) + " on " + TSOS.Utils.formatDate(date) + ".");
         };
         Shell.prototype.shellLocation = function () {
-            _StdOut.putText(TSOS.Utils.getCurrentLocation());
+            var lat = 0;
+            var long = 0;
+            var formattedString = "";
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    lat = position.coords.latitude;
+                    long = position.coords.longitude;
+                    console.log("Your current coordinates are " + lat + ", " + long);
+                    _StdOut.putText("Your current coordinates are " + lat + ", " + long);
+                    _StdOut.advanceLine();
+                    _OsShell.putPrompt();
+                }, function () {
+                    _StdOut.putText("Sorry, there was an error.");
+                    _StdOut.advanceLine();
+                    _OsShell.putPrompt();
+                });
+            }
+            else {
+                _StdOut.putText("Sorry, there was an error.");
+                _StdOut.advanceLine();
+                _OsShell.putPrompt();
+            }
+        };
+        Shell.prototype.shellBrowser = function () {
         };
         return Shell;
     })();

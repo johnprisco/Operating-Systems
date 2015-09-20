@@ -274,6 +274,9 @@ module TSOS {
                     case "whereami":
                         _StdOut.putText("Whereami shows your current location.");
                         break;
+                    case "browser":
+                        _StdOut.putText("Browser displays information about the browser this OS is running in.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -329,7 +332,33 @@ module TSOS {
         }
 
         public shellLocation() {
-            _StdOut.putText(Utils.getCurrentLocation());
+            var lat: number = 0;
+            var long: number = 0;
+            var formattedString: string = "";
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    lat = position.coords.latitude;
+                    long = position.coords.longitude;
+                    console.log("Your current coordinates are " + lat + ", " + long);
+                    _StdOut.putText("Your current coordinates are " + lat + ", " + long);
+                    _StdOut.advanceLine();
+                    _OsShell.putPrompt();
+                }, () => {
+                    _StdOut.putText("Sorry, there was an error.");
+                    _StdOut.advanceLine();
+                    _OsShell.putPrompt();
+                });
+            } else {
+                _StdOut.putText("Sorry, there was an error.");
+                _StdOut.advanceLine();
+                _OsShell.putPrompt();
+            }
+
+    }
+
+        public shellBrowser() {
+
         }
 
     }

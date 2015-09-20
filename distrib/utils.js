@@ -57,7 +57,7 @@ var TSOS;
         Utils.getCurrentLocation = function () {
             var lat = 0;
             var long = 0;
-            var formattedString;
+            var formattedString = "";
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
                     lat = position.coords.latitude;
