@@ -126,6 +126,9 @@ module TSOS {
                     _krnKeyboardDriver.isr(params);   // Kernel mode device driver
                     _StdIn.handleInput();
                     break;
+                case BSOD_IRQ:
+                    this.krnTrapError("User entered BSOD command.");
+                    break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
@@ -173,8 +176,12 @@ module TSOS {
 
         public krnTrapError(msg) {
             Control.hostLog("OS ERROR - TRAP: " + msg);
-            // TODO: Display error on console, perhaps in some sort of colored screen. (Maybe blue?)
+            _Kernel.krnShutdown();
+            clearInterval(_hardwareClockID);
+            _DrawingContext.clearRect(0, 0, 500, 500);
+            _DrawingContext.drawImage(BSOD_BKG, 0, 0, 500, 500);
             this.krnShutdown();
+            clearInterval(_hardwareClockID);
         }
     }
 }

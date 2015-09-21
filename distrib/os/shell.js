@@ -64,6 +64,9 @@ var TSOS;
             // load
             sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Checks user-submitted text if it contains valid hex characters.");
             this.commandList[this.commandList.length] = sc;
+            // bsod
+            sc = new TSOS.ShellCommand(this.shellBSOD, "bsod", "- Crashes the OS.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -247,6 +250,9 @@ var TSOS;
                     case "load":
                         _StdOut.putText("Load checks if user-submitted text contains valid hex characters.");
                         break;
+                    case "bsod":
+                        _StdOut.putText("BSOD crashes the virual OS.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -350,6 +356,10 @@ var TSOS;
                 }
             }
             _StdOut.putText("Congrats! You only typed hex characters!");
+        };
+        Shell.prototype.shellBSOD = function () {
+            var params = "";
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(BSOD_IRQ, params));
         };
         return Shell;
     })();
