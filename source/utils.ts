@@ -44,6 +44,8 @@ module TSOS {
             return retVal;
         }
 
+
+        // Functions used to format date and time as necessary.
         public static formatDate(date:Date):string {
             const months = ["January", "February", "March", "April", "May", "June", "July",
                 "August", "September", "October", "November", "December"];
@@ -67,31 +69,12 @@ module TSOS {
             return formattedString;
         }
 
-        //public static getCurrentLocation():string {
-        //    var lat: number = 0;
-        //    var long: number = 0;
-        //    var formattedString: string = "";
-        //
-        //    if (navigator.geolocation) {
-        //        navigator.geolocation.getCurrentPosition((position) => {
-        //            lat = position.coords.latitude;
-        //            long = position.coords.longitude;
-        //            formattedString = "Your current coordinates are " + lat + ", " + long;
-        //        }, () => {
-        //            formattedString = "Sorry, there was an error";
-        //        });
-        //    } else {
-        //        formattedString = "Sorry, there was an error.";
-        //    }
-        //
-        //    return formattedString;
-        //}
-
         public static updateDateTime(): void {
             var date:Date = new Date();
             _Datetime.innerText = "It's " + Utils.formatTime(date) + " on " + Utils.formatDate(date) + ".";
         }
 
+        // Updates the host with the status supplied by the user.
         public static updateStatus(args: string): void {
             var status: string = "";
             for (var i: number = 0; i < args.length; i++) {
@@ -100,6 +83,8 @@ module TSOS {
             _Status.innerText = status;
         }
 
+
+        // Tables used to print symbols and punctuation
         public static getPunctuation(keyCode: number): string {
             var table = {
                 '186' : ';',
@@ -150,6 +135,7 @@ module TSOS {
             return table[keyCode];
         }
 
+        // Helper function to set prompt with specified string
         public static setPrompt(str: string): void {
             for (var i = 0; i < str.length; i++) {
                 _KernelInputQueue.enqueue(str.charAt(i));

@@ -44,6 +44,7 @@ var TSOS;
             }
             return retVal;
         };
+        // Functions used to format date and time as necessary.
         Utils.formatDate = function (date) {
             var months = ["January", "February", "March", "April", "May", "June", "July",
                 "August", "September", "October", "November", "December"];
@@ -62,29 +63,11 @@ var TSOS;
             var formattedString = date.getHours() + ":" + minuteString;
             return formattedString;
         };
-        //public static getCurrentLocation():string {
-        //    var lat: number = 0;
-        //    var long: number = 0;
-        //    var formattedString: string = "";
-        //
-        //    if (navigator.geolocation) {
-        //        navigator.geolocation.getCurrentPosition((position) => {
-        //            lat = position.coords.latitude;
-        //            long = position.coords.longitude;
-        //            formattedString = "Your current coordinates are " + lat + ", " + long;
-        //        }, () => {
-        //            formattedString = "Sorry, there was an error";
-        //        });
-        //    } else {
-        //        formattedString = "Sorry, there was an error.";
-        //    }
-        //
-        //    return formattedString;
-        //}
         Utils.updateDateTime = function () {
             var date = new Date();
             _Datetime.innerText = "It's " + Utils.formatTime(date) + " on " + Utils.formatDate(date) + ".";
         };
+        // Updates the host with the status supplied by the user.
         Utils.updateStatus = function (args) {
             var status = "";
             for (var i = 0; i < args.length; i++) {
@@ -92,6 +75,7 @@ var TSOS;
             }
             _Status.innerText = status;
         };
+        // Tables used to print symbols and punctuation
         Utils.getPunctuation = function (keyCode) {
             var table = {
                 '186': ';',
@@ -139,6 +123,7 @@ var TSOS;
             };
             return table[keyCode];
         };
+        // Helper function to set prompt with specified string
         Utils.setPrompt = function (str) {
             for (var i = 0; i < str.length; i++) {
                 _KernelInputQueue.enqueue(str.charAt(i));
