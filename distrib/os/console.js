@@ -94,6 +94,7 @@ var TSOS;
                 this.currentYPosition = _Canvas.height - this.currentFontSize;
             }
         };
+        // Helper function to graphically remove a line from the console.
         Console.prototype.deleteLine = function () {
             var startX = this.currentXPosition;
             var startY = this.currentYPosition - _DefaultFontSize - 1;
@@ -103,6 +104,7 @@ var TSOS;
             _DrawingContext.clearRect(startX, startY, this.currentXPosition, this.currentYPosition);
             this.currentXPosition = startX;
         };
+        // Helper function to remove a single character from the console.
         Console.prototype.backspace = function (chr) {
             var width = _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
             var height = _DefaultFontSize + _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) + _FontHeightMargin;

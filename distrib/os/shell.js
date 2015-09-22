@@ -310,12 +310,10 @@ var TSOS;
         Shell.prototype.shellLocation = function () {
             var lat = 0;
             var long = 0;
-            var formattedString = "";
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function (position) {
                     lat = position.coords.latitude;
                     long = position.coords.longitude;
-                    console.log("Your current coordinates are " + lat + ", " + long);
                     _StdOut.putText("Your current coordinates are " + lat + ", " + long);
                     _StdOut.advanceLine();
                     _OsShell.putPrompt();
@@ -343,12 +341,11 @@ var TSOS;
         Shell.prototype.shellLoad = function () {
             var textArea = document.getElementById('taProgramInput');
             var input = textArea.value;
+            var regex = /[0-9A-F\s]/i;
             if (input == "") {
                 _StdOut.putText("Put some text in the User Program Input field first.");
                 return;
             }
-            console.log("taProgramInput: " + input);
-            var regex = /[0-9A-F\s]/i;
             for (var i = 0; i < input.length; i++) {
                 if (regex.test(input.charAt(i)) === false) {
                     _StdOut.putText("There are non-hexadecimal characters inputted.");

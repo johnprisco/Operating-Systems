@@ -97,8 +97,9 @@ module TSOS {
             }
         }
 
+        // Helper function to graphically remove a line from the console.
         public deleteLine(): void {
-            var startX: number = this.currentXPosition
+            var startX: number = this.currentXPosition;
             var startY: number = this.currentYPosition - _DefaultFontSize - 1;
 
             for (var i = 0; i < this.buffer.length; i++) {
@@ -109,6 +110,7 @@ module TSOS {
             this.currentXPosition = startX;
         }
 
+        // Helper function to remove a single character from the console.
         public backspace(chr): void {
             var width: number = _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
             var height: number = _DefaultFontSize + _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) + _FontHeightMargin;

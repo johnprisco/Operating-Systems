@@ -174,7 +174,7 @@ module TSOS {
              }
         }
 
-        public krnTrapError(msg) {
+        public krnTrapError(msg: string) {
             Control.hostLog("OS ERROR - TRAP: " + msg);
             _Kernel.krnShutdown();
             clearInterval(_hardwareClockID);

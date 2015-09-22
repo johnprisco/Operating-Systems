@@ -369,13 +369,11 @@ module TSOS {
         public shellLocation() {
             var lat: number = 0;
             var long: number = 0;
-            var formattedString: string = "";
 
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((position) => {
                     lat = position.coords.latitude;
                     long = position.coords.longitude;
-                    console.log("Your current coordinates are " + lat + ", " + long);
                     _StdOut.putText("Your current coordinates are " + lat + ", " + long);
                     _StdOut.advanceLine();
                     _OsShell.putPrompt();
@@ -406,14 +404,12 @@ module TSOS {
         public shellLoad() {
             var textArea: HTMLInputElement = <HTMLInputElement>document.getElementById('taProgramInput');
             var input: string = textArea.value;
+            var regex: RegExp = /[0-9A-F\s]/i;
 
             if (input == "") {
                 _StdOut.putText("Put some text in the User Program Input field first.");
                 return;
             }
-
-            console.log("taProgramInput: " + input);
-            var regex: RegExp = /[0-9A-F\s]/i;
 
             for (var i = 0; i < input.length; i++) {
                 if(regex.test(input.charAt(i)) === false) {

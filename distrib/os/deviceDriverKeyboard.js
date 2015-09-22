@@ -52,6 +52,8 @@ var TSOS;
                 _KernelInputQueue.enqueue(chr);
             }
             else if ((keyCode >= 48) && (keyCode <= 57)) {
+                // If its shifted, we'll pull the code from the table in the Utils helper.
+                // Otherwise, we can use the built in fromCharCode.
                 if (isShifted) {
                     chr = TSOS.Utils.getShiftedDigit(keyCode);
                 }
@@ -68,6 +70,8 @@ var TSOS;
             }
             else if (((keyCode >= 186) && (keyCode <= 192)) ||
                 ((keyCode >= 219) && (keyCode <= 222))) {
+                // Here we pull these from the tables in the Utils function, as
+                // fromCharCode does not work for these.
                 if (isShifted) {
                     chr = TSOS.Utils.getShiftedPunctuation(keyCode);
                 }
@@ -102,6 +106,35 @@ var TSOS;
                 }
                 else if (_Console.historyIndex >= _Console.commandHistory.length) {
                     _Console.historyIndex = _Console.commandHistory.length;
+                }
+            }
+            else if (keyCode == 9) {
+                var matches = [];
+                var buffer = _Console.buffer;
+                // Compare the buffer to every command in the command list,
+                // and add any matches to the array.
+                if (buffer != "") {
+                    for (var i = 0; i < _OsShell.commandList.length; i++) {
+                        var current = _OsShell.commandList[i].command;
+                        if (current.substring(0, buffer.length) == buffer) {
+                            matches.push(_OsShell.commandList[i].command);
+                        }
+                    }
+                }
+                // If there is only one match, print that command
+                if (matches.length == 1) {
+                    _Console.deleteLine();
+                    for (var i = 0; i < matches[0].length; i++) {
+                        _KernelInputQueue.enqueue(matches[0].charAt(i));
+                    }
+                }
+                else if (matches.length > 1) {
+                    _Console.deleteLine();
+                    for (var i = 0; i < matches.length; i++) {
+                        _StdOut.putText(matches[i] + "   ");
+                    }
+                    _Console.advanceLine();
+                    _OsShell.putPrompt();
                 }
             }
         };

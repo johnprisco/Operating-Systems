@@ -49,6 +49,8 @@ module TSOS {
                 _KernelInputQueue.enqueue(chr);
 
             } else if ((keyCode >= 48) && (keyCode <= 57)) {    // Digits
+                // If its shifted, we'll pull the code from the table in the Utils helper.
+                // Otherwise, we can use the built in fromCharCode.
                 if (isShifted) {
                     chr = Utils.getShiftedDigit(keyCode);
                 } else {
@@ -64,13 +66,18 @@ module TSOS {
 
             } else if (((keyCode >= 186) && (keyCode <= 192)) ||
                        ((keyCode >= 219) && (keyCode <= 222))) { // Punctuation
+                // Here we pull these from the tables in the Utils function, as
+                // fromCharCode does not work for these.
                 if (isShifted) {
                     chr = Utils.getShiftedPunctuation(keyCode);
                 } else {
                     chr = Utils.getPunctuation(keyCode);
                 }
                 _KernelInputQueue.enqueue(chr);
-            } else if (keyCode == 40) {
+
+                // This is used to cycle through command history
+                // Works as expected in Terminal on OS X.
+            } else if (keyCode == 40) {                        // Up and Down arrow keys
                 _Console.deleteLine();
                 _Console.buffer = "";
                 _Console.historyIndex += 1;
@@ -93,6 +100,39 @@ module TSOS {
                     _Console.historyIndex = -1;
                 } else if (_Console.historyIndex >= _Console.commandHistory.length) {
                     _Console.historyIndex = _Console.commandHistory.length;
+                }
+
+                // Command autocomplete.
+            } else if (keyCode == 9) {                          // Tab
+                var matches = [];
+                var buffer = _Console.buffer;
+
+                // Compare the buffer to every command in the command list,
+                // and add any matches to the array.
+                if (buffer != "") {
+                    for (var i = 0; i < _OsShell.commandList.length; i++) {
+                        var current = _OsShell.commandList[i].command;
+
+                        if (current.substring(0, buffer.length) == buffer) {
+                            matches.push(_OsShell.commandList[i].command);
+                        }
+                    }
+                }
+                // If there is only one match, print that command
+                if (matches.length == 1) {
+                    _Console.deleteLine();
+                    for (var i = 0; i < matches[0].length; i++) {
+                        _KernelInputQueue.enqueue(matches[0].charAt(i));
+                    }
+
+                // If there are multiple matches, print them all for the user to see.
+                } else if (matches.length > 1) {
+                    _Console.deleteLine();
+                    for (var i = 0; i < matches.length; i++) {
+                        _StdOut.putText(matches[i] + "   ");
+                    }
+                    _Console.advanceLine();
+                    _OsShell.putPrompt();
                 }
             }
 
