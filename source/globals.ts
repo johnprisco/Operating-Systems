@@ -34,9 +34,9 @@ BSOD_BKG.src = "distrib/images/bsod.png";
 var _CPU: TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
 var _Memory: TSOS.Memory;
 var _MemoryManager: TSOS.MemoryManager;
-var _PCBArray;
-var _CurrentPCB;
-var _Control = TSOS.Control;
+var _PCBArray: [TSOS.ProcessControlBlock];
+var _CurrentPCB: TSOS.ProcessControlBlock;
+var _SingleStepMode: boolean = false;
 
 var _OSclock: number = 0;  // Page 23.
 

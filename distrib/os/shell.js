@@ -62,10 +62,13 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellStatus, "status", "- Updates the host status.");
             this.commandList[this.commandList.length] = sc;
             // load
-            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Checks user-submitted text if it contains valid hex characters.");
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Loads user program into memory.");
             this.commandList[this.commandList.length] = sc;
             // bsod
             sc = new TSOS.ShellCommand(this.shellBSOD, "bsod", "- Crashes the OS.");
+            this.commandList[this.commandList.length] = sc;
+            // run
+            sc = new TSOS.ShellCommand(this.shellRun, "run", "<pid> - Executes the program with the corresponding <pid>.");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -248,10 +251,13 @@ var TSOS;
                         _StdOut.putText("Status updates the status in the client.");
                         break;
                     case "load":
-                        _StdOut.putText("Load checks if user-submitted text contains valid hex characters.");
+                        _StdOut.putText("Load puts a user-submitted program in memory.");
                         break;
                     case "bsod":
-                        _StdOut.putText("BSOD crashes the virual OS.");
+                        _StdOut.putText("BSOD crashes the virtual OS.");
+                        break;
+                    case "run":
+                        _StdOut.putText("Run executes a program in memory.");
                         break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
@@ -342,17 +348,41 @@ var TSOS;
             var textArea = document.getElementById('taProgramInput');
             var input = textArea.value;
             var regex = /[0-9A-F\s]/i;
+            var commands = input.split(" ");
+            // Handle the case where there is no user input
             if (input == "") {
                 _StdOut.putText("Put some text in the User Program Input field first.");
                 return;
             }
+            // Handle the case where there is non-hex input
             for (var i = 0; i < input.length; i++) {
                 if (regex.test(input.charAt(i)) === false) {
                     _StdOut.putText("There are non-hexadecimal characters inputted.");
                     return;
                 }
             }
-            _StdOut.putText("Congrats! You only typed hex characters!");
+            // If we've gotten this far, we can try loading the program into memory.
+            for (var i = 0; i < commands.length; i++) {
+                // Put the byte at position i at position i in the block
+                _MemoryManager.memory.memoryBlock[i] = commands[i];
+            }
+            // Create new PCB and store it in the array tracking all of the PCBs.
+            _CurrentPCB = new TSOS.ProcessControlBlock();
+            _PCBArray.push(_CurrentPCB);
+            // Print the PID for the new process
+            _StdOut.putText("Process assigned ID " + _CurrentPCB.pid);
+        };
+        Shell.prototype.shellRun = function (args) {
+            var pid = args;
+            if (_CurrentPCB == null) {
+                _StdOut.putText("There are no programs to run.");
+                return;
+            }
+            else {
+                _CurrentPCB = _PCBArray[pid];
+                _CPU.isExecuting = true;
+                _StdOut.putText("Program running.");
+            }
         };
         Shell.prototype.shellBSOD = function () {
             var params = "";

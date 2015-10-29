@@ -70,12 +70,27 @@ var TSOS;
             // UPDATE: Even though we are now working in TypeScript, char and string remain undistinguished.
             //         Consider fixing that.
             if (text !== "") {
-                // Draw the text at the current X and Y coordinates.
-                _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
-                // Move the current X position.
-                var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
-                this.currentXPosition = this.currentXPosition + offset;
+                for (var i = 0; i < text.length; i++) {
+                    var character = text.charAt(i);
+                    if (this.lineWrap(character)) {
+                        this.advanceLine();
+                    }
+                    // Draw the text at the current X and Y coordinates.
+                    _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, character);
+                    // Move the current X position.
+                    var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, character);
+                    this.currentXPosition = this.currentXPosition + offset;
+                }
             }
+        };
+        Console.prototype.lineWrap = function (str) {
+            var width = this.currentXPosition + TSOS.CanvasTextFunctions.measure(this.currentFont, this.currentFontSize, str);
+            // If the next character would be drawn beyond the width of the canvas, return true; Yes, we line wrap.
+            if (width > _Canvas.width) {
+                return true;
+            }
+            // ...Otherwise, return false, no line wrap, putText as normal.
+            return false;
         };
         Console.prototype.advanceLine = function () {
             this.currentXPosition = 0;

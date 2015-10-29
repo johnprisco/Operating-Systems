@@ -105,6 +105,12 @@ var TSOS;
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
         };
+        Control.hostBtnStartSingleStep_click = function (btn) {
+        };
+        Control.hostBtnNextSingleStep_click = function (btn) {
+        };
+        Control.hostBtnExitSingleStep_click = function (btn) {
+        };
         return Control;
     })();
     TSOS.Control = Control;
