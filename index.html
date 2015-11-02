@@ -15,6 +15,7 @@
    <script type="text/javascript" src="distrib/host/control.js"></script>
    <script type="text/javascript" src="distrib/host/devices.js"></script>
    <script type="text/javascript" src="distrib/host/cpu.js"></script>
+    <script type="text/javascript" src="distrib/host/memory.js"></script>
 
    <!-- Virtual OS Routines: Make sure Kernel code is last, since it needs those above it. -->
     <script type="text/javascript" src="distrib/os/memoryManager.js"></script>
@@ -68,25 +69,25 @@
              onclick="TSOS.Control.hostBtnReset_click(this);">
    </div>
 
-    <div id="single-step-bar" style="margin:4px; text-align:center">
-        <input type     = "button"
-               id       = "btnStartSingleStep"
-               disabled = "disabled"
-               value    = "Enter Single Step"
-               onclick  = "TSOS.Control.hostBtnStartSingleStep_click(this);">
+    <!--<div id="single-step-bar" style="margin:4px; text-align:center">-->
+        <!--<input type     = "button"-->
+               <!--id       = "btnStartSingleStep"-->
+               <!--disabled = "disabled"-->
+               <!--value    = "Enter Single Step"-->
+               <!--onclick  = "TSOS.Control.hostBtnStartSingleStep_click(this);">-->
 
-        <input type     = "button"
-               id       = "btnNextSingleStep"
-               disabled = "disabled"
-               value    = "Next Step"
-               onclick  = "TSOS.Control.hostBtnNextSingleStep_click(this);">
+        <!--<input type     = "button"-->
+               <!--id       = "btnNextSingleStep"-->
+               <!--disabled = "disabled"-->
+               <!--value    = "Next Step"-->
+               <!--onclick  = "TSOS.Control.hostBtnNextSingleStep_click(this);">-->
 
-        <input type     = "button"
-               id       = "btnExitSingleStep"
-               disabled = "disabled"
-               value    = "Exit Single Step"
-               onclick  = "TSOS.Control.hostBtnExitSingleStep_click(this)">
-    </div>
+        <!--<input type     = "button"-->
+               <!--id       = "btnExitSingleStep"-->
+               <!--disabled = "disabled"-->
+               <!--value    = "Exit Single Step"-->
+               <!--onclick  = "TSOS.Control.hostBtnExitSingleStep_click(this)">-->
+    <!--</div>-->
 
     <div id="infoBar" style="text-align:center;">
         <span id="info-datetime"></span>
@@ -129,7 +130,7 @@
 <div class="iProject-2-container" style="margin-top: 10px; margin-left: 300px;">
     <div class="memory" style="float:left; margin-top: 20px;">
         <label>Memory</label>
-        <div class="memory-container" id="memory-display"></div>
+        <div class="memory-container" id="memory-table"></div>
     </div>
 </div>
 

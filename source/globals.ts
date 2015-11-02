@@ -14,7 +14,7 @@
 // TESTING
 //
 const APP_NAME: string    = "PriscOS";
-const APP_VERSION: string = "4.20";   // What did you expect?
+const APP_VERSION: string = "1.A4";
 
 const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
 
@@ -34,9 +34,9 @@ BSOD_BKG.src = "distrib/images/bsod.png";
 var _CPU: TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
 var _Memory: TSOS.Memory;
 var _MemoryManager: TSOS.MemoryManager;
-var _PCBArray: [TSOS.ProcessControlBlock];
-var _CurrentPCB: TSOS.ProcessControlBlock;
-var _SingleStepMode: boolean = false;
+var _PCBArray = new Array;
+var _CurrentPCB: TSOS.ProcessControlBlock; // Tracks the current program
+var _SingleStepMode: boolean = false; // Single step flag
 
 var _OSclock: number = 0;  // Page 23.
 

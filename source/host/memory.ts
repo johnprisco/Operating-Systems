@@ -6,11 +6,8 @@ module TSOS {
         // The block of memory will be represented via an array
         public memoryBlock = [];
 
-        // Constructor so I don't get errors.
-        public constructor() {}
-
-        public init(): void {
-            // Initialize the block to 256 bytes
+        // Initialize the memory so its all empty (00)
+        public constructor() {
             for (var i = 0; i < 256; i++) {
                 this.memoryBlock[i] = "00";
             }

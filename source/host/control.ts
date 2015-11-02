@@ -79,8 +79,6 @@ module TSOS {
             // Update the log console.
             var taLog = <HTMLInputElement> document.getElementById("taHostLog");
             taLog.value = str + taLog.value;
-
-            // TODO in the future: Optionally update a log database or some streaming service.
         }
 
 
@@ -92,15 +90,19 @@ module TSOS {
             btn.disabled = true;
 
             // .. enable the Halt and Reset buttons ...
-            (<HTMLButtonElement>document.getElementById("btnHaltOS")).disabled = false;
-            (<HTMLButtonElement>document.getElementById("btnReset")).disabled = false;
-
+            (<HTMLButtonElement>document.getElementById("btnHaltOS")).disabled          = false;
+            (<HTMLButtonElement>document.getElementById("btnReset")).disabled           = false;
+            //(<HTMLButtonElement>document.getElementById("btnStartSingleStep")).disabled = false;
             // .. set focus on the OS console display ...
             document.getElementById("display").focus();
 
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
             _CPU = new Cpu();  // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init();       //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
+
+            // Initialize memory and memory manager; Memory implemented to 256 bytes for iProject 2.
+            _Memory = new Memory();
+            _MemoryManager = new MemoryManager();
 
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
@@ -127,16 +129,27 @@ module TSOS {
             // page from its cache, which is not what we want.
         }
 
+        // Methods for Single Step Mode (Currently unused)
         public static hostBtnStartSingleStep_click(btn): void {
+            _SingleStepMode = true; // Set flag to true so we know we're in single step mode.
+            btn.disabled = true; // Disable the button until we exit Single step.
 
+            // Enable next step and exit buttons
+            (<HTMLButtonElement>document.getElementById("btnExitSingleStep")).disabled = false;
+            (<HTMLButtonElement>document.getElementById("btnNextSingleStep")).disabled = false;
         }
 
         public static hostBtnNextSingleStep_click(btn): void {
-
+            // Just cycle.
+            _CPU.cycle();
         }
 
         public static hostBtnExitSingleStep_click(btn): void {
-
+            // No more single step; reverse of start single step
+            _SingleStepMode = false;
+            btn.disabled = true;
+            (<HTMLButtonElement>document.getElementById("btnStartSingleStep")).disabled = false;
+            (<HTMLButtonElement>document.getElementById("btnNextSingleStep")).disabled = true;
         }
     }
 }
