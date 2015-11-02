@@ -105,13 +105,19 @@ module TSOS {
             // load
             sc = new ShellCommand(this.shellLoad,
                                   "load",
-                                  "- Checks user-submitted text if it contains valid hex characters.");
+                                  "- Loads user program into memory.");
             this.commandList[this.commandList.length] = sc;
 
             // bsod
             sc = new ShellCommand(this.shellBSOD,
                                   "bsod",
                                   "- Crashes the OS.");
+            this.commandList[this.commandList.length] = sc;
+
+            // run
+            sc = new ShellCommand(this.shellRun,
+                                  "run",
+                                  "<pid> - Executes the program with the corresponding <pid>.");
             this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
@@ -307,10 +313,13 @@ module TSOS {
                         _StdOut.putText("Status updates the status in the client.");
                         break;
                     case "load":
-                        _StdOut.putText("Load checks if user-submitted text contains valid hex characters.");
+                        _StdOut.putText("Load puts a user-submitted program in memory.");
                         break;
                     case "bsod":
-                        _StdOut.putText("BSOD crashes the virual OS.");
+                        _StdOut.putText("BSOD crashes the virtual OS.");
+                        break;
+                    case "run":
+                        _StdOut.putText("Run executes a program in memory.");
                         break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
@@ -402,22 +411,63 @@ module TSOS {
         }
 
         public shellLoad() {
-            var textArea: HTMLInputElement = <HTMLInputElement>document.getElementById('taProgramInput');
-            var input: string = textArea.value;
+            var input = (<HTMLInputElement>document.getElementById('taProgramInput')).value;
             var regex: RegExp = /[0-9A-F\s]/i;
 
+            var commands = input.split(" ");
+            console.log("Commands array: " + commands);
+            // Handle the case where there is no user input
             if (input == "") {
                 _StdOut.putText("Put some text in the User Program Input field first.");
                 return;
             }
 
+            // Handle the case where there is non-hex input
             for (var i = 0; i < input.length; i++) {
-                if(regex.test(input.charAt(i)) === false) {
+                if (regex.test(input.charAt(i)) === false) {
                     _StdOut.putText("There are non-hexadecimal characters inputted.");
                     return;
                 }
             }
-            _StdOut.putText("Congrats! You only typed hex characters!")
+
+            // If we've gotten this far, we can try loading the program into memory.
+            for (var i = 0; i < commands.length; i++) {
+                // Put the byte at position i at position i in the block
+                console.log("Load command: " + commands[i]);
+                _MemoryManager.setMemoryAt(i, commands[i]);
+            }
+
+            // Create new PCB and store it in the array tracking all of the PCBs.
+            _CurrentPCB = new ProcessControlBlock();
+            _PCBArray.push(_CurrentPCB);
+            _CurrentPCB.init(); // Init after pushing to properly determine length of _PCBArray
+
+            // Reset CPU
+            _CPU.Acc         = 0;
+            _CPU.PC          = 0;
+            _CPU.Xreg        = 0;
+            _CPU.Yreg        = 0;
+            _CPU.Zflag       = 0;
+            _CPU.isExecuting = false;
+
+            // Print the PID for the new process
+            _StdOut.putText("Process assigned ID " + _CurrentPCB.pid);
+        }
+x
+        public shellRun(args) {
+            _CPU.PC = 0; // Reset program counter
+            var pid: number = args;
+
+            if (_CurrentPCB == null) {
+                 _StdOut.putText("There are no programs to run.");
+                return;
+            } else {
+                // Let's start executing.
+                _CurrentPCB = _PCBArray[pid]; // Update the current PCB
+                _CPU.isExecuting = true;
+                console.log("Program running.");
+                _StdOut.putText("Program running.");
+            }
         }
 
         public shellBSOD() {

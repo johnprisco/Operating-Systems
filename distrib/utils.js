@@ -129,6 +129,12 @@ var TSOS;
                 _KernelInputQueue.enqueue(str.charAt(i));
             }
         };
+        Utils.hexToDecimal = function (hex) {
+            return parseInt(hex, 16);
+        };
+        Utils.prototype.deciamlToHex = function (decimal) {
+            return decimal.toString(16);
+        };
         return Utils;
     })();
     TSOS.Utils = Utils;

@@ -67,7 +67,6 @@ var TSOS;
             // Update the log console.
             var taLog = document.getElementById("taHostLog");
             taLog.value = str + taLog.value;
-            // TODO in the future: Optionally update a log database or some streaming service.
         };
         //
         // Host Events
@@ -78,11 +77,15 @@ var TSOS;
             // .. enable the Halt and Reset buttons ...
             document.getElementById("btnHaltOS").disabled = false;
             document.getElementById("btnReset").disabled = false;
+            //(<HTMLButtonElement>document.getElementById("btnStartSingleStep")).disabled = false;
             // .. set focus on the OS console display ...
             document.getElementById("display").focus();
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
             _CPU = new TSOS.Cpu(); // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init(); //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
+            // Initialize memory and memory manager; Memory implemented to 256 bytes for iProject 2.
+            _Memory = new TSOS.Memory();
+            _MemoryManager = new TSOS.MemoryManager();
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(TSOS.Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
             // .. and call the OS Kernel Bootstrap routine.
@@ -104,6 +107,25 @@ var TSOS;
             // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
+        };
+        // Methods for Single Step Mode (Currently unused)
+        Control.hostBtnStartSingleStep_click = function (btn) {
+            _SingleStepMode = true; // Set flag to true so we know we're in single step mode.
+            btn.disabled = true; // Disable the button until we exit Single step.
+            // Enable next step and exit buttons
+            document.getElementById("btnExitSingleStep").disabled = false;
+            document.getElementById("btnNextSingleStep").disabled = false;
+        };
+        Control.hostBtnNextSingleStep_click = function (btn) {
+            // Just cycle.
+            _CPU.cycle();
+        };
+        Control.hostBtnExitSingleStep_click = function (btn) {
+            // No more single step; reverse of start single step
+            _SingleStepMode = false;
+            btn.disabled = true;
+            document.getElementById("btnStartSingleStep").disabled = false;
+            document.getElementById("btnNextSingleStep").disabled = true;
         };
         return Control;
     })();

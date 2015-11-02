@@ -141,5 +141,13 @@ module TSOS {
                 _KernelInputQueue.enqueue(str.charAt(i));
             }
         }
+
+        public static hexToDecimal(hex): number {
+            return parseInt(hex, 16);
+        }
+
+        public deciamlToHex(decimal): number {
+            return decimal.toString(16);
+        }
     }
 }
