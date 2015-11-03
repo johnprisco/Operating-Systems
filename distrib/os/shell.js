@@ -70,6 +70,9 @@ var TSOS;
             // run
             sc = new TSOS.ShellCommand(this.shellRun, "run", "<pid> - Executes the program with the corresponding <pid>.");
             this.commandList[this.commandList.length] = sc;
+            // clearmem
+            sc = new TSOS.ShellCommand(this.shellClearMemory, "clearmem", "- Clears the memory.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             //
@@ -259,6 +262,9 @@ var TSOS;
                     case "run":
                         _StdOut.putText("Run executes a program in memory.");
                         break;
+                    case "clearmem":
+                        _StdOut.putText("Clears all the memory; removes anything stored in memory.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -395,6 +401,9 @@ var TSOS;
                 console.log("Program running.");
                 _StdOut.putText("Program running.");
             }
+        };
+        Shell.prototype.shellClearMemory = function () {
+            _MemoryManager.clearMemory();
         };
         Shell.prototype.shellBSOD = function () {
             var params = "";

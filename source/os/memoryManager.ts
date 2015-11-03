@@ -47,8 +47,16 @@ module TSOS {
                 // Print whats in memory at the current location
                 div.innerHTML += " " + this.getMemoryFrom(i);
             }
+        }
 
-
+        /**
+         * Clears all memory partitions and update the memory display;
+         */
+        public clearMemory() {
+            for (var i = 0; i < 786; i++) {
+                this.setMemoryAt(i, "00");
+            }
+            this.updateHostDisplay();
         }
     }
 }
