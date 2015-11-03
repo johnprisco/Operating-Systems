@@ -104,7 +104,7 @@ module TSOS {
          */
         public loadAccumulatorFromMemory(): void {
             var address = Utils.hexToDecimal(this.getNextByte() + this.getByte());
-            this.Acc = _MemoryManager.getMemoryFrom(address);
+            this.Acc = _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + address);
             this.PC += 3;
         }
 
@@ -113,7 +113,7 @@ module TSOS {
          */
         public storeAccumulatorInMemory(): void {
             var address = Utils.hexToDecimal(this.getNextByte() + this.getByte());
-            _MemoryManager.setMemoryAt(address, this.Acc.toString(16));
+            _MemoryManager.setMemoryAt(_CurrentPCB.memoryBase + address, this.Acc.toString(16));
             this.PC += 3;
         }
 
@@ -121,7 +121,7 @@ module TSOS {
          * Updates the Zflag if the X register if equal to the next two bytes in memory
          */
         public compareByte(): void {
-            var memory = Utils.hexToDecimal(_MemoryManager.getMemoryFrom(Utils.hexToDecimal(this.getByte())));
+            var memory = Utils.hexToDecimal(_MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + Utils.hexToDecimal(this.getByte())));
             this.Zflag = (memory === this.Xreg) ? 1 : 0;
             this.PC += 3;
         }
@@ -131,7 +131,7 @@ module TSOS {
          */
         public addWithCarry(): void {
             var address = Utils.hexToDecimal(this.getNextByte() + this.getByte());
-            this.Acc += Utils.hexToDecimal(_MemoryManager.getMemoryFrom(address));
+            this.Acc += Utils.hexToDecimal(_MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + address));
             this.PC += 3;
         }
 
@@ -148,7 +148,7 @@ module TSOS {
          */
         public loadXFromMemory(): void {
             var address = Utils.hexToDecimal(this.getNextByte() + this.getByte());
-            this.Xreg = Utils.hexToDecimal(_MemoryManager.getMemoryFrom(address));
+            this.Xreg = Utils.hexToDecimal(_MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + address));
             this.PC += 3;
         }
 
@@ -166,7 +166,7 @@ module TSOS {
          */
         public loadYFromMemory(): void {
             var address = Utils.hexToDecimal(this.getNextByte() + this.getByte());
-            this.Yreg = Utils.hexToDecimal(_MemoryManager.getMemoryFrom(address));
+            this.Yreg = Utils.hexToDecimal(_MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + address));
             console.log("loadYFromMemory Yreg: " + this.Yreg);
             this.PC += 3;
         }
@@ -205,9 +205,11 @@ module TSOS {
                 var byte = this.getByte();
                 console.log("Getting byte: " + byte);
                 console.log("Byte as Decimal: " + Utils.hexToDecimal(byte));
-                if ((this.PC + Utils.hexToDecimal(byte)) > 256) {
+                if ((this.PC + Utils.hexToDecimal(byte)) > _CurrentPCB.memoryLimit) {
+                    console.log("Branch greater.");
                     this.PC += Utils.hexToDecimal(byte) - 256;
                 } else {
+                    console.log("Branch else.");
                     this.PC += Utils.hexToDecimal(byte);
                 }
             }
@@ -221,7 +223,7 @@ module TSOS {
          */
         public incrementByte(): void {
             var address = Utils.hexToDecimal(this.getNextByte() + this.getByte());
-            _MemoryManager.setMemoryAt(address, (Utils.hexToDecimal(_MemoryManager.getMemoryFrom(address)) + 1));
+            _MemoryManager.setMemoryAt(_CurrentPCB.memoryBase + address, (Utils.hexToDecimal(_MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + address)) + 1));
             this.PC += 3;
         }
 
@@ -244,7 +246,7 @@ module TSOS {
                 var str = "";
                 var y = this.Yreg;
                 console.log("Initial y: " + y);
-                var val = _MemoryManager.getMemoryFrom(y);
+                var val = _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + y);
                 console.log("Initial val: " + val);
                 while (val != "00") {
                     console.log("Val: " + val);
@@ -259,7 +261,7 @@ module TSOS {
                     //_StdOut.putText(dataFromCode);
                     str += String.fromCharCode(Utils.hexToDecimal(val));
                     y += 1;
-                    val = _MemoryManager.getMemoryFrom(y);
+                    val = _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + y);
                     console.log("str: " + str);
                 }
                 console.log("Should put text: " + str);

@@ -12,7 +12,7 @@ var TSOS;
             if (y === void 0) { y = 0; }
             if (z === void 0) { z = 0; }
             if (memoryBase === void 0) { memoryBase = 0; }
-            if (memoryLimit === void 0) { memoryLimit = 0; }
+            if (memoryLimit === void 0) { memoryLimit = 256; }
             this.pid = pid;
             this.programCounter = programCounter;
             this.acc = acc;

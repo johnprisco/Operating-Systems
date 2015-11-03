@@ -13,7 +13,7 @@ module TSOS {
                     public y: number              = 0,
                     public z: number              = 0,
                     public memoryBase: number     = 0,
-                    public memoryLimit: number    = 0) {
+                    public memoryLimit: number    = 256) {
 
         }
 

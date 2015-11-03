@@ -48,13 +48,13 @@ var TSOS;
          * Clears all memory partitions and update the memory display;
          */
         MemoryManager.prototype.clearMemory = function () {
+            this.isFull = false;
+            this.base = 0;
+            this.limit = 256;
             for (var i = 0; i < 786; i++) {
                 this.setMemoryAt(i, "00");
             }
             this.updateHostDisplay();
-            this.isFull = false;
-            this.base = 0;
-            this.limit = 256;
             // Delete programs stored in PCB Array;
             _PCBArray = [];
         };
@@ -76,11 +76,10 @@ var TSOS;
                     this.base = 0;
                     this.limit = 256;
                     this.isFull = true;
-                    ;
                     this.currentPartition = 0;
                     break;
                 default:
-                    console.log("Something broke, currentPartiton is incorrect. currentPartition: "
+                    console.log("Something broke, currentPartition is incorrect. currentPartition: "
                         + this.currentPartition);
             }
         };

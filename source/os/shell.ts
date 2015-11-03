@@ -451,7 +451,7 @@ module TSOS {
                 // If we've gotten this far, we can try loading the program into memory.
                 for (var i = 0; i < commands.length; i++) {
                     // Put the byte at position i at position i in the block
-                    console.log("Load command: " + commands[i]);
+                    console.log("Load command: " + commands[i] + " at " + (_MemoryManager.base + i));
                     _MemoryManager.setMemoryAt(_MemoryManager.base + i, commands[i]);
                 }
 
@@ -479,15 +479,15 @@ module TSOS {
 
 
         public shellRun(args) {
-            _CPU.PC = 0; // Reset program counter
             var pid: number = args;
+            console.log("Running pid: " + pid);
 
             if (_CurrentPCB == null) {
                  _StdOut.putText("There are no programs to run.");
-                return;
             } else {
                 // Let's start executing.
                 _CurrentPCB = _PCBArray[pid]; // Update the current PCB
+                _CPU.PC = _CurrentPCB.memoryBase;
                 _CPU.isExecuting = true;
                 console.log("Program running.");
                 _StdOut.putText("Program running.");
