@@ -1,6 +1,8 @@
 module TSOS {
     export class MemoryManager {
         public memory: TSOS.Memory;
+        public isFull: boolean = false;
+        public currentPartition: number = 0;
 
         constructor() {
             this.memory = _Memory;
@@ -57,6 +59,23 @@ module TSOS {
                 this.setMemoryAt(i, "00");
             }
             this.updateHostDisplay();
+        }
+
+        public setNextPartition() {
+            switch(this.currentPartition) {
+                case 0:
+                    this.currentPartition++;
+                    break;
+                case 1:
+                    this.currentPartition++;
+                    break;
+                case 2:
+                    this.currentPartition = 0;
+                    break;
+                default:
+                    console.log("Something broke, currentPartiton is incorrect. currentPartition: "
+                    + this.currentPartition)
+            }
         }
     }
 }

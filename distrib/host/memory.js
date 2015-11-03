@@ -7,7 +7,7 @@ var TSOS;
         function Memory() {
             // The block of memory will be represented via an array
             this.memoryBlock = [];
-            for (var i = 0; i < 786; i++) {
+            for (var i = 0; i < 768; i++) {
                 this.memoryBlock[i] = "00";
             }
         }

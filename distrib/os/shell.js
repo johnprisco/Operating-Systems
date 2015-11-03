@@ -351,41 +351,70 @@ var TSOS;
             TSOS.Utils.updateStatus(args);
         };
         Shell.prototype.shellLoad = function () {
-            var input = document.getElementById('taProgramInput').value;
-            var regex = /[0-9A-F\s]/i;
-            var commands = input.split(" ");
-            console.log("Commands array: " + commands);
-            // Handle the case where there is no user input
-            if (input == "") {
-                _StdOut.putText("Put some text in the User Program Input field first.");
-                return;
+            if (_MemoryManager.isFull) {
+                _StdOut.putText("Memory is full, another program cannot be loaded.");
             }
-            // Handle the case where there is non-hex input
-            for (var i = 0; i < input.length; i++) {
-                if (regex.test(input.charAt(i)) === false) {
-                    _StdOut.putText("There are non-hexadecimal characters inputted.");
+            else {
+                var input = document.getElementById('taProgramInput').value;
+                var regex = /[0-9A-F\s]/i;
+                var base = 0;
+                var limit = 0;
+                var commands = input.split(" ");
+                console.log("Commands array: " + commands);
+                // Handle the case where there is no user input
+                if (input == "") {
+                    _StdOut.putText("Put some text in the User Program Input field first.");
                     return;
                 }
+                switch (_MemoryManager.currentPartition) {
+                    case 0:
+                        base = 0;
+                        limit = 256;
+                        break;
+                    case 1:
+                        base = 256;
+                        limit = 512;
+                        break;
+                    case 2:
+                        base = 512;
+                        limit = 768;
+                        _MemoryManager.isFull = true;
+                        break;
+                    default:
+                        console.log("Something broke when partitioning memory. currentPartition: "
+                            + _MemoryManager.currentPartition);
+                }
+                // Handle the case where there is non-hex input
+                for (var i = 0; i < input.length; i++) {
+                    if (regex.test(input.charAt(i)) === false) {
+                        _StdOut.putText("There are non-hexadecimal characters inputted.");
+                        return;
+                    }
+                }
+                // If we've gotten this far, we can try loading the program into memory.
+                for (var i = 0; i < commands.length; i++) {
+                    // Put the byte at position i at position i in the block
+                    console.log("Load command: " + commands[i]);
+                    _MemoryManager.setMemoryAt(base + i, commands[i]);
+                }
+                // Create new PCB and store it in the array tracking all of the PCBs.
+                _CurrentPCB = new TSOS.ProcessControlBlock();
+                _PCBArray.push(_CurrentPCB);
+                _CurrentPCB.init(); // Init after pushing to properly determine length of _PCBArray
+                // Reset CPU
+                _CPU.Acc = 0;
+                _CPU.PC = 0;
+                _CPU.Xreg = 0;
+                _CPU.Yreg = 0;
+                _CPU.Zflag = 0;
+                _CPU.isExecuting = false;
+                // Update the counter to save the current partition
+                _MemoryManager.setNextPartition();
+                console.log("Current partition: " + _MemoryManager.currentPartition);
+                // Print the memory and PID for the new process
+                _MemoryManager.updateHostDisplay();
+                _StdOut.putText("Process assigned ID " + _CurrentPCB.pid);
             }
-            // If we've gotten this far, we can try loading the program into memory.
-            for (var i = 0; i < commands.length; i++) {
-                // Put the byte at position i at position i in the block
-                console.log("Load command: " + commands[i]);
-                _MemoryManager.setMemoryAt(i, commands[i]);
-            }
-            // Create new PCB and store it in the array tracking all of the PCBs.
-            _CurrentPCB = new TSOS.ProcessControlBlock();
-            _PCBArray.push(_CurrentPCB);
-            _CurrentPCB.init(); // Init after pushing to properly determine length of _PCBArray
-            // Reset CPU
-            _CPU.Acc = 0;
-            _CPU.PC = 0;
-            _CPU.Xreg = 0;
-            _CPU.Yreg = 0;
-            _CPU.Zflag = 0;
-            _CPU.isExecuting = false;
-            // Print the PID for the new process
-            _StdOut.putText("Process assigned ID " + _CurrentPCB.pid);
         };
         Shell.prototype.shellRun = function (args) {
             _CPU.PC = 0; // Reset program counter

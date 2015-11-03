@@ -8,7 +8,7 @@ module TSOS {
 
         // Initialize the memory so its all empty (00)
         public constructor() {
-            for (var i = 0; i < 786; i++) {
+            for (var i = 0; i < 768; i++) {
                 this.memoryBlock[i] = "00";
             }
         }
