@@ -435,6 +435,11 @@ module TSOS {
                     return;
                 }
 
+                if (commands.length > 256) {
+                    _StdOut.putText("This program will not fit in a 256-byte partition in memory.");
+                    return;
+                }
+
                 // Handle the case where there is non-hex input
                 for (var i = 0; i < input.length; i++) {
                     if (regex.test(input.charAt(i)) === false) {
