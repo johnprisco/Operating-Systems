@@ -1,8 +1,10 @@
 module TSOS {
     export class MemoryManager {
         public memory: TSOS.Memory;
-        public isFull: boolean = false;
+        public isFull: boolean          = false;
         public currentPartition: number = 0;
+        public base: number             = 0;
+        public limit: number            = 256;
 
         constructor() {
             this.memory = _Memory;
@@ -58,18 +60,34 @@ module TSOS {
             for (var i = 0; i < 786; i++) {
                 this.setMemoryAt(i, "00");
             }
+
             this.updateHostDisplay();
+            this.isFull = false;
+            this.base   = 0;
+            this.limit  = 256;
+
+            // Delete programs stored in PCB Array;
+            _PCBArray = [];
         }
 
         public setNextPartition() {
             switch(this.currentPartition) {
                 case 0:
+                    this.base  = 256;
+                    this.limit = 512;
+                    this.isFull = false;
                     this.currentPartition++;
                     break;
                 case 1:
+                    this.base  = 512;
+                    this.limit = 768;
                     this.currentPartition++;
+                    this.isFull = false;
                     break;
                 case 2:
+                    this.base  = 0;
+                    this.limit = 256;
+                    this.isFull = true;;
                     this.currentPartition = 0;
                     break;
                 default:

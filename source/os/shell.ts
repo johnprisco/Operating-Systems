@@ -426,8 +426,6 @@ module TSOS {
             } else {
                 var input = (<HTMLInputElement>document.getElementById('taProgramInput')).value;
                 var regex:RegExp = /[0-9A-F\s]/i;
-                var base: number  = 0;
-                var limit: number = 0;
 
                 var commands = input.split(" ");
                 console.log("Commands array: " + commands);
@@ -435,25 +433,6 @@ module TSOS {
                 if (input == "") {
                     _StdOut.putText("Put some text in the User Program Input field first.");
                     return;
-                }
-
-                switch(_MemoryManager.currentPartition) {
-                    case 0:
-                        base  = 0;
-                        limit = 256;
-                        break;
-                    case 1:
-                        base  = 256;
-                        limit = 512;
-                        break;
-                    case 2:
-                        base  = 512;
-                        limit = 768;
-                        _MemoryManager.isFull = true;
-                        break;
-                    default:
-                        console.log("Something broke when partitioning memory. currentPartition: "
-                        + _MemoryManager.currentPartition);
                 }
 
                 // Handle the case where there is non-hex input
@@ -468,7 +447,7 @@ module TSOS {
                 for (var i = 0; i < commands.length; i++) {
                     // Put the byte at position i at position i in the block
                     console.log("Load command: " + commands[i]);
-                    _MemoryManager.setMemoryAt(base + i, commands[i]);
+                    _MemoryManager.setMemoryAt(_MemoryManager.base + i, commands[i]);
                 }
 
                 // Create new PCB and store it in the array tracking all of the PCBs.
@@ -492,7 +471,8 @@ module TSOS {
                 _StdOut.putText("Process assigned ID " + _CurrentPCB.pid);
             }
         }
-x
+
+
         public shellRun(args) {
             _CPU.PC = 0; // Reset program counter
             var pid: number = args;
