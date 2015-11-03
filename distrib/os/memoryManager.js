@@ -2,6 +2,8 @@ var TSOS;
 (function (TSOS) {
     var MemoryManager = (function () {
         function MemoryManager() {
+            this.isFull = false;
+            this.currentPartition = 0;
             this.memory = _Memory;
         }
         // Returns the size of the memory
@@ -38,6 +40,31 @@ var TSOS;
                 }
                 // Print whats in memory at the current location
                 div.innerHTML += " " + this.getMemoryFrom(i);
+            }
+        };
+        /**
+         * Clears all memory partitions and update the memory display;
+         */
+        MemoryManager.prototype.clearMemory = function () {
+            for (var i = 0; i < 786; i++) {
+                this.setMemoryAt(i, "00");
+            }
+            this.updateHostDisplay();
+        };
+        MemoryManager.prototype.setNextPartition = function () {
+            switch (this.currentPartition) {
+                case 0:
+                    this.currentPartition++;
+                    break;
+                case 1:
+                    this.currentPartition++;
+                    break;
+                case 2:
+                    this.currentPartition = 0;
+                    break;
+                default:
+                    console.log("Something broke, currentPartiton is incorrect. currentPartition: "
+                        + this.currentPartition);
             }
         };
         return MemoryManager;

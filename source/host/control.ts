@@ -100,9 +100,10 @@ module TSOS {
             _CPU = new Cpu();  // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init();       //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
 
-            // Initialize memory and memory manager; Memory implemented to 256 bytes for iProject 2.
+            // Initialize memory and memory manager; Memory implemented to 768 bytes for iProject 3.
             _Memory = new Memory();
             _MemoryManager = new MemoryManager();
+            _MemoryManager.updateHostDisplay();
 
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);

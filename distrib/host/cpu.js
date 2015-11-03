@@ -51,6 +51,17 @@ var TSOS;
             document.getElementById('ir-cpu').innerHTML = op;
         };
         /**
+         * Set the attributes of the specified pcb with the current CPU attributes
+         * @param pcb: the PCB we are updating
+         */
+        Cpu.prototype.updatePCB = function (pcb) {
+            pcb.programCounter = this.PC;
+            pcb.acc = this.Acc;
+            pcb.x = this.Xreg;
+            pcb.y = this.Yreg;
+            pcb.z = this.Zflag;
+        };
+        /**
          * Cycle the CPU to perform operations.
          */
         Cpu.prototype.cycle = function () {
@@ -154,11 +165,7 @@ var TSOS;
          * Update the current PCB and set isExecuting to false
          */
         Cpu.prototype.breakOperation = function () {
-            _CurrentPCB.programCounter = this.PC;
-            _CurrentPCB.acc = this.Acc;
-            _CurrentPCB.x = this.Xreg;
-            _CurrentPCB.y = this.Yreg;
-            _CurrentPCB.z = this.Zflag;
+            this.updatePCB(_CurrentPCB);
             _CurrentPCB.updateHostDisplay("00");
             this.isExecuting = false;
             _StdOut.advanceLine();
