@@ -457,16 +457,8 @@ module TSOS {
 
                 // Create new PCB and store it in the array tracking all of the PCBs.
                 _CurrentPCB = new ProcessControlBlock();
-                _PCBArray.push(_CurrentPCB);
-                _CurrentPCB.init(); // Init after pushing to properly determine length of _PCBArray
-
-                // Reset CPU
-                _CPU.Acc         = 0;
-                _CPU.PC          = 0;
-                _CPU.Xreg        = 0;
-                _CPU.Yreg        = 0;
-                _CPU.Zflag       = 0;
-                _CPU.isExecuting = false;
+                _ResidentList.push(_CurrentPCB);
+                _CurrentPCB.init(); // Init after pushing to properly determine length of _ResidentList
 
                 // Update the counter to save the current partition
                 _MemoryManager.setNextPartition();
@@ -479,18 +471,23 @@ module TSOS {
 
 
         public shellRun(args) {
-            var pid: number = args;
-            console.log("Running pid: " + pid);
-
-            if (_CurrentPCB == null) {
+            if (_ResidentList.length === 0) {
                  _StdOut.putText("There are no programs to run.");
             } else {
                 // Let's start executing.
-                _CurrentPCB = _PCBArray[pid]; // Update the current PCB
-                _CPU.PC = _CurrentPCB.memoryBase;
-                _CPU.isExecuting = true;
-                console.log("Program running.");
-                _StdOut.putText("Program running.");
+                var temp = _ResidentList[args[0]];
+                console.log("Attempting to enqueue program with pid: " + temp.pid);
+                if (temp.state === PROCESS_TERMINATED) {
+                    _StdOut.putText("This process is terminated.");
+                } else {
+                    temp.state = PROCESS_READY;
+                    _ReadyQueue.enqueue(temp);
+                    _KernelInterruptQueue.enqueue(new Interrupt(RUN_PROGRAM_IRQ, ""));
+
+                    console.log("Program running.");
+                    _CpuScheduler.test();
+                    _StdOut.putText("Program running.");
+                }
             }
         }
 

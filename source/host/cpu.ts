@@ -1,6 +1,6 @@
 ///<reference path="../globals.ts" />
 
-/* ------------
+/*   ------------
      CPU.ts
 
      Requires global.ts.
@@ -66,12 +66,15 @@ module TSOS {
          * Cycle the CPU to perform operations.
          */
         public cycle(): void {
-
             var op = _MemoryManager.getMemoryFrom(this.PC);
             this.executeOperation(op);
 
             _MemoryManager.updateHostDisplay();
             this.updateHostDisplay(op);
+
+            if (_CpuScheduler.algorithm = ROUND_ROBIN) {
+                _CpuScheduler.quantumCounter++;
+            }
 
             _Kernel.krnTrace('CPU cycle');
         }
@@ -236,6 +239,8 @@ module TSOS {
                 console.log("Xreg = 1");
                 console.log("Should putText: " + Utils.hexToDecimal(this.Yreg).toString());
                 _StdOut.putText(Utils.hexToDecimal(this.Yreg).toString());
+                _StdOut.advanceLine();
+                _OsShell.putPrompt();
                 this.PC += 1;
                 _CurrentPCB.updateHostDisplay("00");
                 return;
@@ -267,6 +272,8 @@ module TSOS {
                 console.log("Should put text: " + str);
                 //console.log("Should putText: " + str);
                 _StdOut.putText(str);
+                _StdOut.advanceLine();
+                _OsShell.putPrompt();
                 this.PC += 1;
                 _CurrentPCB.updateHostDisplay("00");
                 return;
@@ -326,6 +333,8 @@ module TSOS {
                 default:
                     console.log(code);
                     _StdOut.putText("The following code is undefined: " + code);
+                    _StdOut.advanceLine();
+                    _OsShell.putPrompt();
                     this.PC += 1;
                     break;
             }

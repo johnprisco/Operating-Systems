@@ -4,7 +4,7 @@ var TSOS;
 (function (TSOS) {
     var ProcessControlBlock = (function () {
         // Initializes all fields
-        function ProcessControlBlock(pid, programCounter, acc, x, y, z, memoryBase, memoryLimit) {
+        function ProcessControlBlock(pid, programCounter, acc, x, y, z, memoryBase, memoryLimit, state) {
             if (pid === void 0) { pid = 0; }
             if (programCounter === void 0) { programCounter = 0; }
             if (acc === void 0) { acc = 0; }
@@ -13,6 +13,7 @@ var TSOS;
             if (z === void 0) { z = 0; }
             if (memoryBase === void 0) { memoryBase = 0; }
             if (memoryLimit === void 0) { memoryLimit = 256; }
+            if (state === void 0) { state = PROCESS_NEW; }
             this.pid = pid;
             this.programCounter = programCounter;
             this.acc = acc;
@@ -21,9 +22,10 @@ var TSOS;
             this.z = z;
             this.memoryBase = memoryBase;
             this.memoryLimit = memoryLimit;
+            this.state = state;
         }
         ProcessControlBlock.prototype.init = function () {
-            this.pid = _PCBArray.length - 1;
+            this.pid = _ResidentList.length - 1;
             this.memoryBase = _MemoryManager.base;
             this.memoryLimit = _MemoryManager.limit;
         };

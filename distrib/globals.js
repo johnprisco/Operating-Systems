@@ -15,11 +15,13 @@
 var APP_NAME = "PriscOS";
 var APP_VERSION = "1.A4";
 var CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second.
-var TIMER_IRQ = 0; // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
+// Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
 // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
+var TIMER_IRQ = 0;
 var KEYBOARD_IRQ = 1;
-// Constants for the Blue Screen of Death.
 var BSOD_IRQ = 2;
+var RUN_PROGRAM_IRQ = 3;
+var CONTEXT_SWITCH_IRQ = 4;
 var BSOD_BKG = new Image();
 BSOD_BKG.src = "distrib/images/bsod.png";
 //
@@ -29,9 +31,11 @@ BSOD_BKG.src = "distrib/images/bsod.png";
 var _CPU; // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
 var _Memory;
 var _MemoryManager;
-var _PCBArray = new Array;
+var _ResidentList = new Array;
+var _ReadyQueue;
 var _CurrentPCB; // Tracks the current program
 var _SingleStepMode = false; // Single step flag
+var _CpuScheduler;
 var _OSclock = 0; // Page 23.
 var _Mode = 0; // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 var _Canvas; // Initialized in Control.hostInit().
@@ -39,6 +43,14 @@ var _DrawingContext; // = _Canvas.getContext("2d");  // Assigned here for type s
 var _DefaultFontFamily = "sans"; // Ignored, I think. The was just a place-holder in 2008, but the HTML canvas may have use for it.
 var _DefaultFontSize = 13;
 var _FontHeightMargin = 4; // Additional space added to font size when advancing a line.
+// The possible states of scheduling
+var ROUND_ROBIN = "Round Robin";
+// The possible states of a process
+var PROCESS_NEW = "New";
+var PROCESS_RUNNING = "Running";
+var PROCESS_WAITING = "Waiting";
+var PROCESS_READY = "Ready";
+var PROCESS_TERMINATED = "Terminated";
 var _Trace = true; // Default the OS trace to be on.
 // The OS Kernel and its queues.
 var _Kernel;

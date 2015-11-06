@@ -1,5 +1,6 @@
 ///<reference path="../globals.ts" />
 ///<reference path="queue.ts" />
+///<reference path="cpuScheduler.ts" />
 /* ------------
      Kernel.ts
 
@@ -76,6 +77,10 @@ var TSOS;
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             }
             else if (_CPU.isExecuting) {
+                // TODO: Check here if we need to context switch, and issue an interrupt if so
+                if (_CpuScheduler.shouldSwitchContext()) {
+                    _CpuScheduler.switchContext();
+                }
                 _CPU.cycle();
             }
             else {
@@ -113,6 +118,12 @@ var TSOS;
                     break;
                 case BSOD_IRQ:
                     this.krnTrapError("User entered BSOD command.");
+                    break;
+                case RUN_PROGRAM_IRQ:
+                    _CpuScheduler.schedule();
+                    break;
+                case CONTEXT_SWITCH_IRQ:
+                    _CpuScheduler.switchContext();
                     break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");

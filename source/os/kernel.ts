@@ -1,5 +1,6 @@
 ///<reference path="../globals.ts" />
 ///<reference path="queue.ts" />
+///<reference path="cpuScheduler.ts" />
 
 /* ------------
      Kernel.ts
@@ -87,6 +88,10 @@ module TSOS {
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
+                // TODO: Check here if we need to context switch, and issue an interrupt if so
+                if (_CpuScheduler.shouldSwitchContext()) {
+                    _CpuScheduler.switchContext();
+                }
                 _CPU.cycle();
             } else {                      // If there are no interrupts and there is nothing being executed then just be idle. {
                 this.krnTrace("Idle");
@@ -128,6 +133,12 @@ module TSOS {
                     break;
                 case BSOD_IRQ:
                     this.krnTrapError("User entered BSOD command.");
+                    break;
+                case RUN_PROGRAM_IRQ:
+                    _CpuScheduler.schedule();
+                    break;
+                case CONTEXT_SWITCH_IRQ:
+                    _CpuScheduler.switchContext();
                     break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");

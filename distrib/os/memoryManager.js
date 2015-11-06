@@ -56,7 +56,7 @@ var TSOS;
             }
             this.updateHostDisplay();
             // Delete programs stored in PCB Array;
-            _PCBArray = [];
+            _ResidentList = [];
         };
         MemoryManager.prototype.setNextPartition = function () {
             switch (this.currentPartition) {

@@ -68,7 +68,7 @@ module TSOS {
             this.updateHostDisplay();
 
             // Delete programs stored in PCB Array;
-            _PCBArray = [];
+            _ResidentList = [];
         }
 
         public setNextPartition() {
