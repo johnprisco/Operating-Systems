@@ -77,9 +77,9 @@ var TSOS;
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             }
             else if (_CPU.isExecuting) {
-                // TODO: Check here if we need to context switch, and issue an interrupt if so
+                // Check here if we need to context switch, and issue an interrupt if so
                 if (_CpuScheduler.shouldSwitchContext()) {
-                    _CpuScheduler.switchContext();
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CONTEXT_SWITCH_IRQ, ""));
                 }
                 _CPU.cycle();
             }

@@ -11,7 +11,8 @@ var TSOS;
         function ReadyQueue() {
             _super.call(this);
         }
-        ReadyQueue.prototype.getElementAt = function (index) {
+        ReadyQueue.prototype.getPCBAt = function (index) {
+            console.log("Trying to get element at index: " + index + " with pid " + this.q[index]);
             return this.q[index];
         };
         return ReadyQueue;

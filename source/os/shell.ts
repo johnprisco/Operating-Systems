@@ -127,10 +127,30 @@ module TSOS {
                                   "- Clears the memory.");
             this.commandList[this.commandList.length] = sc;
 
-            // ps  - list the running processes and their IDs
-            // kill <id> - kills the specified process id.
+            // runall
+            sc = new ShellCommand(this.shellRunAll,
+                                  "runall",
+                                  "- Runs all the programs loaded in memory.");
+            this.commandList[this.commandList.length] = sc;
 
-            //
+            // quantum
+            sc = new ShellCommand(this.shellSetQuantum,
+                                  "quantum",
+                                  "<num> - Sets the quantum of the CPU scheduler to <num>.");
+            this.commandList[this.commandList.length] = sc;
+
+            // ps  - list the running processes and their IDs
+            sc = new ShellCommand(this.shellListProcesses,
+                                  "ps",
+                                  "- Lists all the processes currently running.");
+            this.commandList[this.commandList.length] = sc;
+
+            // kill <id> - kills the specified process id.
+            sc = new ShellCommand(this.shellKillProcess,
+                                  "kill",
+                                  "<pid> - Kill the process with pid <pid>.");
+            this.commandList[this.commandList.length] = sc;
+
             // Display the initial prompt.
             this.putPrompt();
         }
@@ -469,7 +489,7 @@ module TSOS {
             }
         }
 
-
+        // TODO: Make sure the input is a number.
         public shellRun(args) {
             if (_ResidentList.length === 0) {
                  _StdOut.putText("There are no programs to run.");
@@ -485,7 +505,6 @@ module TSOS {
                     _KernelInterruptQueue.enqueue(new Interrupt(RUN_PROGRAM_IRQ, ""));
 
                     console.log("Program running.");
-                    _CpuScheduler.test();
                     _StdOut.putText("Program running.");
                 }
             }
@@ -498,6 +517,83 @@ module TSOS {
         public shellBSOD() {
             var params = "";
             _KernelInterruptQueue.enqueue(new Interrupt(BSOD_IRQ, params));
+        }
+
+        public shellRunAll() {
+            if (_ResidentList.length === 0) {
+                _StdOut.putText("There are no programs to run.");
+            } else {
+                // Add all the loaded processes to the ready queue
+                while (_ResidentList.length > 0) {
+                    var temp = _ResidentList.shift();
+
+                    if (temp.state !== PROCESS_TERMINATED) {
+                        temp.state = PROCESS_READY;
+                        _ReadyQueue.enqueue(temp);
+                    }
+                }
+
+                _KernelInterruptQueue.enqueue(new Interrupt(RUN_PROGRAM_IRQ, ""));
+                console.log("All programs running.");
+                _StdOut.putText("All programs running.");
+            }
+        }
+
+        public shellSetQuantum(args) {
+            var regex = /^-?[\d.]+(?:e-?\d+)?$/;
+
+            // Make sure the user wants to set the quantum to a number,
+            // not something unreasonable like a string.
+            if(!(regex.test(args[0]))) {
+                _StdOut.putText("Entering strings will not set the quantum.")
+            } else {
+                _CpuScheduler.setQuantum(args);
+                _StdOut.putText("Updated CPU quantum to " + _CpuScheduler.getQuantum() + ".");
+            }
+        }
+
+        public shellListProcesses() {
+            if (!_CPU.isExecuting) {
+                _StdOut.putText("No programs running.")
+            } else {
+                var temp = [];
+
+                for (var i in _ReadyQueue.q) {
+                    temp.push(_ReadyQueue.getPCBAt(i));
+                }
+
+                temp.push(_CurrentPCB); // Don't forget to include the current procecss.
+
+                for (var j = 0; j < temp.length; j++) {
+                    _StdOut.putText("PID " + temp[j].pid + " is running.");
+                    _StdOut.advanceLine();
+                }
+            }
+        }
+
+        public shellKillProcess(args) {
+            var regex = /^-?[\d.]+(?:e-?\d+)?$/;
+
+            // Make sure they're submitting something that could actually be a PID.
+            if(!(regex.test(args[0]))) {
+                _StdOut.putText("That's not a valid PID.")
+            } else {
+                if (_CurrentPCB.pid === args[0]) {
+                    _CurrentPCB.state = PROCESS_TERMINATED;
+                    _KernelInterruptQueue.enqueue(new Interrupt(CONTEXT_SWITCH_IRQ, ""));
+                    _StdOut.putText("Process terminated.");
+                } else {
+                    // Check _ReadyQueue for that PID
+                    for (var i in _ReadyQueue.q) {
+                        if (_ReadyQueue.q[i].pid === args[0]) {
+                            _ReadyQueue.q[i].state = PROCESS_TERMINATED;
+                            _StdOut.putText("Process terminated.");
+                        }
+                    }
+
+                    _StdOut.putText("There is no process with that PID.");
+                }
+            }
         }
     }
 }

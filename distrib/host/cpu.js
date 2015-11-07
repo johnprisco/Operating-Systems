@@ -73,6 +73,7 @@ var TSOS;
                 _CpuScheduler.quantumCounter++;
             }
             _Kernel.krnTrace('CPU cycle');
+            console.log("Current PID: " + _CurrentPCB.pid);
         };
         /**
          * Returns the next byte in memory
@@ -93,6 +94,7 @@ var TSOS;
         Cpu.prototype.loadAccumulatorWithConstant = function () {
             this.Acc = TSOS.Utils.hexToDecimal(this.getByte());
             this.PC += 2;
+            this.updatePCB(_CurrentPCB);
         };
         /**
          * Loads the accumulator with what is stored at the address of the next two bytes in memory
@@ -101,6 +103,7 @@ var TSOS;
             var address = TSOS.Utils.hexToDecimal(this.getNextByte() + this.getByte());
             this.Acc = _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + address);
             this.PC += 3;
+            this.updatePCB(_CurrentPCB);
         };
         /**
          * Stores the accumulator at the address specified by the next two bytes
@@ -109,6 +112,7 @@ var TSOS;
             var address = TSOS.Utils.hexToDecimal(this.getNextByte() + this.getByte());
             _MemoryManager.setMemoryAt(_CurrentPCB.memoryBase + address, this.Acc.toString(16));
             this.PC += 3;
+            this.updatePCB(_CurrentPCB);
         };
         /**
          * Updates the Zflag if the X register if equal to the next two bytes in memory
@@ -117,6 +121,7 @@ var TSOS;
             var memory = TSOS.Utils.hexToDecimal(_MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + TSOS.Utils.hexToDecimal(this.getByte())));
             this.Zflag = (memory === this.Xreg) ? 1 : 0;
             this.PC += 3;
+            this.updatePCB(_CurrentPCB);
         };
         /**
          * Increase the accumulator by the value stored in the address specified by the next two bytes
@@ -125,6 +130,7 @@ var TSOS;
             var address = TSOS.Utils.hexToDecimal(this.getNextByte() + this.getByte());
             this.Acc += TSOS.Utils.hexToDecimal(_MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + address));
             this.PC += 3;
+            this.updatePCB(_CurrentPCB);
         };
         /**
          * Set X register to the value of the next byte
@@ -132,6 +138,7 @@ var TSOS;
         Cpu.prototype.loadXWithConstant = function () {
             this.Xreg = TSOS.Utils.hexToDecimal(this.getByte());
             this.PC += 2;
+            this.updatePCB(_CurrentPCB);
         };
         /**
          * Set X register to the value stored at the address specified by the next two bytes
@@ -140,6 +147,7 @@ var TSOS;
             var address = TSOS.Utils.hexToDecimal(this.getNextByte() + this.getByte());
             this.Xreg = TSOS.Utils.hexToDecimal(_MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + address));
             this.PC += 3;
+            this.updatePCB(_CurrentPCB);
         };
         /**
          * Set Y register to the value of the next byte
@@ -148,6 +156,7 @@ var TSOS;
             this.Yreg = TSOS.Utils.hexToDecimal(this.getByte());
             console.log("loadYWithConstant Yreg: " + this.Yreg);
             this.PC += 2;
+            this.updatePCB(_CurrentPCB);
         };
         /**
          * Set Y register to the value stored at the address specified by the next two bytes
@@ -157,12 +166,14 @@ var TSOS;
             this.Yreg = TSOS.Utils.hexToDecimal(_MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + address));
             console.log("loadYFromMemory Yreg: " + this.Yreg);
             this.PC += 3;
+            this.updatePCB(_CurrentPCB);
         };
         /**
          * Move along, nothing to see here, you don't have to go home, but you have to get out of here
          */
         Cpu.prototype.noOperation = function () {
             // Nothing to execute
+            this.updatePCB(_CurrentPCB);
         };
         /**
          * Update the current PCB and set isExecuting to false
@@ -171,6 +182,9 @@ var TSOS;
             this.updatePCB(_CurrentPCB);
             _CurrentPCB.updateHostDisplay("00");
             this.isExecuting = false;
+            // TODO: Here the CPU scheduler has to check if there are more processes to run.
+            // TODO: Remove from ready queue if its terminated, schedule for next process.
+            // TODO: Do we need to do anything more than switch context?
             _StdOut.advanceLine();
             _OsShell.putPrompt();
             //if (_SingleStepMode) {
@@ -187,7 +201,7 @@ var TSOS;
                 var byte = this.getByte();
                 console.log("Getting byte: " + byte);
                 console.log("Byte as Decimal: " + TSOS.Utils.hexToDecimal(byte));
-                if ((this.PC + TSOS.Utils.hexToDecimal(byte)) > _CurrentPCB.memoryLimit) {
+                if ((this.PC + TSOS.Utils.hexToDecimal(byte)) >= 256) {
                     console.log("Branch greater.");
                     this.PC += TSOS.Utils.hexToDecimal(byte) - 256;
                 }
@@ -197,6 +211,7 @@ var TSOS;
                 }
             }
             this.PC += 2;
+            this.updatePCB(_CurrentPCB);
             console.log("Program Counter after branchBytes(): " + this.PC);
         };
         /**
@@ -206,6 +221,7 @@ var TSOS;
             var address = TSOS.Utils.hexToDecimal(this.getNextByte() + this.getByte());
             _MemoryManager.setMemoryAt(_CurrentPCB.memoryBase + address, (TSOS.Utils.hexToDecimal(_MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + address)) + 1));
             this.PC += 3;
+            this.updatePCB(_CurrentPCB);
         };
         /**
          * Print to the console what's stored in the Y register or what's stored
@@ -220,6 +236,7 @@ var TSOS;
                 _OsShell.putPrompt();
                 this.PC += 1;
                 _CurrentPCB.updateHostDisplay("00");
+                this.updatePCB(_CurrentPCB);
                 return;
             }
             if (this.Xreg == 2) {
@@ -252,6 +269,7 @@ var TSOS;
                 _OsShell.putPrompt();
                 this.PC += 1;
                 _CurrentPCB.updateHostDisplay("00");
+                this.updatePCB(_CurrentPCB);
                 return;
             }
         };
@@ -311,6 +329,7 @@ var TSOS;
                     _StdOut.advanceLine();
                     _OsShell.putPrompt();
                     this.PC += 1;
+                    this.updatePCB(_CurrentPCB);
                     break;
             }
         };

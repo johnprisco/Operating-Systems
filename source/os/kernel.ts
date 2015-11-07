@@ -88,9 +88,9 @@ module TSOS {
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed. {
-                // TODO: Check here if we need to context switch, and issue an interrupt if so
+                // Check here if we need to context switch, and issue an interrupt if so
                 if (_CpuScheduler.shouldSwitchContext()) {
-                    _CpuScheduler.switchContext();
+                    _KernelInterruptQueue.enqueue(new Interrupt(CONTEXT_SWITCH_IRQ, ""));
                 }
                 _CPU.cycle();
             } else {                      // If there are no interrupts and there is nothing being executed then just be idle. {
