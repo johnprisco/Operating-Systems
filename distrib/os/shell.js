@@ -402,8 +402,13 @@ var TSOS;
                 _StdOut.putText("Process assigned ID " + _CurrentPCB.pid);
             }
         };
-        // TODO: Make sure the input is a number.
         Shell.prototype.shellRun = function (args) {
+            var regex = /^-?[\d.]+(?:e-?\d+)?$/;
+            // Make sure they're submitting something a number.
+            if (!(regex.test(args[0]))) {
+                _StdOut.putText("That's not valid input.");
+                return;
+            }
             if (_ResidentList.length === 0) {
                 _StdOut.putText("There are no programs to run.");
             }

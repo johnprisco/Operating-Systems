@@ -61,6 +61,13 @@ var TSOS;
             pcb.y = this.Yreg;
             pcb.z = this.Zflag;
         };
+        Cpu.prototype.setToPCB = function (pcb) {
+            this.PC = pcb.programCounter;
+            this.Acc = pcb.acc;
+            this.Xreg = pcb.x;
+            this.Yreg = pcb.y;
+            this.Zflag = pcb.z;
+        };
         /**
          * Cycle the CPU to perform operations.
          */
@@ -179,18 +186,11 @@ var TSOS;
          * Update the current PCB and set isExecuting to false
          */
         Cpu.prototype.breakOperation = function () {
+            _CurrentPCB.state = PROCESS_TERMINATED;
             this.updatePCB(_CurrentPCB);
             _CurrentPCB.updateHostDisplay("00");
             this.isExecuting = false;
-            // TODO: Here the CPU scheduler has to check if there are more processes to run.
-            // TODO: Remove from ready queue if its terminated, schedule for next process.
-            // TODO: Do we need to do anything more than switch context?
-            _StdOut.advanceLine();
-            _OsShell.putPrompt();
-            //if (_SingleStepMode) {
-            //    TSOS.Control.hostBtnExitSingleStep_click(document.getElementById("btnExitSingleStep"));
-            //    this.PC = 0;
-            //}
+            _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CONTEXT_SWITCH_IRQ, ""));
         };
         /**
          * Moving the program counter as specified by the next byte, if the Z flag is zero
@@ -248,15 +248,6 @@ var TSOS;
                 console.log("Initial val: " + val);
                 while (val != "00") {
                     console.log("Val: " + val);
-                    //var data = _MemoryManager.getMemoryFrom(val);
-                    //console.log("data: " + data);
-                    //var dataInDecimal = Utils.hexToDecimal(data);
-                    //console.log("dataInDecimal: " + dataInDecimal);
-                    //var dataFromCode = String.fromCharCode(dataInDecimal);
-                    //console.log("dataFromCode: " + dataFromCode);
-                    //str += dataFromCode;
-                    //console.log("current str: " + str);
-                    //_StdOut.putText(dataFromCode);
                     str += String.fromCharCode(TSOS.Utils.hexToDecimal(val));
                     y += 1;
                     val = _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + y);

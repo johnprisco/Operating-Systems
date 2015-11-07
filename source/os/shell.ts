@@ -489,8 +489,15 @@ module TSOS {
             }
         }
 
-        // TODO: Make sure the input is a number.
         public shellRun(args) {
+            var regex = /^-?[\d.]+(?:e-?\d+)?$/;
+
+            // Make sure they're submitting something a number.
+            if(!(regex.test(args[0]))) {
+                _StdOut.putText("That's not valid input.");
+                return;
+            }
+
             if (_ResidentList.length === 0) {
                  _StdOut.putText("There are no programs to run.");
             } else {

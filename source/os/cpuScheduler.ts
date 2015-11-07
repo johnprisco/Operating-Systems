@@ -28,7 +28,7 @@ module TSOS {
         public schedule(): void {
             console.log("We schedulin'.");
             _CurrentPCB = _ReadyQueue.dequeue();
-            _CPU.PC = _CurrentPCB.programCounter;
+            _CPU.setToPCB(_CurrentPCB);
             _CurrentPCB.state = PROCESS_RUNNING;
             _CPU.isExecuting = true;
         }
