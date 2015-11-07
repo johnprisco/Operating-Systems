@@ -41,14 +41,6 @@ var TSOS;
         };
         CpuScheduler.prototype.switchContext = function () {
             console.log("Switching context.");
-            //var temp = _ReadyQueue.dequeue();
-            //
-            //if (_CurrentPCB.state !== PROCESS_TERMINATED) {
-            //    temp.state = PROCESS_WAITING;
-            //    _ReadyQueue.enqueue(temp);
-            //}
-            //
-            //this.schedule();
             if (_CurrentPCB.state !== PROCESS_TERMINATED) {
                 var temp = _CurrentPCB;
                 temp.state = PROCESS_WAITING;
@@ -56,7 +48,9 @@ var TSOS;
                 this.schedule();
             }
             else {
-                _ReadyQueue.dequeue();
+                // TODO: This doesn't work as it should.
+                // TODO: Why did I dequeue at all?
+                // _ReadyQueue.dequeue();
                 // Process is terminated, so queue up the next one
                 // ...unless there aren't any more processes to run.
                 if (_ReadyQueue.getSize() > 0) {
