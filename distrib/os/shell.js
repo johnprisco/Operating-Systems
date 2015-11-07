@@ -422,7 +422,9 @@ var TSOS;
                 else {
                     temp.state = PROCESS_READY;
                     _ReadyQueue.enqueue(temp);
-                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(RUN_PROGRAM_IRQ, ""));
+                    if (!_CPU.isExecuting) {
+                        _KernelInterruptQueue.enqueue(new TSOS.Interrupt(RUN_PROGRAM_IRQ, ""));
+                    }
                     console.log("Program running.");
                     _StdOut.putText("Program running.");
                 }
