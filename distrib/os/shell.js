@@ -450,6 +450,9 @@ var TSOS;
                         _ReadyQueue.enqueue(temp);
                     }
                 }
+                for (var i in _ReadyQueue.q) {
+                    console.log("Printing ready queue: " + _ReadyQueue.q[i].pid);
+                }
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(RUN_PROGRAM_IRQ, ""));
                 console.log("All programs running.");
                 _StdOut.putText("All programs running.");

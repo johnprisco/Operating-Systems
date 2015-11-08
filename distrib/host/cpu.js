@@ -72,7 +72,7 @@ var TSOS;
          * Cycle the CPU to perform operations.
          */
         Cpu.prototype.cycle = function () {
-            var op = _MemoryManager.getMemoryFrom(this.PC);
+            var op = _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + this.PC);
             this.executeOperation(op);
             _MemoryManager.updateHostDisplay();
             this.updateHostDisplay(op);
@@ -315,7 +315,7 @@ var TSOS;
                     this.syscall();
                     break;
                 default:
-                    console.log(code);
+                    console.log("Undefined code: " + code);
                     _StdOut.putText("The following code is undefined: " + code);
                     _StdOut.advanceLine();
                     _OsShell.putPrompt();
