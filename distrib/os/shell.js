@@ -432,6 +432,7 @@ var TSOS;
         };
         Shell.prototype.shellClearMemory = function () {
             _MemoryManager.clearMemory();
+            _StdOut.putText("Memory cleared.");
         };
         Shell.prototype.shellBSOD = function () {
             var params = "";

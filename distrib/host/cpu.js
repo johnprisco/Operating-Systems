@@ -86,14 +86,14 @@ var TSOS;
          * Returns the next byte in memory
          */
         Cpu.prototype.getByte = function () {
-            return _MemoryManager.getMemoryFrom(this.PC + 1);
+            return _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + this.PC + 1);
         };
         /**
          *
          * @returns second to next byte in memory
          */
         Cpu.prototype.getNextByte = function () {
-            return _MemoryManager.getMemoryFrom(this.PC + 2);
+            return _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + this.PC + 2);
         };
         /**
          * Loads accumulator with the next byte in memory, converted to decimal

@@ -522,6 +522,7 @@ module TSOS {
 
         public shellClearMemory() {
             _MemoryManager.clearMemory();
+            _StdOut.putText("Memory cleared.");
         }
 
         public shellBSOD() {

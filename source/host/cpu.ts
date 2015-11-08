@@ -91,7 +91,7 @@ module TSOS {
          * Returns the next byte in memory
          */
         public getByte() {
-            return _MemoryManager.getMemoryFrom(this.PC + 1);
+            return _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + this.PC + 1);
         }
 
         /**
@@ -99,7 +99,7 @@ module TSOS {
          * @returns second to next byte in memory
          */
         public getNextByte() {
-            return _MemoryManager.getMemoryFrom(this.PC + 2);
+            return _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + this.PC + 2);
         }
 
         /**
