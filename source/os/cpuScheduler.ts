@@ -24,7 +24,7 @@ module TSOS {
         public setQuantum(quantum: number) {
             this.quantum = quantum;
         }
-        
+
         public schedule(): void {
             console.log("We schedulin'.");
             _CurrentPCB = _ReadyQueue.dequeue();

@@ -593,6 +593,11 @@ module TSOS {
             if(!(regex.test(args[0]))) {
                 _StdOut.putText("That's not a valid PID.")
             } else {
+                // TODO: First check if the current program is the one to terminate.
+                // TODO: Then check the ready queue.
+
+
+
                 if (_CurrentPCB.pid === args[0]) {
                     _CurrentPCB.state = PROCESS_TERMINATED;
                     _KernelInterruptQueue.enqueue(new Interrupt(CONTEXT_SWITCH_IRQ, ""));
