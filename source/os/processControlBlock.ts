@@ -11,12 +11,18 @@ module TSOS {
                     public acc: number            = 0,
                     public x: number              = 0,
                     public y: number              = 0,
-                    public z: number              = 0) {
+                    public z: number              = 0,
+                    public memoryBase: number     = 0,
+                    public memoryLimit: number    = 256,
+                    public state: string          = PROCESS_NEW
+        ) {
 
         }
 
         public init(): void {
-            this.pid = _PCBArray.length - 1;
+            this.pid         = _ResidentList.length - 1;
+            this.memoryBase  = _MemoryManager.base;
+            this.memoryLimit = _MemoryManager.limit;
         }
 
         // Update the host with the current values of the PCB

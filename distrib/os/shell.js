@@ -73,9 +73,18 @@ var TSOS;
             // clearmem
             sc = new TSOS.ShellCommand(this.shellClearMemory, "clearmem", "- Clears the memory.");
             this.commandList[this.commandList.length] = sc;
+            // runall
+            sc = new TSOS.ShellCommand(this.shellRunAll, "runall", "- Runs all the programs loaded in memory.");
+            this.commandList[this.commandList.length] = sc;
+            // quantum
+            sc = new TSOS.ShellCommand(this.shellSetQuantum, "quantum", "<num> - Sets the quantum of the CPU scheduler to <num>.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
+            sc = new TSOS.ShellCommand(this.shellListProcesses, "ps", "- Lists all the processes currently running.");
+            this.commandList[this.commandList.length] = sc;
             // kill <id> - kills the specified process id.
-            //
+            sc = new TSOS.ShellCommand(this.shellKillProcess, "kill", "<pid> - Kill the process with pid <pid>.");
+            this.commandList[this.commandList.length] = sc;
             // Display the initial prompt.
             this.putPrompt();
         };
@@ -265,8 +274,20 @@ var TSOS;
                     case "clearmem":
                         _StdOut.putText("Clears all the memory; removes anything stored in memory.");
                         break;
+                    case "runall":
+                        _StdOut.putText("Runs all the programs loaded in memory.");
+                        break;
+                    case "quantum":
+                        _StdOut.putText("Sets the Round Robin quantum to the provided argument.");
+                        break;
+                    case "ps":
+                        _StdOut.putText("Lists the PIDs of the currently running processes.");
+                        break;
+                    case "kill":
+                        _StdOut.putText("Terminates the process with the PID specified in the argument.");
+                        break;
                     default:
-                        _StdOut.putText("No manual entry for " + args[0] + ".");
+                        _StdOut.putText("No manual entry for " + args[0] + ". ");
                 }
             }
             else {
@@ -357,8 +378,6 @@ var TSOS;
             else {
                 var input = document.getElementById('taProgramInput').value;
                 var regex = /[0-9A-F\s]/i;
-                var base = 0;
-                var limit = 0;
                 var commands = input.split(" ");
                 console.log("Commands array: " + commands);
                 // Handle the case where there is no user input
@@ -366,23 +385,9 @@ var TSOS;
                     _StdOut.putText("Put some text in the User Program Input field first.");
                     return;
                 }
-                switch (_MemoryManager.currentPartition) {
-                    case 0:
-                        base = 0;
-                        limit = 256;
-                        break;
-                    case 1:
-                        base = 256;
-                        limit = 512;
-                        break;
-                    case 2:
-                        base = 512;
-                        limit = 768;
-                        _MemoryManager.isFull = true;
-                        break;
-                    default:
-                        console.log("Something broke when partitioning memory. currentPartition: "
-                            + _MemoryManager.currentPartition);
+                if (commands.length > 256) {
+                    _StdOut.putText("This program will not fit in a 256-byte partition in memory.");
+                    return;
                 }
                 // Handle the case where there is non-hex input
                 for (var i = 0; i < input.length; i++) {
@@ -394,20 +399,13 @@ var TSOS;
                 // If we've gotten this far, we can try loading the program into memory.
                 for (var i = 0; i < commands.length; i++) {
                     // Put the byte at position i at position i in the block
-                    console.log("Load command: " + commands[i]);
-                    _MemoryManager.setMemoryAt(base + i, commands[i]);
+                    console.log("Load command: " + commands[i] + " at " + (_MemoryManager.base + i));
+                    _MemoryManager.setMemoryAt(_MemoryManager.base + i, commands[i]);
                 }
                 // Create new PCB and store it in the array tracking all of the PCBs.
                 _CurrentPCB = new TSOS.ProcessControlBlock();
-                _PCBArray.push(_CurrentPCB);
-                _CurrentPCB.init(); // Init after pushing to properly determine length of _PCBArray
-                // Reset CPU
-                _CPU.Acc = 0;
-                _CPU.PC = 0;
-                _CPU.Xreg = 0;
-                _CPU.Yreg = 0;
-                _CPU.Zflag = 0;
-                _CPU.isExecuting = false;
+                _ResidentList.push(_CurrentPCB);
+                _CurrentPCB.init(); // Init after pushing to properly determine length of _ResidentList
                 // Update the counter to save the current partition
                 _MemoryManager.setNextPartition();
                 console.log("Current partition: " + _MemoryManager.currentPartition);
@@ -417,26 +415,115 @@ var TSOS;
             }
         };
         Shell.prototype.shellRun = function (args) {
-            _CPU.PC = 0; // Reset program counter
-            var pid = args;
-            if (_CurrentPCB == null) {
-                _StdOut.putText("There are no programs to run.");
+            var regex = /^-?[\d.]+(?:e-?\d+)?$/;
+            // Make sure they're submitting something a number.
+            if (!(regex.test(args[0]))) {
+                _StdOut.putText("That's not valid input.");
                 return;
+            }
+            if (_ResidentList.length === 0) {
+                _StdOut.putText("There are no programs to run.");
             }
             else {
                 // Let's start executing.
-                _CurrentPCB = _PCBArray[pid]; // Update the current PCB
-                _CPU.isExecuting = true;
-                console.log("Program running.");
-                _StdOut.putText("Program running.");
+                var temp = _ResidentList[args[0]];
+                console.log("Attempting to enqueue program with pid: " + temp.pid);
+                if (temp.state === PROCESS_TERMINATED) {
+                    _StdOut.putText("This process is terminated.");
+                }
+                else {
+                    temp.state = PROCESS_READY;
+                    _ReadyQueue.enqueue(temp);
+                    if (!_CPU.isExecuting) {
+                        _KernelInterruptQueue.enqueue(new TSOS.Interrupt(RUN_PROGRAM_IRQ, ""));
+                    }
+                    console.log("Program running.");
+                    _StdOut.putText("Program running.");
+                }
             }
         };
         Shell.prototype.shellClearMemory = function () {
             _MemoryManager.clearMemory();
+            _StdOut.putText("Memory cleared.");
         };
         Shell.prototype.shellBSOD = function () {
             var params = "";
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(BSOD_IRQ, params));
+        };
+        Shell.prototype.shellRunAll = function () {
+            if (_ResidentList.length === 0) {
+                _StdOut.putText("There are no programs to run.");
+            }
+            else {
+                // Add all the loaded processes to the ready queue
+                while (_ResidentList.length > 0) {
+                    var temp = _ResidentList.shift();
+                    if (temp.state !== PROCESS_TERMINATED) {
+                        temp.state = PROCESS_READY;
+                        _ReadyQueue.enqueue(temp);
+                    }
+                }
+                for (var i in _ReadyQueue.q) {
+                    console.log("Printing ready queue: " + _ReadyQueue.q[i].pid);
+                }
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(RUN_PROGRAM_IRQ, ""));
+                console.log("All programs running.");
+                _StdOut.putText("All programs running.");
+            }
+        };
+        Shell.prototype.shellSetQuantum = function (args) {
+            var regex = /^-?[\d.]+(?:e-?\d+)?$/;
+            // Make sure the user wants to set the quantum to a number,
+            // not something unreasonable like a string.
+            if (!(regex.test(args[0]))) {
+                _StdOut.putText("Entering strings will not set the quantum.");
+            }
+            else {
+                _CpuScheduler.setQuantum(args);
+                _StdOut.putText("Updated CPU quantum to " + _CpuScheduler.getQuantum() + ".");
+            }
+        };
+        Shell.prototype.shellListProcesses = function () {
+            if (!_CPU.isExecuting) {
+                _StdOut.putText("No programs running.");
+            }
+            else {
+                var temp = [];
+                for (var i in _ReadyQueue.q) {
+                    temp.push(_ReadyQueue.getPCBAt(i));
+                }
+                temp.push(_CurrentPCB); // Don't forget to include the current procecss.
+                for (var j = 0; j < temp.length; j++) {
+                    _StdOut.putText("PID " + temp[j].pid + " is running.");
+                    _StdOut.advanceLine();
+                }
+            }
+        };
+        Shell.prototype.shellKillProcess = function (args) {
+            var regex = /^-?[\d.]+(?:e-?\d+)?$/;
+            // Make sure they're submitting something that could actually be a PID.
+            if (!(regex.test(args[0]))) {
+                _StdOut.putText("That's not a valid PID.");
+            }
+            else {
+                // TODO: First check if the current program is the one to terminate.
+                // TODO: Then check the ready queue.
+                if (_CurrentPCB.pid === args[0]) {
+                    _CurrentPCB.state = PROCESS_TERMINATED;
+                    _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CONTEXT_SWITCH_IRQ, ""));
+                    _StdOut.putText("Process terminated.");
+                }
+                else {
+                    // Check _ReadyQueue for that PID
+                    for (var i in _ReadyQueue.q) {
+                        if (_ReadyQueue.q[i].pid === args[0]) {
+                            _ReadyQueue.q[i].state = PROCESS_TERMINATED;
+                            _StdOut.putText("Process terminated.");
+                        }
+                    }
+                    _StdOut.putText("There is no process with that PID.");
+                }
+            }
         };
         return Shell;
     })();

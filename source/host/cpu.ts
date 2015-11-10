@@ -1,6 +1,6 @@
 ///<reference path="../globals.ts" />
 
-/* ------------
+/*   ------------
      CPU.ts
 
      Requires global.ts.
@@ -18,7 +18,6 @@
 module TSOS {
 
     export class Cpu {
-
         constructor(public PC: number           = 0,
                     public Acc: number          = 0,
                     public Xreg: number         = 0,
@@ -62,25 +61,37 @@ module TSOS {
             pcb.z              = this.Zflag;
         }
 
+        public setToPCB(pcb: ProcessControlBlock) {
+            this.PC    = pcb.programCounter;
+            this.Acc   = pcb.acc;
+            this.Xreg  = pcb.x;
+            this.Yreg  = pcb.y;
+            this.Zflag = pcb.z;
+        }
+
         /**
          * Cycle the CPU to perform operations.
          */
         public cycle(): void {
-
-            var op = _MemoryManager.getMemoryFrom(this.PC);
+            var op = _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + this.PC);
             this.executeOperation(op);
 
             _MemoryManager.updateHostDisplay();
             this.updateHostDisplay(op);
 
+            if (_CpuScheduler.algorithm = ROUND_ROBIN) {
+                _CpuScheduler.quantumCounter++;
+            }
+
             _Kernel.krnTrace('CPU cycle');
+            console.log("Current PID: " + _CurrentPCB.pid);
         }
 
         /**
          * Returns the next byte in memory
          */
         public getByte() {
-            return _MemoryManager.getMemoryFrom(this.PC + 1);
+            return _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + this.PC + 1);
         }
 
         /**
@@ -88,7 +99,7 @@ module TSOS {
          * @returns second to next byte in memory
          */
         public getNextByte() {
-            return _MemoryManager.getMemoryFrom(this.PC + 2);
+            return _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + this.PC + 2);
         }
 
         /**
@@ -97,6 +108,7 @@ module TSOS {
         public loadAccumulatorWithConstant(): void {
             this.Acc = Utils.hexToDecimal(this.getByte());
             this.PC += 2;
+            this.updatePCB(_CurrentPCB);
         }
 
         /**
@@ -104,8 +116,9 @@ module TSOS {
          */
         public loadAccumulatorFromMemory(): void {
             var address = Utils.hexToDecimal(this.getNextByte() + this.getByte());
-            this.Acc = _MemoryManager.getMemoryFrom(address);
+            this.Acc = _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + address);
             this.PC += 3;
+            this.updatePCB(_CurrentPCB);
         }
 
         /**
@@ -113,17 +126,19 @@ module TSOS {
          */
         public storeAccumulatorInMemory(): void {
             var address = Utils.hexToDecimal(this.getNextByte() + this.getByte());
-            _MemoryManager.setMemoryAt(address, this.Acc.toString(16));
+            _MemoryManager.setMemoryAt(_CurrentPCB.memoryBase + address, this.Acc.toString(16));
             this.PC += 3;
+            this.updatePCB(_CurrentPCB);
         }
 
         /**
          * Updates the Zflag if the X register if equal to the next two bytes in memory
          */
         public compareByte(): void {
-            var memory = Utils.hexToDecimal(_MemoryManager.getMemoryFrom(Utils.hexToDecimal(this.getByte())));
+            var memory = Utils.hexToDecimal(_MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + Utils.hexToDecimal(this.getByte())));
             this.Zflag = (memory === this.Xreg) ? 1 : 0;
             this.PC += 3;
+            this.updatePCB(_CurrentPCB);
         }
 
         /**
@@ -131,8 +146,9 @@ module TSOS {
          */
         public addWithCarry(): void {
             var address = Utils.hexToDecimal(this.getNextByte() + this.getByte());
-            this.Acc += Utils.hexToDecimal(_MemoryManager.getMemoryFrom(address));
+            this.Acc += Utils.hexToDecimal(_MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + address));
             this.PC += 3;
+            this.updatePCB(_CurrentPCB);
         }
 
         /**
@@ -141,6 +157,7 @@ module TSOS {
         public loadXWithConstant(): void {
             this.Xreg = Utils.hexToDecimal(this.getByte());
             this.PC += 2;
+            this.updatePCB(_CurrentPCB);
         }
 
         /**
@@ -148,8 +165,9 @@ module TSOS {
          */
         public loadXFromMemory(): void {
             var address = Utils.hexToDecimal(this.getNextByte() + this.getByte());
-            this.Xreg = Utils.hexToDecimal(_MemoryManager.getMemoryFrom(address));
+            this.Xreg = Utils.hexToDecimal(_MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + address));
             this.PC += 3;
+            this.updatePCB(_CurrentPCB);
         }
 
         /**
@@ -159,6 +177,7 @@ module TSOS {
             this.Yreg = Utils.hexToDecimal(this.getByte());
             console.log("loadYWithConstant Yreg: " + this.Yreg);
             this.PC += 2;
+            this.updatePCB(_CurrentPCB);
         }
 
         /**
@@ -166,9 +185,10 @@ module TSOS {
          */
         public loadYFromMemory(): void {
             var address = Utils.hexToDecimal(this.getNextByte() + this.getByte());
-            this.Yreg = Utils.hexToDecimal(_MemoryManager.getMemoryFrom(address));
+            this.Yreg = Utils.hexToDecimal(_MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + address));
             console.log("loadYFromMemory Yreg: " + this.Yreg);
             this.PC += 3;
+            this.updatePCB(_CurrentPCB);
         }
 
         /**
@@ -176,23 +196,18 @@ module TSOS {
          */
         public noOperation(): void {
             // Nothing to execute
+            this.updatePCB(_CurrentPCB);
         }
 
         /**
          * Update the current PCB and set isExecuting to false
          */
         public breakOperation(): void {
+            _CurrentPCB.state = PROCESS_TERMINATED;
             this.updatePCB(_CurrentPCB);
             _CurrentPCB.updateHostDisplay("00");
             this.isExecuting = false;
-
-            _StdOut.advanceLine();
-            _OsShell.putPrompt();
-
-            //if (_SingleStepMode) {
-            //    TSOS.Control.hostBtnExitSingleStep_click(document.getElementById("btnExitSingleStep"));
-            //    this.PC = 0;
-            //}
+            _KernelInterruptQueue.enqueue(new Interrupt(CONTEXT_SWITCH_IRQ, ""));
         }
 
         /**
@@ -205,14 +220,17 @@ module TSOS {
                 var byte = this.getByte();
                 console.log("Getting byte: " + byte);
                 console.log("Byte as Decimal: " + Utils.hexToDecimal(byte));
-                if ((this.PC + Utils.hexToDecimal(byte)) > 256) {
+                if ((this.PC + Utils.hexToDecimal(byte)) >= 256) {
+                    console.log("Branch greater.");
                     this.PC += Utils.hexToDecimal(byte) - 256;
                 } else {
+                    console.log("Branch else.");
                     this.PC += Utils.hexToDecimal(byte);
                 }
             }
 
             this.PC += 2;
+            this.updatePCB(_CurrentPCB);
             console.log("Program Counter after branchBytes(): " + this.PC);
         }
 
@@ -221,8 +239,10 @@ module TSOS {
          */
         public incrementByte(): void {
             var address = Utils.hexToDecimal(this.getNextByte() + this.getByte());
-            _MemoryManager.setMemoryAt(address, (Utils.hexToDecimal(_MemoryManager.getMemoryFrom(address)) + 1));
+            _MemoryManager.setMemoryAt(_CurrentPCB.memoryBase + address,
+                                      (Utils.hexToDecimal(_MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + address)) + 1));
             this.PC += 3;
+            this.updatePCB(_CurrentPCB);
         }
 
         /**
@@ -234,8 +254,11 @@ module TSOS {
                 console.log("Xreg = 1");
                 console.log("Should putText: " + Utils.hexToDecimal(this.Yreg).toString());
                 _StdOut.putText(Utils.hexToDecimal(this.Yreg).toString());
+                _StdOut.advanceLine();
+                _OsShell.putPrompt();
                 this.PC += 1;
                 _CurrentPCB.updateHostDisplay("00");
+                this.updatePCB(_CurrentPCB);
                 return;
             }
 
@@ -244,29 +267,23 @@ module TSOS {
                 var str = "";
                 var y = this.Yreg;
                 console.log("Initial y: " + y);
-                var val = _MemoryManager.getMemoryFrom(y);
+                var val = _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + y);
                 console.log("Initial val: " + val);
                 while (val != "00") {
                     console.log("Val: " + val);
-                    //var data = _MemoryManager.getMemoryFrom(val);
-                    //console.log("data: " + data);
-                    //var dataInDecimal = Utils.hexToDecimal(data);
-                    //console.log("dataInDecimal: " + dataInDecimal);
-                    //var dataFromCode = String.fromCharCode(dataInDecimal);
-                    //console.log("dataFromCode: " + dataFromCode);
-                    //str += dataFromCode;
-                    //console.log("current str: " + str);
-                    //_StdOut.putText(dataFromCode);
                     str += String.fromCharCode(Utils.hexToDecimal(val));
                     y += 1;
-                    val = _MemoryManager.getMemoryFrom(y);
+                    val = _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + y);
                     console.log("str: " + str);
                 }
                 console.log("Should put text: " + str);
                 //console.log("Should putText: " + str);
                 _StdOut.putText(str);
+                _StdOut.advanceLine();
+                _OsShell.putPrompt();
                 this.PC += 1;
                 _CurrentPCB.updateHostDisplay("00");
+                this.updatePCB(_CurrentPCB);
                 return;
             }
         }
@@ -276,7 +293,7 @@ module TSOS {
          * @param code: the operation to be executed
          */
         public executeOperation(code): void {
-            console.log("Current Program Counter: " + this.PC)
+            console.log("Current Program Counter: " + this.PC);
             console.log("Executing operation: " + code);
             switch (code) {
                 case "A9":
@@ -322,9 +339,12 @@ module TSOS {
                     this.syscall();
                     break;
                 default:
-                    console.log(code);
+                    console.log("Undefined code: " + code);
                     _StdOut.putText("The following code is undefined: " + code);
+                    _StdOut.advanceLine();
+                    _OsShell.putPrompt();
                     this.PC += 1;
+                    this.updatePCB(_CurrentPCB);
                     break;
             }
         }

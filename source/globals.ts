@@ -18,12 +18,15 @@ const APP_VERSION: string = "1.A4";
 
 const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
 
-const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
-                              // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
-const KEYBOARD_IRQ: number = 1;
+// Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
+// NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
+const TIMER_IRQ: number          = 0;
+const KEYBOARD_IRQ: number       = 1;
+const BSOD_IRQ: number           = 2;
+const RUN_PROGRAM_IRQ: number    = 3;
+const CONTEXT_SWITCH_IRQ: number = 4;
+const KILL_PROCESS_IRQ: number   = 5;
 
-// Constants for the Blue Screen of Death.
-const BSOD_IRQ: number = 2;
 const BSOD_BKG = new Image();
 BSOD_BKG.src = "distrib/images/bsod.png";
 
@@ -34,9 +37,11 @@ BSOD_BKG.src = "distrib/images/bsod.png";
 var _CPU: TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
 var _Memory: TSOS.Memory;
 var _MemoryManager: TSOS.MemoryManager;
-var _PCBArray = new Array;
+var _ResidentList = new Array;
+var _ReadyQueue: TSOS.ReadyQueue;
 var _CurrentPCB: TSOS.ProcessControlBlock; // Tracks the current program
 var _SingleStepMode: boolean = false; // Single step flag
+var _CpuScheduler: TSOS.CpuScheduler;
 
 var _OSclock: number = 0;  // Page 23.
 
@@ -47,6 +52,17 @@ var _DrawingContext: any; // = _Canvas.getContext("2d");  // Assigned here for t
 var _DefaultFontFamily: string = "sans";        // Ignored, I think. The was just a place-holder in 2008, but the HTML canvas may have use for it.
 var _DefaultFontSize: number = 13;
 var _FontHeightMargin: number = 4;              // Additional space added to font size when advancing a line.
+
+// The possible states of scheduling
+const ROUND_ROBIN = "Round Robin";
+
+
+// The possible states of a process
+const PROCESS_NEW         = "New";
+const PROCESS_RUNNING     = "Running";
+const PROCESS_WAITING     = "Waiting";
+const PROCESS_READY       = "Ready";
+const PROCESS_TERMINATED  = "Terminated";
 
 var _Trace: boolean = true;  // Default the OS trace to be on.
 
