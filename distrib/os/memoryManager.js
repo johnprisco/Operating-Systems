@@ -14,10 +14,24 @@ var TSOS;
         };
         // Getter method for a location in memory
         MemoryManager.prototype.getMemoryFrom = function (location) {
-            return _MemoryManager.memory.memoryBlock[location];
+            if (location >= _CurrentPCB.memoryLimit || location < _CurrentPCB.memoryBase) {
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(MEMORY_OUT_OF_BOUNDS_IRQ, ""));
+            }
+            else {
+                return this.memory.memoryBlock[location];
+            }
         };
         // Setter for a location in memory
         MemoryManager.prototype.setMemoryAt = function (location, item) {
+            if (location >= _CurrentPCB.memoryLimit || location < _CurrentPCB.memoryBase) {
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(MEMORY_OUT_OF_BOUNDS_IRQ, ""));
+            }
+            else {
+                this.memory.memoryBlock[location] = item;
+            }
+        };
+        // Method to load a program in to memory
+        MemoryManager.prototype.loadMemoryAt = function (location, item) {
             _MemoryManager.memory.memoryBlock[location] = item;
         };
         // Displays the memory in the host
@@ -41,18 +55,19 @@ var TSOS;
                     }
                 }
                 // Print whats in memory at the current location
-                div.innerHTML += " " + this.getMemoryFrom(i);
+                div.innerHTML += " " + this.memory.memoryBlock[i];
             }
         };
         /**
          * Clears all memory partitions and update the memory display;
          */
         MemoryManager.prototype.clearMemory = function () {
+            // _CPU.isExecuting = false;
             this.isFull = false;
             this.base = 0;
             this.limit = 256;
             for (var i = 0; i < 786; i++) {
-                this.setMemoryAt(i, "00");
+                this.memory.memoryBlock[i] = "00";
             }
             this.updateHostDisplay();
             // Delete programs stored in PCB Array;

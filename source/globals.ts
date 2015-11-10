@@ -20,14 +20,15 @@ const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 100
 
 // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
 // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
-const TIMER_IRQ: number          = 0;
-const KEYBOARD_IRQ: number       = 1;
-const BSOD_IRQ: number           = 2;
-const RUN_PROGRAM_IRQ: number    = 3;
-const CONTEXT_SWITCH_IRQ: number = 4;
-const KILL_PROCESS_IRQ: number   = 5;
-const SYSCALL_IRQ: number        = 6;
-const BREAK_IRQ: number          = 7;
+const TIMER_IRQ: number                = 0;
+const KEYBOARD_IRQ: number             = 1;
+const BSOD_IRQ: number                 = 2;
+const RUN_PROGRAM_IRQ: number          = 3;
+const CONTEXT_SWITCH_IRQ: number       = 4;
+const KILL_PROCESS_IRQ: number         = 5;
+const SYSCALL_IRQ: number              = 6;
+const BREAK_IRQ: number                = 7;
+const MEMORY_OUT_OF_BOUNDS_IRQ: number = 8;
 
 const BSOD_BKG = new Image();
 BSOD_BKG.src = "distrib/images/bsod.png";

@@ -400,7 +400,7 @@ var TSOS;
                 for (var i = 0; i < commands.length; i++) {
                     // Put the byte at position i at position i in the block
                     console.log("Load command: " + commands[i] + " at " + (_MemoryManager.base + i));
-                    _MemoryManager.setMemoryAt(_MemoryManager.base + i, commands[i]);
+                    _MemoryManager.loadMemoryAt(_MemoryManager.base + i, commands[i]);
                 }
                 // Create new PCB and store it in the array tracking all of the PCBs.
                 _CurrentPCB = new TSOS.ProcessControlBlock();
