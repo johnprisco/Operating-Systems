@@ -281,13 +281,13 @@ var TSOS;
                         _StdOut.putText("Sets the Round Robin quantum to the provided argument.");
                         break;
                     case "ps":
-                        _StdOut.putText();
+                        _StdOut.putText("Lists the PIDs of the currently running processes.");
                         break;
                     case "kill":
-                        _StdOut.putText();
+                        _StdOut.putText("Terminates the process with the PID specified in the argument.");
                         break;
                     default:
-                        _StdOut.putText("No manual entry for " + args[0] + ".");
+                        _StdOut.putText("No manual entry for " + args[0] + ". ");
                 }
             }
             else {
