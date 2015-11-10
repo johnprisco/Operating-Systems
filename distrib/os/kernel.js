@@ -129,7 +129,6 @@ var TSOS;
                     // Kill the process trying to mess with someone else's memory.
                     _CurrentPCB.state = PROCESS_TERMINATED;
                     // On to the next.
-                    _StdOut.putText("Process terminated for attempting to access memory outside its partition.");
                     _CpuScheduler.switchContext();
                     break;
                 default:

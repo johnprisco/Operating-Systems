@@ -1,4 +1,5 @@
 ///<reference path="../globals.ts" />
+///<reference path="../utils.ts" />
 /*   ------------
      CPU.ts
 
@@ -72,6 +73,7 @@ var TSOS;
          * Cycle the CPU to perform operations.
          */
         Cpu.prototype.cycle = function () {
+            TSOS.Utils.trackTime();
             var op = _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + this.PC);
             this.executeOperation(op);
             _MemoryManager.updateHostDisplay();
@@ -187,6 +189,7 @@ var TSOS;
          */
         Cpu.prototype.breakOperation = function () {
             _CurrentPCB.state = PROCESS_TERMINATED;
+            console.log("PID " + _CurrentPCB.pid + " terminated with turnaround time " + _CurrentPCB.turnaroundTime + " and wait time " + _CurrentPCB.waitTime);
             this.updatePCB(_CurrentPCB);
             _CurrentPCB.updateHostDisplay("00");
             this.isExecuting = false;

@@ -14,7 +14,9 @@ module TSOS {
                     public z: number              = 0,
                     public memoryBase: number     = 0,
                     public memoryLimit: number    = 256,
-                    public state: string          = PROCESS_NEW
+                    public state: string          = PROCESS_NEW,
+                    public turnaroundTime: number = 0,
+                    public waitTime: number       = 0
         ) {
 
         }
@@ -34,5 +36,6 @@ module TSOS {
             document.getElementById('z-pcb').innerHTML   = this.z.toString();
             document.getElementById('ir-pcb').innerHTML  = op;
         }
+
     }
 }

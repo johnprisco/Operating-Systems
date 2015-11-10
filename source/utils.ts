@@ -146,8 +146,30 @@ module TSOS {
             return parseInt(hex, 16);
         }
 
-        public deciamlToHex(decimal): number {
-            return decimal.toString(16);
+
+        public static trackTime(): void {
+            if (_CurrentPCB.state != PROCESS_TERMINATED) {
+                _CurrentPCB.turnaroundTime++;
+            }
+
+            if (_CurrentPCB.state === PROCESS_WAITING ||
+                _CurrentPCB.state === PROCESS_NEW ||
+                _CurrentPCB.state === PROCESS_READY) {
+                _CurrentPCB.waitTime++;
+            }
+
+            for (var i in _ReadyQueue.q) {
+
+                if (_ReadyQueue.q[i].state != PROCESS_TERMINATED) {
+                    _ReadyQueue.q[i].turnaroundTime++;
+                }
+
+                if (_ReadyQueue.q[i].state === PROCESS_WAITING ||
+                    _ReadyQueue.q[i].state === PROCESS_NEW ||
+                    _ReadyQueue.q[i].state === PROCESS_READY) {
+                    _ReadyQueue.q[i].waitTime++;
+                }
+            }
         }
     }
 }
