@@ -351,6 +351,18 @@ module TSOS {
                     case "clearmem":
                         _StdOut.putText("Clears all the memory; removes anything stored in memory.");
                         break;
+                    case "runall":
+                        _StdOut.putText("Runs all the programs loaded in memory.");
+                        break;
+                    case "quantum":
+                        _StdOut.putText("Sets the Round Robin quantum to the provided argument.");
+                        break;
+                    case "ps":
+                        _StdOut.putText("Lists the PIDs of the currently running processes.");
+                        break;
+                    case "kill":
+                        _StdOut.putText("Terminates the process with the PID specified in the argument.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
