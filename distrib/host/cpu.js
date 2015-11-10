@@ -263,6 +263,7 @@ var TSOS;
                 this.updatePCB(_CurrentPCB);
                 return;
             }
+            //_KernelInterruptQueue.enqueue(new Interrupt(SYSCALL_IRQ, ""));
         };
         /**
          * Translating the code to the correct method to execute

@@ -286,6 +286,8 @@ module TSOS {
                 this.updatePCB(_CurrentPCB);
                 return;
             }
+
+            //_KernelInterruptQueue.enqueue(new Interrupt(SYSCALL_IRQ, ""));
         }
 
         /**

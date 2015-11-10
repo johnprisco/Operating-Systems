@@ -605,25 +605,24 @@ module TSOS {
             if(!(regex.test(args[0]))) {
                 _StdOut.putText("That's not a valid PID.")
             } else {
-                // TODO: First check if the current program is the one to terminate.
-                // TODO: Then check the ready queue.
+                console.log("Trying to pass PID " + args[0]);
+                var pid = args[0];
 
-
-
-                if (_CurrentPCB.pid === args[0]) {
+                if (_CurrentPCB.pid === parseInt(pid)) {
                     _CurrentPCB.state = PROCESS_TERMINATED;
                     _KernelInterruptQueue.enqueue(new Interrupt(CONTEXT_SWITCH_IRQ, ""));
                     _StdOut.putText("Process terminated.");
                 } else {
                     // Check _ReadyQueue for that PID
                     for (var i in _ReadyQueue.q) {
-                        if (_ReadyQueue.q[i].pid === args[0]) {
+                        console.log("ReadyQueue at i pid: " + _ReadyQueue.q[i].pid);
+                        if (_ReadyQueue.q[i].pid === parseInt(pid)) {
                             _ReadyQueue.q[i].state = PROCESS_TERMINATED;
+                            _ReadyQueue.q.splice(i, 1);
                             _StdOut.putText("Process terminated.");
+                            break;
                         }
                     }
-
-                    _StdOut.putText("There is no process with that PID.");
                 }
             }
         }
