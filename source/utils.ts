@@ -83,8 +83,9 @@ module TSOS {
             _Status.innerText = status;
         }
 
-
+        //
         // Tables used to print symbols and punctuation
+        //
         public static getPunctuation(keyCode: number): string {
             var table = {
                 '186' : ';',
@@ -142,11 +143,12 @@ module TSOS {
             }
         }
 
+        // Helper function to convert hex to decimal.
         public static hexToDecimal(hex): number {
             return parseInt(hex, 16);
         }
 
-
+        // Method to track the turnaround and wait times of the running processes.
         public static trackTime(): void {
             if (_CurrentPCB.state != PROCESS_TERMINATED) {
                 _CurrentPCB.turnaroundTime++;
@@ -171,7 +173,9 @@ module TSOS {
                 }
             }
         }
-        
+
+        // Hacky method to display the Ready Queue in the host
+        // It will be fixed in time.
         public static updateReadyQueueDisplay() {
             for (var i in _ReadyQueue.q) {
                 document.getElementById('pid-pcb-' + i).innerHTML   = _ReadyQueue.q[i].pid.toString();

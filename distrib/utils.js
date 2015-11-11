@@ -75,7 +75,9 @@ var TSOS;
             }
             _Status.innerText = status;
         };
+        //
         // Tables used to print symbols and punctuation
+        //
         Utils.getPunctuation = function (keyCode) {
             var table = {
                 '186': ';',
@@ -129,9 +131,11 @@ var TSOS;
                 _KernelInputQueue.enqueue(str.charAt(i));
             }
         };
+        // Helper function to convert hex to decimal.
         Utils.hexToDecimal = function (hex) {
             return parseInt(hex, 16);
         };
+        // Method to track the turnaround and wait times of the running processes.
         Utils.trackTime = function () {
             if (_CurrentPCB.state != PROCESS_TERMINATED) {
                 _CurrentPCB.turnaroundTime++;
@@ -152,6 +156,8 @@ var TSOS;
                 }
             }
         };
+        // Hacky method to display the Ready Queue in the host
+        // It will be fixed in time.
         Utils.updateReadyQueueDisplay = function () {
             for (var i in _ReadyQueue.q) {
                 document.getElementById('pid-pcb-' + i).innerHTML = _ReadyQueue.q[i].pid.toString();

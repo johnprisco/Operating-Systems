@@ -73,6 +73,11 @@ var TSOS;
             // Delete programs stored in PCB Array;
             _ResidentList = [];
         };
+        /**
+         * Used when loading programs to make sure they're
+         * placed in the proper partition, with bases and
+         * limits defined.
+         */
         MemoryManager.prototype.setNextPartition = function () {
             switch (this.currentPartition) {
                 case 0:

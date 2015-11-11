@@ -62,6 +62,10 @@ var TSOS;
             pcb.y = this.Yreg;
             pcb.z = this.Zflag;
         };
+        /**
+         * Set the attributes of the CPU to those of the PCB in the argument
+         * @param pcb: the PCB the CPU will model
+         */
         Cpu.prototype.setToPCB = function (pcb) {
             this.PC = pcb.programCounter;
             this.Acc = pcb.acc;
@@ -164,7 +168,6 @@ var TSOS;
          */
         Cpu.prototype.loadYWithConstant = function () {
             this.Yreg = TSOS.Utils.hexToDecimal(this.getByte());
-            console.log("loadYWithConstant Yreg: " + this.Yreg);
             this.PC += 2;
             this.updatePCB(_CurrentPCB);
         };
@@ -174,7 +177,6 @@ var TSOS;
         Cpu.prototype.loadYFromMemory = function () {
             var address = TSOS.Utils.hexToDecimal(this.getNextByte() + this.getByte());
             this.Yreg = TSOS.Utils.hexToDecimal(_MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + address));
-            console.log("loadYFromMemory Yreg: " + this.Yreg);
             this.PC += 3;
             this.updatePCB(_CurrentPCB);
         };
@@ -190,9 +192,7 @@ var TSOS;
          */
         Cpu.prototype.breakOperation = function () {
             _CurrentPCB.state = PROCESS_TERMINATED;
-            console.log("PID " + _CurrentPCB.pid + " terminated with turnaround time " + _CurrentPCB.turnaroundTime + " and wait time " + _CurrentPCB.waitTime);
             this.updatePCB(_CurrentPCB);
-            // _CurrentPCB.updateHostDisplay("00");
             this.isExecuting = false;
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CONTEXT_SWITCH_IRQ, ""));
         };
@@ -203,8 +203,8 @@ var TSOS;
             console.log("Program Counter before branchBytes(): " + this.PC);
             if (this.Zflag == 0) {
                 var byte = this.getByte();
-                console.log("Getting byte: " + byte);
-                console.log("Byte as Decimal: " + TSOS.Utils.hexToDecimal(byte));
+                //console.log("Getting byte: " + byte);
+                //console.log("Byte as Decimal: " + Utils.hexToDecimal(byte));
                 if ((this.PC + TSOS.Utils.hexToDecimal(byte)) >= 256) {
                     console.log("Branch greater.");
                     this.PC += TSOS.Utils.hexToDecimal(byte) - 256;
@@ -233,13 +233,12 @@ var TSOS;
          */
         Cpu.prototype.syscall = function () {
             if (this.Xreg == 1) {
-                console.log("Xreg = 1");
-                console.log("Should putText: " + TSOS.Utils.hexToDecimal(this.Yreg).toString());
+                // console.log("Xreg = 1");
+                // console.log("Should putText: " + Utils.hexToDecimal(this.Yreg).toString());
                 _StdOut.putText(TSOS.Utils.hexToDecimal(this.Yreg).toString());
                 _StdOut.advanceLine();
                 _OsShell.putPrompt();
                 this.PC += 1;
-                //_CurrentPCB.updateHostDisplay("00");
                 this.updatePCB(_CurrentPCB);
                 return;
             }
@@ -247,18 +246,17 @@ var TSOS;
                 console.log("Xreg = 2");
                 var str = "";
                 var y = this.Yreg;
-                console.log("Initial y: " + y);
+                // console.log("Initial y: " + y);
                 var val = _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + y);
-                console.log("Initial val: " + val);
+                // console.log("Initial val: " + val);
                 while (val != "00") {
                     console.log("Val: " + val);
                     str += String.fromCharCode(TSOS.Utils.hexToDecimal(val));
                     y += 1;
                     val = _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + y);
-                    console.log("str: " + str);
                 }
-                console.log("Should put text: " + str);
-                //console.log("Should putText: " + str);
+                // console.log("Should put text: " + str);
+                // console.log("Should putText: " + str);
                 _StdOut.putText(str);
                 _StdOut.advanceLine();
                 _OsShell.putPrompt();
@@ -267,15 +265,14 @@ var TSOS;
                 this.updatePCB(_CurrentPCB);
                 return;
             }
-            //_KernelInterruptQueue.enqueue(new Interrupt(SYSCALL_IRQ, ""));
         };
         /**
          * Translating the code to the correct method to execute
          * @param code: the operation to be executed
          */
         Cpu.prototype.executeOperation = function (code) {
-            console.log("Current Program Counter: " + this.PC);
-            console.log("Executing operation: " + code);
+            // console.log("Current Program Counter: " + this.PC);
+            // console.log("Executing operation: " + code);
             switch (code) {
                 case "A9":
                     this.loadAccumulatorWithConstant();
@@ -320,7 +317,7 @@ var TSOS;
                     this.syscall();
                     break;
                 default:
-                    console.log("Undefined code: " + code);
+                    // console.log("Undefined code: " + code);
                     _StdOut.putText("The following code is undefined: " + code);
                     _StdOut.advanceLine();
                     _OsShell.putPrompt();

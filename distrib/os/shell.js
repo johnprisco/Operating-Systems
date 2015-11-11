@@ -215,6 +215,7 @@ var TSOS;
             _StdOut.putText("Shutting down...");
             // Call Kernel shutdown routine.
             _CPU.isExecuting = false;
+            _Mode = 0;
             _MemoryManager.clearMemory();
             _ReadyQueue.q = [];
             _Kernel.krnShutdown();

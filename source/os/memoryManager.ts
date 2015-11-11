@@ -85,6 +85,11 @@ module TSOS {
             _ResidentList = [];
         }
 
+        /**
+         * Used when loading programs to make sure they're
+         * placed in the proper partition, with bases and
+         * limits defined.
+         */
         public setNextPartition() {
             switch(this.currentPartition) {
                 case 0:
