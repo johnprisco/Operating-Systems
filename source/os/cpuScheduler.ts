@@ -58,6 +58,7 @@ module TSOS {
                 _ReadyQueue.enqueue(temp);
                 this.schedule();
             } else {
+                _ReadyQueue.dequeue();
                 // Process is terminated, so queue up the next one
                 // ...unless there aren't any more processes to run.
                 if (_ReadyQueue.getSize() > 0) {
