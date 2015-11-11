@@ -8,6 +8,18 @@
       PriscOS - a browser-based virtual Operating System in TypeScript
    </title>
 
+    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+
    <!-- Globals CONSTANTS and _Variables. Must included be first. -->
    <script type="text/javascript" src="distrib/globals.js"></script>
 
@@ -43,126 +55,79 @@
 
 <body onload="onDocumentLoad()">
 
-<div id="divMain" style="width:60%; margin:0 auto;">
+<div id="divMain" style="padding-left:5px; padding-top: 5px;">
 
-   <div id="divButtonBar" style="margin:4px; text-align:center;">
-      <input type="button"
-             id = "btnStartOS"
-             name="brnStartOS"
-             class="normal_button"
-             value="Start"
-             tabindex="0"
-             onclick="TSOS.Control.hostBtnStartOS_click(this);">
+   <div id="divButtonBar" style="margin:4px;">
+       <nav class="navbar navbar-default">
+           <div class="container-fluid">
+               <div class="navbar-header">
+                   <button type="button" class="btn btn-primary navbar-btn"
+                           id="btnStartOS" name="btnStartOS"
+                           onclick="TSOS.Control.hostBtnStartOS_click(this);">
+                       Start
+                   </button>
 
-      <input type="button"
-             id = "btnHaltOS"
-             name="brnHaltOS"
-             class="normal_button"
-             disabled="disabled"
-             value="Halt"
-             tabindex="1"
-             onclick="TSOS.Control.hostBtnHaltOS_click(this);">
+                   <button type="button" class="btn btn-warning navbar-btn"
+                           id="btnHaltOS" name="btnHaltOS"
+                           onclick="TSOS.Control.hostBtnHaltOS_click(this);">
+                       Halt
+                   </button>
 
-      <input type="button"
-             id = "btnReset"
-             name="brnReset"
-             class="normal_button"
-             disabled="disabled"
-             value="Reset"
-             tabindex="2"
-             onclick="TSOS.Control.hostBtnReset_click(this);">
+                   <button type="button" class="btn btn-danger navbar-btn"
+                           id="btnReset" name="btnReset"
+                           onclick="TSOS.Control.hostBtnReset_click(this);">
+                       Reset
+                   </button>
+                   <span id="info-datetime"></span>
+                   <span id="info-status"></span>
+               </div>
+           </div>
+       </nav>
    </div>
-
-    <!--<div id="single-step-bar" style="margin:4px; text-align:center">-->
-        <!--<input type     = "button"-->
-               <!--id       = "btnStartSingleStep"-->
-               <!--disabled = "disabled"-->
-               <!--value    = "Enter Single Step"-->
-               <!--onclick  = "TSOS.Control.hostBtnStartSingleStep_click(this);">-->
-
-        <!--<input type     = "button"-->
-               <!--id       = "btnNextSingleStep"-->
-               <!--disabled = "disabled"-->
-               <!--value    = "Next Step"-->
-               <!--onclick  = "TSOS.Control.hostBtnNextSingleStep_click(this);">-->
-
-        <!--<input type     = "button"-->
-               <!--id       = "btnExitSingleStep"-->
-               <!--disabled = "disabled"-->
-               <!--value    = "Exit Single Step"-->
-               <!--onclick  = "TSOS.Control.hostBtnExitSingleStep_click(this)">-->
-    <!--</div>-->
-
-    <div id="infoBar" style="text-align:center;">
-        <span id="info-datetime"></span>
-        <span id="info-status"></span>
-    </div>
 
    <div id="divConsole" style="margin:4px; width:500px; height:500px; float:left;">
-      <canvas id="display"
-              width="500px"
-              height="500px"
-              tabindex="3">
-      </canvas>
+       <label>Console
+          <canvas id="display"
+                  width="500px"
+                  height="500px"
+                  tabindex="3">
+          </canvas>
+       </label>
    </div>
 
-   <div id="divLog" style="margin-left:520px;">
+   <div id="divLog" style="margin-left:15px; padding-top: 5px; float:left;">
       <label>
          Host Log
          <br>
          <textarea name="taHostLog"
                    id  ="taHostLog"
                    rows="26"
-                   cols="48"
-         ></textarea>
+                   cols="36"
+                   style="height: 345px; resize: none;"
+                   disabled >
+         </textarea>
       </label>
+
+        <div class="programInput">
+           <label>
+               User Program Input
+               <br>
+             <textarea name="taProgramInput"
+                       id  ="taProgramInput"
+                       rows="8"
+                       cols="36"
+                       style="height: 132px; resize: none;">
+             </textarea>
+           </label>
+        </div>
    </div>
 
-   <div id="divUserProgramInput" style="margin-left:520px;">
-      <label>
-         User Program Input
-         <br>
-         <textarea name="taProgramInput"
-                   id  ="taProgramInput"
-                   rows="8"
-                   cols="48"
-         ></textarea>
-      </label>
-   </div>
-</div>
 
-<div class="iProject-2-container" style="margin-top: 10px; margin-left: 300px;">
-    <div class="memory" style="float:left; margin-top: 20px; height: 200px; overflow:scroll; border-style:solid;">
-        <label>Memory</label>
-        <div class="memory-container" id="memory-table"></div>
-    </div>
-</div>
+    <div class="pcb-status" style="margin-left:810px;">
+        <label style="padding-top: 5px;">Memory</label>
+        <div class="memory-container" id="memory-table" style="overflow:scroll; height:160px" ></div>
 
-<div class="pcb-and-cpu" style="float:right; margin-top:20px; margin-right:200px;">
-    <div class="pcb-status">
-        <label>PCB Status</label>
-        <table class="table" id="pcb-status-table" style="width:300px border-style:solid;">
-            <tr>
-                <th>PC</th>
-                <th>IR</th>
-                <th>Acc</th>
-                <th>X</th>
-                <th>Y</th>
-                <th>Z</th>
-            </tr>
-            <tr>
-                <td id="pc-pcb"></td>
-                <td id="ir-pcb"></td>
-                <td id="acc-pcb"></td>
-                <td id="x-pcb"></td>
-                <td id="y-pcb"></td>
-                <td id="z-pcb"></td>
-            </tr>
-        </table>
-    </div>
-
-    <div class="cpu-status" style="margin-top: 20px;">
-        <label>CPU Status</label>
+        <label style="padding-top:10px;">CPU Status</label>
         <table class="table" id="cpu-status-table" style="width:300px; border-style:solid;">
             <tr>
                 <th>PC</th>
@@ -179,6 +144,56 @@
                 <td id="x-cpu"></td>
                 <td id="y-cpu"></td>
                 <td id="z-cpu"></td>
+            </tr>
+        </table>
+
+        <label style="padding-top:10px;">Ready Queue</label>
+        <table class="table" id="pcb-status-table" style="width:300px; border-style:solid;">
+            <tr>
+                <th>PID</th>
+                <th>State</th>
+                <th>PC</th>
+                <th>Acc</th>
+                <th>X</th>
+                <th>Y</th>
+                <th>Z</th>
+                <th>Turnaround Time</th>
+                <th>Wait Time</th>
+            </tr>
+            <tr>
+                <td id="pid-pcb-0"></td>
+                <td id="state-pcb-0"></td>
+                <td id="pc-pcb-0"></td>
+                <td id="acc-pcb-0"></td>
+                <td id="x-pcb-0"></td>
+                <td id="y-pcb-0"></td>
+                <td id="z-pcb-0"></td>
+                <td id="turn-pcb-0"></td>
+                <td id="wait-pcb-0"></td>
+            </tr>
+
+            <tr>
+                <td id="pid-pcb-1"></td>
+                <td id="state-pcb-1"></td>
+                <td id="pc-pcb-1"></td>
+                <td id="acc-pcb-1"></td>
+                <td id="x-pcb-1"></td>
+                <td id="y-pcb-1"></td>
+                <td id="z-pcb-1"></td>
+                <td id="turn-pcb-1"></td>
+                <td id="wait-pcb-1"></td>
+            </tr>
+
+            <tr>
+                <td id="pid-pcb-2"></td>
+                <td id="state-pcb-2"></td>
+                <td id="pc-pcb-2"></td>
+                <td id="acc-pcb-2"></td>
+                <td id="x-pcb-2"></td>
+                <td id="y-pcb-2"></td>
+                <td id="z-pcb-2"></td>
+                <td id="turn-pcb-2"></td>
+                <td id="wait-pcb-2"></td>
             </tr>
         </table>
     </div>

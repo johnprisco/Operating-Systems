@@ -35,12 +35,16 @@ var TSOS;
         };
         // Update the host with the current values of the PCB
         ProcessControlBlock.prototype.updateHostDisplay = function (op) {
+            document.getElementById('pid-pcb').innerHTML = this.pid.toString();
+            document.getElementById('state-pcb').innerHTML = this.state.toString();
             document.getElementById('pc-pcb').innerHTML = this.programCounter.toString();
             document.getElementById('acc-pcb').innerHTML = this.acc.toString();
             document.getElementById('x-pcb').innerHTML = this.x.toString();
             document.getElementById('y-pcb').innerHTML = this.y.toString();
             document.getElementById('z-pcb').innerHTML = this.z.toString();
             document.getElementById('ir-pcb').innerHTML = op;
+            document.getElementById('turn-pcb').innerHTML = this.turnaroundTime.toString();
+            document.getElementById('wait-pcb').innerHTML = this.waitTime.toString();
         };
         return ProcessControlBlock;
     })();

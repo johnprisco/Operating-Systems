@@ -81,6 +81,7 @@ module TSOS {
 
             _MemoryManager.updateHostDisplay();
             this.updateHostDisplay(op);
+            Utils.updateReadyQueueDisplay();
 
             if (_CpuScheduler.algorithm = ROUND_ROBIN) {
                 _CpuScheduler.quantumCounter++;
@@ -211,7 +212,7 @@ module TSOS {
             console.log("PID " + _CurrentPCB.pid + " terminated with turnaround time " + _CurrentPCB.turnaroundTime + " and wait time " + _CurrentPCB.waitTime);
 
             this.updatePCB(_CurrentPCB);
-            _CurrentPCB.updateHostDisplay("00");
+           // _CurrentPCB.updateHostDisplay("00");
             this.isExecuting = false;
             _KernelInterruptQueue.enqueue(new Interrupt(CONTEXT_SWITCH_IRQ, ""));
         }
@@ -263,7 +264,7 @@ module TSOS {
                 _StdOut.advanceLine();
                 _OsShell.putPrompt();
                 this.PC += 1;
-                _CurrentPCB.updateHostDisplay("00");
+                //_CurrentPCB.updateHostDisplay("00");
                 this.updatePCB(_CurrentPCB);
                 return;
             }
@@ -288,7 +289,7 @@ module TSOS {
                 _StdOut.advanceLine();
                 _OsShell.putPrompt();
                 this.PC += 1;
-                _CurrentPCB.updateHostDisplay("00");
+               // _CurrentPCB.updateHostDisplay("00");
                 this.updatePCB(_CurrentPCB);
                 return;
             }

@@ -152,6 +152,19 @@ var TSOS;
                 }
             }
         };
+        Utils.updateReadyQueueDisplay = function () {
+            for (var i in _ReadyQueue.q) {
+                document.getElementById('pid-pcb-' + i).innerHTML = _ReadyQueue.q[i].pid.toString();
+                document.getElementById('state-pcb-' + i).innerHTML = _ReadyQueue.q[i].state.toString();
+                document.getElementById('pc-pcb-' + i).innerHTML = _ReadyQueue.q[i].programCounter.toString();
+                document.getElementById('acc-pcb-' + i).innerHTML = _ReadyQueue.q[i].acc.toString();
+                document.getElementById('x-pcb-' + i).innerHTML = _ReadyQueue.q[i].x.toString();
+                document.getElementById('y-pcb-' + i).innerHTML = _ReadyQueue.q[i].y.toString();
+                document.getElementById('z-pcb-' + i).innerHTML = _ReadyQueue.q[i].z.toString();
+                document.getElementById('turn-pcb-' + i).innerHTML = _ReadyQueue.q[i].turnaroundTime.toString();
+                document.getElementById('wait-pcb-' + i).innerHTML = _ReadyQueue.q[i].waitTime.toString();
+            }
+        };
         return Utils;
     })();
     TSOS.Utils = Utils;

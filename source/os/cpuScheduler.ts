@@ -27,7 +27,8 @@ module TSOS {
 
         public schedule(): void {
             console.log("We schedulin'.");
-            _CurrentPCB = _ReadyQueue.dequeue();
+            //_CurrentPCB = _ReadyQueue.dequeue();
+            _CurrentPCB = _ReadyQueue.q[0];
             _CPU.setToPCB(_CurrentPCB);
             _CurrentPCB.state = PROCESS_RUNNING;
             _CPU.isExecuting = true;
@@ -53,6 +54,7 @@ module TSOS {
             if (_CurrentPCB.state !== PROCESS_TERMINATED) {
                 var temp = _CurrentPCB;
                 temp.state = PROCESS_WAITING;
+                _ReadyQueue.dequeue();
                 _ReadyQueue.enqueue(temp);
                 this.schedule();
             } else {

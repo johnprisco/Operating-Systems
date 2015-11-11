@@ -289,6 +289,10 @@ module TSOS {
         public shellShutdown(args) {
              _StdOut.putText("Shutting down...");
              // Call Kernel shutdown routine.
+
+            _CPU.isExecuting = false;
+            _MemoryManager.clearMemory();
+            _ReadyQueue.q = [];
             _Kernel.krnShutdown();
             // TODO: Stop the final prompt from being displayed.  If possible.  Not a high priority.  (Damn OCD!)
         }

@@ -78,6 +78,7 @@ var TSOS;
             this.executeOperation(op);
             _MemoryManager.updateHostDisplay();
             this.updateHostDisplay(op);
+            TSOS.Utils.updateReadyQueueDisplay();
             if (_CpuScheduler.algorithm = ROUND_ROBIN) {
                 _CpuScheduler.quantumCounter++;
             }
@@ -191,7 +192,7 @@ var TSOS;
             _CurrentPCB.state = PROCESS_TERMINATED;
             console.log("PID " + _CurrentPCB.pid + " terminated with turnaround time " + _CurrentPCB.turnaroundTime + " and wait time " + _CurrentPCB.waitTime);
             this.updatePCB(_CurrentPCB);
-            _CurrentPCB.updateHostDisplay("00");
+            // _CurrentPCB.updateHostDisplay("00");
             this.isExecuting = false;
             _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CONTEXT_SWITCH_IRQ, ""));
         };
@@ -238,7 +239,7 @@ var TSOS;
                 _StdOut.advanceLine();
                 _OsShell.putPrompt();
                 this.PC += 1;
-                _CurrentPCB.updateHostDisplay("00");
+                //_CurrentPCB.updateHostDisplay("00");
                 this.updatePCB(_CurrentPCB);
                 return;
             }
@@ -262,7 +263,7 @@ var TSOS;
                 _StdOut.advanceLine();
                 _OsShell.putPrompt();
                 this.PC += 1;
-                _CurrentPCB.updateHostDisplay("00");
+                // _CurrentPCB.updateHostDisplay("00");
                 this.updatePCB(_CurrentPCB);
                 return;
             }
