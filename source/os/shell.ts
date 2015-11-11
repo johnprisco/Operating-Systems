@@ -586,16 +586,8 @@ module TSOS {
             if (!_CPU.isExecuting) {
                 _StdOut.putText("No programs running.")
             } else {
-                var temp = [];
-
-                for (var i in _ReadyQueue.q) {
-                    temp.push(_ReadyQueue.getPCBAt(i));
-                }
-
-                temp.push(_CurrentPCB); // Don't forget to include the current procecss.
-
-                for (var j = 0; j < temp.length; j++) {
-                    _StdOut.putText("PID " + temp[j].pid + " is running.");
+                for (var j = 0; j < _ReadyQueue.getSize(); j++) {
+                    _StdOut.putText("PID " + _ReadyQueue.q[j].pid + " is running.");
                     _StdOut.advanceLine();
                 }
             }
@@ -613,6 +605,8 @@ module TSOS {
 
                 if (_CurrentPCB.pid === parseInt(pid)) {
                     _CurrentPCB.state = PROCESS_TERMINATED;
+                    _ReadyQueue.dequeue();
+                    Utils.updateReadyQueueDisplay();
                     _KernelInterruptQueue.enqueue(new Interrupt(CONTEXT_SWITCH_IRQ, ""));
                     _StdOut.putText("Process terminated.");
                 } else {
@@ -622,6 +616,7 @@ module TSOS {
                         if (_ReadyQueue.q[i].pid === parseInt(pid)) {
                             _ReadyQueue.q[i].state = PROCESS_TERMINATED;
                             _ReadyQueue.q.splice(i, 1);
+                            Utils.updateReadyQueueDisplay();
                             _StdOut.putText("Process terminated.");
                             break;
                         }
