@@ -83,8 +83,9 @@ module TSOS {
             _Status.innerText = status;
         }
 
-
+        //
         // Tables used to print symbols and punctuation
+        //
         public static getPunctuation(keyCode: number): string {
             var table = {
                 '186' : ';',
@@ -142,12 +143,51 @@ module TSOS {
             }
         }
 
+        // Helper function to convert hex to decimal.
         public static hexToDecimal(hex): number {
             return parseInt(hex, 16);
         }
 
-        public deciamlToHex(decimal): number {
-            return decimal.toString(16);
+        // Method to track the turnaround and wait times of the running processes.
+        public static trackTime(): void {
+            if (_CurrentPCB.state != PROCESS_TERMINATED) {
+                _CurrentPCB.turnaroundTime++;
+            }
+
+            if (_CurrentPCB.state === PROCESS_WAITING ||
+                _CurrentPCB.state === PROCESS_NEW ||
+                _CurrentPCB.state === PROCESS_READY) {
+                _CurrentPCB.waitTime++;
+            }
+
+            for (var i in _ReadyQueue.q) {
+
+                if (_ReadyQueue.q[i].state != PROCESS_TERMINATED) {
+                    _ReadyQueue.q[i].turnaroundTime++;
+                }
+
+                if (_ReadyQueue.q[i].state === PROCESS_WAITING ||
+                    _ReadyQueue.q[i].state === PROCESS_NEW ||
+                    _ReadyQueue.q[i].state === PROCESS_READY) {
+                    _ReadyQueue.q[i].waitTime++;
+                }
+            }
+        }
+
+        // Hacky method to display the Ready Queue in the host
+        // It will be fixed in time.
+        public static updateReadyQueueDisplay() {
+            for (var i in _ReadyQueue.q) {
+                document.getElementById('pid-pcb-' + i).innerHTML   = _ReadyQueue.q[i].pid.toString();
+                document.getElementById('state-pcb-' + i).innerHTML = _ReadyQueue.q[i].state.toString();
+                document.getElementById('pc-pcb-' + i).innerHTML    = _ReadyQueue.q[i].programCounter.toString();
+                document.getElementById('acc-pcb-' + i).innerHTML   = _ReadyQueue.q[i].acc.toString();
+                document.getElementById('x-pcb-' + i).innerHTML     = _ReadyQueue.q[i].x.toString();
+                document.getElementById('y-pcb-' + i).innerHTML     = _ReadyQueue.q[i].y.toString();
+                document.getElementById('z-pcb-' + i).innerHTML     = _ReadyQueue.q[i].z.toString();
+                document.getElementById('turn-pcb-' + i).innerHTML  = _ReadyQueue.q[i].turnaroundTime.toString();
+                document.getElementById('wait-pcb-' + i).innerHTML  = _ReadyQueue.q[i].waitTime.toString();
+            }
         }
     }
 }

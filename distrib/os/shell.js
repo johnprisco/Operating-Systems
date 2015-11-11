@@ -214,6 +214,10 @@ var TSOS;
         Shell.prototype.shellShutdown = function (args) {
             _StdOut.putText("Shutting down...");
             // Call Kernel shutdown routine.
+            _CPU.isExecuting = false;
+            _Mode = 0;
+            _MemoryManager.clearMemory();
+            _ReadyQueue.q = [];
             _Kernel.krnShutdown();
             // TODO: Stop the final prompt from being displayed.  If possible.  Not a high priority.  (Damn OCD!)
         };
@@ -287,7 +291,7 @@ var TSOS;
                         _StdOut.putText("Terminates the process with the PID specified in the argument.");
                         break;
                     default:
-                        _StdOut.putText("No manual entry for " + args[0] + ". ");
+                        _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
             }
             else {
@@ -400,7 +404,7 @@ var TSOS;
                 for (var i = 0; i < commands.length; i++) {
                     // Put the byte at position i at position i in the block
                     console.log("Load command: " + commands[i] + " at " + (_MemoryManager.base + i));
-                    _MemoryManager.setMemoryAt(_MemoryManager.base + i, commands[i]);
+                    _MemoryManager.loadMemoryAt(_MemoryManager.base + i, commands[i]);
                 }
                 // Create new PCB and store it in the array tracking all of the PCBs.
                 _CurrentPCB = new TSOS.ProcessControlBlock();
@@ -488,13 +492,8 @@ var TSOS;
                 _StdOut.putText("No programs running.");
             }
             else {
-                var temp = [];
-                for (var i in _ReadyQueue.q) {
-                    temp.push(_ReadyQueue.getPCBAt(i));
-                }
-                temp.push(_CurrentPCB); // Don't forget to include the current procecss.
-                for (var j = 0; j < temp.length; j++) {
-                    _StdOut.putText("PID " + temp[j].pid + " is running.");
+                for (var j = 0; j < _ReadyQueue.getSize(); j++) {
+                    _StdOut.putText("PID " + _ReadyQueue.q[j].pid + " is running.");
                     _StdOut.advanceLine();
                 }
             }
@@ -506,22 +505,27 @@ var TSOS;
                 _StdOut.putText("That's not a valid PID.");
             }
             else {
-                // TODO: First check if the current program is the one to terminate.
-                // TODO: Then check the ready queue.
-                if (_CurrentPCB.pid === args[0]) {
+                console.log("Trying to pass PID " + args[0]);
+                var pid = args[0];
+                if (_CurrentPCB.pid === parseInt(pid)) {
                     _CurrentPCB.state = PROCESS_TERMINATED;
+                    _ReadyQueue.dequeue();
+                    TSOS.Utils.updateReadyQueueDisplay();
                     _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CONTEXT_SWITCH_IRQ, ""));
                     _StdOut.putText("Process terminated.");
                 }
                 else {
                     // Check _ReadyQueue for that PID
                     for (var i in _ReadyQueue.q) {
-                        if (_ReadyQueue.q[i].pid === args[0]) {
+                        console.log("ReadyQueue at i pid: " + _ReadyQueue.q[i].pid);
+                        if (_ReadyQueue.q[i].pid === parseInt(pid)) {
                             _ReadyQueue.q[i].state = PROCESS_TERMINATED;
+                            _ReadyQueue.q.splice(i, 1);
+                            TSOS.Utils.updateReadyQueueDisplay();
                             _StdOut.putText("Process terminated.");
+                            break;
                         }
                     }
-                    _StdOut.putText("There is no process with that PID.");
                 }
             }
         };

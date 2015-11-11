@@ -23,6 +23,9 @@ var BSOD_IRQ = 2;
 var RUN_PROGRAM_IRQ = 3;
 var CONTEXT_SWITCH_IRQ = 4;
 var KILL_PROCESS_IRQ = 5;
+var SYSCALL_IRQ = 6;
+var BREAK_IRQ = 7;
+var MEMORY_OUT_OF_BOUNDS_IRQ = 8;
 var BSOD_BKG = new Image();
 BSOD_BKG.src = "distrib/images/bsod.png";
 //

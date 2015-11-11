@@ -74,7 +74,6 @@ module TSOS {
             this.krnTrace("end shutdown OS");
         }
 
-
         public krnOnCPUClockPulse() {
             /* This gets called from the host hardware simulation every time there is a hardware clock pulse.
                This is NOT the same as a TIMER, which causes an interrupt and is handled like other interrupts.
@@ -138,6 +137,12 @@ module TSOS {
                     _CpuScheduler.schedule();
                     break;
                 case CONTEXT_SWITCH_IRQ:
+                    _CpuScheduler.switchContext();
+                    break;
+                case MEMORY_OUT_OF_BOUNDS_IRQ:
+                    // Kill the process trying to mess with someone else's memory.
+                    _CurrentPCB.state = PROCESS_TERMINATED;
+                    // On to the next.
                     _CpuScheduler.switchContext();
                     break;
                 default:

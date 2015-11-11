@@ -125,6 +125,12 @@ var TSOS;
                 case CONTEXT_SWITCH_IRQ:
                     _CpuScheduler.switchContext();
                     break;
+                case MEMORY_OUT_OF_BOUNDS_IRQ:
+                    // Kill the process trying to mess with someone else's memory.
+                    _CurrentPCB.state = PROCESS_TERMINATED;
+                    // On to the next.
+                    _CpuScheduler.switchContext();
+                    break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");
             }
