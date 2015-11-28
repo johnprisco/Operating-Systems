@@ -2,6 +2,8 @@
 ///<reference path="../utils.ts" />
 ///<reference path="shellCommand.ts" />
 ///<reference path="userCommand.ts" />
+///<reference path="cpuScheduler.ts" />
+
 
 /* ------------
    Shell.ts
@@ -149,6 +151,42 @@ module TSOS {
             sc = new ShellCommand(this.shellKillProcess,
                                   "kill",
                                   "<pid> - Kill the process with pid <pid>.");
+            this.commandList[this.commandList.length] = sc;
+
+            // create <filename> - creates a file with the specified filename.
+            sc = new ShellCommand(this.shellCreateFile, "create", "");
+            this.commandList[this.commandList.length] = sc;
+
+            // read <filename> - displays the contents of file with the specified filename.
+            sc = new ShellCommand(this.shellReadFile, "read", "");
+            this.commandList[this.commandList.length] = sc;
+
+            // write <filename> "data" - writes the data to file with name <filename>.
+            sc = new ShellCommand(this.shellWriteFile, "write", "");
+            this.commandList[this.commandList.length] = sc;
+
+            // delete <filename> - removes file with name <filename> from disk.
+            sc = new ShellCommand(this.shellDeleteFile, "delete", "");
+            this.commandList[this.commandList.length] = sc;
+
+            // format - formats the hard drive to be used by the operating system.
+            sc = new ShellCommand(this.shellFormatDrive, "format", "");
+            this.commandList[this.commandList.length] = sc;
+
+            // ls - lists the files stored on the hard drive.
+            sc = new ShellCommand(this.shellListFiles, "ls", "");
+            this.commandList[this.commandList.length] = sc;
+
+            // setschedule [rr, fcfs, priority] - sets the CPU scheduling algorithm to Round Robin, FCFS, Priority.
+            sc = new ShellCommand(this.shellSetCPUSchedule,
+                                  "setschedule",
+                                  "[rr, fcfs, priority] - sets the CPU scheduling algorithm to Round Robin, FCFS, Priority.");
+            this.commandList[this.commandList.length] = sc;
+
+            // getschedule - prints the current CPU scheduling algorithm to the console.
+            sc = new ShellCommand(this.shellGetCPUSchedule,
+                                  "getschedule",
+                                  "- prints the current CPU scheduling algorithm to the console.");
             this.commandList[this.commandList.length] = sc;
 
             // Display the initial prompt.
@@ -624,6 +662,40 @@ module TSOS {
                     }
                 }
             }
+        }
+
+        // Call methods from fsDD in these as necessary.
+        public shellCreateFile(args) {
+
+        }
+
+        public shellReadFile(args) {
+
+        }
+
+        public shellWriteFile(args) {
+
+        }
+
+        public shellDeleteFile(args) {
+
+        }
+
+        public shellFormatDrive() {
+
+        }
+
+        public shellListFiles() {
+
+        }
+
+        public shellSetCPUSchedule(args) {
+
+        }
+
+        public shellGetCPUSchedule() {
+            _StdOut.putText("CPU Scheduling determined by: " + _CpuScheduler.getAlgorithm());
+
         }
     }
 }

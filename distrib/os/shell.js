@@ -2,6 +2,7 @@
 ///<reference path="../utils.ts" />
 ///<reference path="shellCommand.ts" />
 ///<reference path="userCommand.ts" />
+///<reference path="cpuScheduler.ts" />
 /* ------------
    Shell.ts
 
@@ -84,6 +85,30 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
             // kill <id> - kills the specified process id.
             sc = new TSOS.ShellCommand(this.shellKillProcess, "kill", "<pid> - Kill the process with pid <pid>.");
+            this.commandList[this.commandList.length] = sc;
+            // create <filename> - creates a file with the specified filename.
+            sc = new TSOS.ShellCommand(this.shellCreateFile, "create", "");
+            this.commandList[this.commandList.length] = sc;
+            // read <filename> - displays the contents of file with the specified filename.
+            sc = new TSOS.ShellCommand(this.shellReadFile, "read", "");
+            this.commandList[this.commandList.length] = sc;
+            // write <filename> "data" - writes the data to file with name <filename>.
+            sc = new TSOS.ShellCommand(this.shellWriteFile, "write", "");
+            this.commandList[this.commandList.length] = sc;
+            // delete <filename> - removes file with name <filename> from disk.
+            sc = new TSOS.ShellCommand(this.shellDeleteFile, "delete", "");
+            this.commandList[this.commandList.length] = sc;
+            // format - formats the hard drive to be used by the operating system.
+            sc = new TSOS.ShellCommand(this.shellFormatDrive, "format", "");
+            this.commandList[this.commandList.length] = sc;
+            // ls - lists the files stored on the hard drive.
+            sc = new TSOS.ShellCommand(this.shellListFiles, "ls", "");
+            this.commandList[this.commandList.length] = sc;
+            // setschedule [rr, fcfs, priority] - sets the CPU scheduling algorithm to Round Robin, FCFS, Priority.
+            sc = new TSOS.ShellCommand(this.shellSetCPUSchedule, "setschedule", "[rr, fcfs, priority] - sets the CPU scheduling algorithm to Round Robin, FCFS, Priority.");
+            this.commandList[this.commandList.length] = sc;
+            // getschedule - prints the current CPU scheduling algorithm to the console.
+            sc = new TSOS.ShellCommand(this.shellGetCPUSchedule, "getschedule", "- prints the current CPU scheduling algorithm to the console.");
             this.commandList[this.commandList.length] = sc;
             // Display the initial prompt.
             this.putPrompt();
@@ -383,7 +408,7 @@ var TSOS;
                 var input = document.getElementById('taProgramInput').value;
                 var regex = /[0-9A-F\s]/i;
                 var commands = input.split(" ");
-                void 0;
+                console.log("Commands array: " + commands);
                 // Handle the case where there is no user input
                 if (input == "") {
                     _StdOut.putText("Put some text in the User Program Input field first.");
@@ -403,7 +428,7 @@ var TSOS;
                 // If we've gotten this far, we can try loading the program into memory.
                 for (var i = 0; i < commands.length; i++) {
                     // Put the byte at position i at position i in the block
-                    void 0;
+                    console.log("Load command: " + commands[i] + " at " + (_MemoryManager.base + i));
                     _MemoryManager.loadMemoryAt(_MemoryManager.base + i, commands[i]);
                 }
                 // Create new PCB and store it in the array tracking all of the PCBs.
@@ -412,7 +437,7 @@ var TSOS;
                 _CurrentPCB.init(); // Init after pushing to properly determine length of _ResidentList
                 // Update the counter to save the current partition
                 _MemoryManager.setNextPartition();
-                void 0;
+                console.log("Current partition: " + _MemoryManager.currentPartition);
                 // Print the memory and PID for the new process
                 _MemoryManager.updateHostDisplay();
                 _StdOut.putText("Process assigned ID " + _CurrentPCB.pid);
@@ -431,7 +456,7 @@ var TSOS;
             else {
                 // Let's start executing.
                 var temp = _ResidentList[args[0]];
-                void 0;
+                console.log("Attempting to enqueue program with pid: " + temp.pid);
                 if (temp.state === PROCESS_TERMINATED) {
                     _StdOut.putText("This process is terminated.");
                 }
@@ -441,7 +466,7 @@ var TSOS;
                     if (!_CPU.isExecuting) {
                         _KernelInterruptQueue.enqueue(new TSOS.Interrupt(RUN_PROGRAM_IRQ, ""));
                     }
-                    void 0;
+                    console.log("Program running.");
                     _StdOut.putText("Program running.");
                 }
             }
@@ -468,10 +493,10 @@ var TSOS;
                     }
                 }
                 for (var i in _ReadyQueue.q) {
-                    void 0;
+                    console.log("Printing ready queue: " + _ReadyQueue.q[i].pid);
                 }
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(RUN_PROGRAM_IRQ, ""));
-                void 0;
+                console.log("All programs running.");
                 _StdOut.putText("All programs running.");
             }
         };
@@ -505,7 +530,7 @@ var TSOS;
                 _StdOut.putText("That's not a valid PID.");
             }
             else {
-                void 0;
+                console.log("Trying to pass PID " + args[0]);
                 var pid = args[0];
                 if (_CurrentPCB.pid === parseInt(pid)) {
                     _CurrentPCB.state = PROCESS_TERMINATED;
@@ -517,7 +542,7 @@ var TSOS;
                 else {
                     // Check _ReadyQueue for that PID
                     for (var i in _ReadyQueue.q) {
-                        void 0;
+                        console.log("ReadyQueue at i pid: " + _ReadyQueue.q[i].pid);
                         if (_ReadyQueue.q[i].pid === parseInt(pid)) {
                             _ReadyQueue.q[i].state = PROCESS_TERMINATED;
                             _ReadyQueue.q.splice(i, 1);
@@ -528,6 +553,24 @@ var TSOS;
                     }
                 }
             }
+        };
+        // Call methods from fsDD in these as necessary.
+        Shell.prototype.shellCreateFile = function (args) {
+        };
+        Shell.prototype.shellReadFile = function (args) {
+        };
+        Shell.prototype.shellWriteFile = function (args) {
+        };
+        Shell.prototype.shellDeleteFile = function (args) {
+        };
+        Shell.prototype.shellFormatDrive = function () {
+        };
+        Shell.prototype.shellListFiles = function () {
+        };
+        Shell.prototype.shellSetCPUSchedule = function (args) {
+        };
+        Shell.prototype.shellGetCPUSchedule = function () {
+            _StdOut.putText("CPU Scheduling determined by: " + _CpuScheduler.getAlgorithm());
         };
         return Shell;
     })();
