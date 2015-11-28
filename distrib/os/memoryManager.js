@@ -99,8 +99,7 @@ var TSOS;
                     this.currentPartition = 0;
                     break;
                 default:
-                    console.log("Something broke, currentPartition is incorrect. currentPartition: "
-                        + this.currentPartition);
+                    void 0;
             }
         };
         return MemoryManager;

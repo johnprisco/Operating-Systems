@@ -39,7 +39,7 @@ var TSOS;
          * We get the first PCB off the Ready Queue and set the CPU to start
          */
         CpuScheduler.prototype.schedule = function () {
-            console.log("We schedulin'.");
+            void 0;
             _Mode = 1; // User mode now
             _CurrentPCB = _ReadyQueue.q[0];
             _CPU.setToPCB(_CurrentPCB);
@@ -55,14 +55,14 @@ var TSOS;
         CpuScheduler.prototype.shouldSwitchContext = function () {
             if (this.quantumCounter >= this.quantum) {
                 this.quantumCounter = 0;
-                console.log("Should switch context.");
+                void 0;
                 return true;
             }
             else if (_CurrentPCB.state === PROCESS_TERMINATED) {
-                console.log("Should switch context. Dequeing PCB.");
+                void 0;
                 return true;
             }
-            console.log("Should not switch context.");
+            void 0;
             return false;
         };
         /**
@@ -71,7 +71,7 @@ var TSOS;
          * put it back on the Ready Queue.
          */
         CpuScheduler.prototype.switchContext = function () {
-            console.log("Switching context.");
+            void 0;
             if (_CurrentPCB.state !== PROCESS_TERMINATED) {
                 var temp = _CurrentPCB;
                 temp.state = PROCESS_WAITING;
