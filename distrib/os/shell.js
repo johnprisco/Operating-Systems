@@ -3,6 +3,7 @@
 ///<reference path="shellCommand.ts" />
 ///<reference path="userCommand.ts" />
 ///<reference path="cpuScheduler.ts" />
+///<reference path="deviceDriverFileSystem.ts" />
 /* ------------
    Shell.ts
 
@@ -564,6 +565,8 @@ var TSOS;
         Shell.prototype.shellDeleteFile = function (args) {
         };
         Shell.prototype.shellFormatDrive = function () {
+            console.log("Trying to format");
+            _krnFileSystemDriver.format();
         };
         Shell.prototype.shellListFiles = function () {
         };

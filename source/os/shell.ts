@@ -3,6 +3,7 @@
 ///<reference path="shellCommand.ts" />
 ///<reference path="userCommand.ts" />
 ///<reference path="cpuScheduler.ts" />
+///<reference path="deviceDriverFileSystem.ts" />
 
 
 /* ------------
@@ -682,7 +683,8 @@ module TSOS {
         }
 
         public shellFormatDrive() {
-
+            console.log("Trying to format");
+            _krnFileSystemDriver.format();
         }
 
         public shellListFiles() {
