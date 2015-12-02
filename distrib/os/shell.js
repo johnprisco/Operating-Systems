@@ -612,6 +612,7 @@ var TSOS;
             _krnFileSystemDriver.format();
         };
         Shell.prototype.shellListFiles = function () {
+            _StdOut.putText(_krnFileSystemDriver.listFiles());
         };
         Shell.prototype.shellSetCPUSchedule = function (args) {
         };

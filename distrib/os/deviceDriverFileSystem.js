@@ -168,6 +168,19 @@ var TSOS;
             sessionStorage.setItem(tsb, this.initialValue);
             return true;
         };
+        DeviceDriverFileSystem.prototype.listFiles = function () {
+            var str = "";
+            for (var sector = 0; sector < this.sectors; sector++) {
+                for (var block = 1; block < this.blocks; block++) {
+                    var tsb = "0" + sector.toString() + block.toString();
+                    var currentData = sessionStorage.getItem(tsb);
+                    if (currentData.charAt(0) === "1") {
+                        str += TSOS.Utils.hexToString(currentData.slice(4, 128)) + " ";
+                    }
+                }
+            }
+            return str;
+        };
         return DeviceDriverFileSystem;
     })(TSOS.DeviceDriver);
     TSOS.DeviceDriverFileSystem = DeviceDriverFileSystem;

@@ -197,5 +197,21 @@ module TSOS {
 
             return true;
         }
+
+        public listFiles(): string {
+            var str = "";
+            for (var sector = 0; sector < this.sectors; sector++) {
+                for (var block = 1; block < this.blocks; block++) {
+                    var tsb = "0" + sector.toString() + block.toString();
+                    var currentData = sessionStorage.getItem(tsb);
+
+                    if (currentData.charAt(0) === "1") {
+                        str += Utils.hexToString(currentData.slice(4, 128)) + " ";
+                    }
+                }
+            }
+
+            return str;
+        }
     }
 }

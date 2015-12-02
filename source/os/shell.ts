@@ -728,7 +728,7 @@ module TSOS {
         }
 
         public shellListFiles() {
-
+            _StdOut.putText(_krnFileSystemDriver.listFiles());
         }
 
         public shellSetCPUSchedule(args) {
