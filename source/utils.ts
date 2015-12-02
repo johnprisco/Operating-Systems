@@ -148,6 +148,31 @@ module TSOS {
             return parseInt(hex, 16);
         }
 
+        public static stringToHex(str: string): string {
+            var hex = "";
+            for (var i = 0; i < str.length; i++) {
+                hex += str.charCodeAt(i).toString(16);
+            }
+            return hex;
+        }
+
+        public static hexToString(data: string): string {
+            var str = "";
+            for (var i = 0; i < data.length; i += 2) {
+                str += String.fromCharCode(parseInt(data.substr(i, 2), 16));
+            }
+
+            return str;
+        }
+
+        public static rightPadString(str: string): string {
+            while (str.length < 128) {
+                str += "0";
+            }
+            return str;
+
+        }
+
         // Method to track the turnaround and wait times of the running processes.
         public static trackTime(): void {
             if (_CurrentPCB.state != PROCESS_TERMINATED) {

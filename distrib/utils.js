@@ -135,6 +135,26 @@ var TSOS;
         Utils.hexToDecimal = function (hex) {
             return parseInt(hex, 16);
         };
+        Utils.stringToHex = function (str) {
+            var hex = "";
+            for (var i = 0; i < str.length; i++) {
+                hex += str.charCodeAt(i).toString(16);
+            }
+            return hex;
+        };
+        Utils.hexToString = function (data) {
+            var str = "";
+            for (var i = 0; i < data.length; i += 2) {
+                str += String.fromCharCode(parseInt(data.substr(i, 2), 16));
+            }
+            return str;
+        };
+        Utils.rightPadString = function (str) {
+            while (str.length < 128) {
+                str += "0";
+            }
+            return str;
+        };
         // Method to track the turnaround and wait times of the running processes.
         Utils.trackTime = function () {
             if (_CurrentPCB.state != PROCESS_TERMINATED) {

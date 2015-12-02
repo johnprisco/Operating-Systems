@@ -19,6 +19,7 @@ module TSOS {
                     public waitTime: number       = 0
         ) {
 
+
         }
 
         public init(): void {

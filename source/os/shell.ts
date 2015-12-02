@@ -2,6 +2,9 @@
 ///<reference path="../utils.ts" />
 ///<reference path="shellCommand.ts" />
 ///<reference path="userCommand.ts" />
+///<reference path="cpuScheduler.ts" />
+///<reference path="deviceDriverFileSystem.ts" />
+
 
 /* ------------
    Shell.ts
@@ -149,6 +152,42 @@ module TSOS {
             sc = new ShellCommand(this.shellKillProcess,
                                   "kill",
                                   "<pid> - Kill the process with pid <pid>.");
+            this.commandList[this.commandList.length] = sc;
+
+            // create <filename> - creates a file with the specified filename.
+            sc = new ShellCommand(this.shellCreateFile, "create", "");
+            this.commandList[this.commandList.length] = sc;
+
+            // read <filename> - displays the contents of file with the specified filename.
+            sc = new ShellCommand(this.shellReadFile, "read", "");
+            this.commandList[this.commandList.length] = sc;
+
+            // write <filename> "data" - writes the data to file with name <filename>.
+            sc = new ShellCommand(this.shellWriteFile, "write", "");
+            this.commandList[this.commandList.length] = sc;
+
+            // delete <filename> - removes file with name <filename> from disk.
+            sc = new ShellCommand(this.shellDeleteFile, "delete", "");
+            this.commandList[this.commandList.length] = sc;
+
+            // format - formats the hard drive to be used by the operating system.
+            sc = new ShellCommand(this.shellFormatDrive, "format", "");
+            this.commandList[this.commandList.length] = sc;
+
+            // ls - lists the files stored on the hard drive.
+            sc = new ShellCommand(this.shellListFiles, "ls", "");
+            this.commandList[this.commandList.length] = sc;
+
+            // setschedule [rr, fcfs, priority] - sets the CPU scheduling algorithm to Round Robin, FCFS, Priority.
+            sc = new ShellCommand(this.shellSetCPUSchedule,
+                                  "setschedule",
+                                  "[rr, fcfs, priority] - sets the CPU scheduling algorithm to Round Robin, FCFS, Priority.");
+            this.commandList[this.commandList.length] = sc;
+
+            // getschedule - prints the current CPU scheduling algorithm to the console.
+            sc = new ShellCommand(this.shellGetCPUSchedule,
+                                  "getschedule",
+                                  "- prints the current CPU scheduling algorithm to the console.");
             this.commandList[this.commandList.length] = sc;
 
             // Display the initial prompt.
@@ -624,6 +663,67 @@ module TSOS {
                     }
                 }
             }
+        }
+
+        // Call methods from fsDD in these as necessary.
+        public shellCreateFile(args) {
+
+            // TODO: Consider using switch case here to print the appropriate message
+            // TODO: depending on what is returned by the driver.
+
+            if (_krnFileSystemDriver.createFile(args[0])) {
+                _StdOut.putText("Success!");
+            } else {
+                _StdOut.putText("Something broke.");
+            }
+        }
+
+        public shellReadFile(args) {
+            // Check the args so it doesn't break the program
+            _StdOut.putText(_krnFileSystemDriver.readFile(args[0]));
+        }
+
+        public shellWriteFile(args) {
+            var textToWrite = "";
+
+            for (var i = 1; i < args.length; i++) {
+                if (i === 1) {
+                    console.log("Trying to write: " + args[i].slice(1, args[i].length));
+                    textToWrite += args[i].slice(1, args[i].length);
+                } else if (i === args.length - 1) {
+                    console.log("Trying to write: " + args[i].slice(0, i - 1));
+                    textToWrite += " " + args[i].slice(0, i);
+                } else {
+                    textToWrite += " " + args[i];
+                }
+            }
+
+            if (_krnFileSystemDriver.writeFile(args[0], textToWrite)) {
+                _StdOut.putText("Success!");
+            } else {
+                _StdOut.putText("Something broke.");
+            }
+        }
+
+        public shellDeleteFile(args) {
+
+        }
+
+        public shellFormatDrive() {
+            _krnFileSystemDriver.format();
+        }
+
+        public shellListFiles() {
+
+        }
+
+        public shellSetCPUSchedule(args) {
+
+        }
+
+        public shellGetCPUSchedule() {
+            _StdOut.putText("CPU Scheduling determined by: " + _CpuScheduler.getAlgorithm());
+
         }
     }
 }

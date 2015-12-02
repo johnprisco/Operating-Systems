@@ -5,6 +5,7 @@
 // Read more about Gulp at http://gulpjs.com/
 //
 var gulp = require('gulp');
+var stripDebug = require('gulp-strip-debug');
 
 // This is a Gulp Plugin for TypeScript.
 var typescript = require('gulp-tsc');
@@ -24,6 +25,7 @@ gulp.task('compile-typescript', function() {
         .pipe(typescript({
         	emitError: false
         }))
+		//.pipe(stripDebug())
         .pipe(gulp.dest(typescriptPaths.dest));
 });
 
