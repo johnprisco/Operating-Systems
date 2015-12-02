@@ -687,15 +687,25 @@ module TSOS {
             var textToWrite = "";
 
             for (var i = 1; i < args.length; i++) {
+                if (args.length === 2) {
+                    console.log("args.length === 2");
+                    textToWrite = args[i];
+                    textToWrite = textToWrite.slice(1, args[i].length);
+                    textToWrite = textToWrite.slice(0, args[i].length - 2);
+                    console.log("writing: " + textToWrite);
+                    break;
+                }
+
                 if (i === 1) {
                     console.log("Trying to write: " + args[i].slice(1, args[i].length));
                     textToWrite += args[i].slice(1, args[i].length);
                 } else if (i === args.length - 1) {
-                    console.log("Trying to write: " + args[i].slice(0, i - 1));
-                    textToWrite += " " + args[i].slice(0, i);
+                    console.log("Trying to write: " + args[i].slice(0, args[i].length - 1));
+                    textToWrite += " " + args[i].slice(0, args[i].length - 1);
                 } else {
                     textToWrite += " " + args[i];
                 }
+
             }
 
             if (_krnFileSystemDriver.writeFile(args[0], textToWrite)) {
@@ -706,7 +716,11 @@ module TSOS {
         }
 
         public shellDeleteFile(args) {
-
+            if (_krnFileSystemDriver.deleteFile(args[0])) {
+                _StdOut.putText("Success!");
+            } else {
+                _StdOut.putText("Something broke.");
+            }
         }
 
         public shellFormatDrive() {

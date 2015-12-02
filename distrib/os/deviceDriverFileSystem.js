@@ -74,6 +74,28 @@ var TSOS;
             // 404 Not Found
             return null;
         };
+        DeviceDriverFileSystem.prototype.findDirectoryBlockForFile = function (filename) {
+            var hexFilename = TSOS.Utils.stringToHex(filename);
+            var paddedHexFilename = TSOS.Utils.rightPadString(hexFilename).slice(0, 124);
+            for (var sector = 0; sector < this.sectors; sector++) {
+                for (var block = 1; block < this.blocks; block++) {
+                    var tsb = "0" + sector.toString() + block.toString();
+                    var currentData = sessionStorage.getItem(tsb);
+                    // check if its in use
+                    if (currentData.charAt(0) === "1") {
+                        console.log("We've found an in-use block.");
+                        // compare hex filename to stored file name
+                        // if there's a match, return the tsb where that file starts.
+                        console.log("paddedHexFilename: " + paddedHexFilename);
+                        console.log("current Data: " + currentData.slice(4, 128));
+                        if (paddedHexFilename === currentData.slice(4, 128)) {
+                            console.log("Trying to return: " + currentData.slice(1, 4));
+                            return tsb;
+                        }
+                    }
+                }
+            }
+        };
         DeviceDriverFileSystem.prototype.findNextAvailableDirectoryBlock = function () {
             for (var sector = 0; sector < this.sectors; sector++) {
                 for (var block = 1; block < this.blocks; block++) {
@@ -129,6 +151,22 @@ var TSOS;
             data = data.slice(4, data.length);
             str += TSOS.Utils.hexToString(data);
             return str;
+        };
+        DeviceDriverFileSystem.prototype.deleteFile = function (filename) {
+            var tsb = this.searchForFileWithName(filename);
+            var data = sessionStorage.getItem(tsb);
+            var nextTsb = data.slice(1, 4);
+            while (nextTsb != "~~~") {
+                sessionStorage.setItem(tsb, this.initialValue);
+                // set the next tsb
+                tsb = nextTsb;
+                data = sessionStorage.getItem(tsb);
+                nextTsb = data.slice(1, 4);
+            }
+            var dirBlock = this.findDirectoryBlockForFile(filename);
+            sessionStorage.setItem(dirBlock, this.initialValue);
+            sessionStorage.setItem(tsb, this.initialValue);
+            return true;
         };
         return DeviceDriverFileSystem;
     })(TSOS.DeviceDriver);
