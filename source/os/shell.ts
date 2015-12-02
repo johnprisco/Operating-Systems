@@ -668,14 +668,41 @@ module TSOS {
         // Call methods from fsDD in these as necessary.
         public shellCreateFile(args) {
 
+            // TODO: Consider using switch case here to print the appropriate message
+            // TODO: depending on what is returned by the driver.
+
+            if (_krnFileSystemDriver.createFile(args[0])) {
+                _StdOut.putText("Success!");
+            } else {
+                _StdOut.putText("Something broke.");
+            }
         }
 
         public shellReadFile(args) {
-
+            // Check the args so it doesn't break the program
+            _StdOut.putText(_krnFileSystemDriver.readFile(args[0]));
         }
 
         public shellWriteFile(args) {
+            var textToWrite = "";
 
+            for (var i = 1; i < args.length; i++) {
+                if (i === 1) {
+                    console.log("Trying to write: " + args[i].slice(1, args[i].length));
+                    textToWrite += args[i].slice(1, args[i].length);
+                } else if (i === args.length - 1) {
+                    console.log("Trying to write: " + args[i].slice(0, i - 1));
+                    textToWrite += " " + args[i].slice(0, i);
+                } else {
+                    textToWrite += " " + args[i];
+                }
+            }
+
+            if (_krnFileSystemDriver.writeFile(args[0], textToWrite)) {
+                _StdOut.putText("Success!");
+            } else {
+                _StdOut.putText("Something broke.");
+            }
         }
 
         public shellDeleteFile(args) {
@@ -683,7 +710,6 @@ module TSOS {
         }
 
         public shellFormatDrive() {
-            console.log("Trying to format");
             _krnFileSystemDriver.format();
         }
 
