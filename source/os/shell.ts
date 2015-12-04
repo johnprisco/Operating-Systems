@@ -743,7 +743,7 @@ module TSOS {
                     _CpuScheduler.setAlgorithm(PRIORITY);
                     break;
                 default:
-                    _StdOut.putText("No dice. Try rr, fcfs, or priority.");
+                    _StdOut.putText("No dice. Try rr, fcfs, or priority as your algorithm.");
             }
 
             _StdOut.putText("CPU Scheduling determined by: " + _CpuScheduler.getAlgorithm());
