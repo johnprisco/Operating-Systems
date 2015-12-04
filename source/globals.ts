@@ -58,6 +58,8 @@ var _FontHeightMargin: number = 4;              // Additional space added to fon
 
 // The possible states of scheduling
 const ROUND_ROBIN = "Round Robin";
+const FCFS        = "First Come, First Served";
+const PRIORITY    = "Priority";
 
 
 // The possible states of a process

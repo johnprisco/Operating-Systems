@@ -22,6 +22,7 @@ module TSOS {
          */
         public setAlgorithm(algorithm: string) {
             this.algorithm = algorithm;
+            this.quantumCounter = 1;
         }
 
         /**
@@ -60,17 +61,31 @@ module TSOS {
          * @returns {boolean}
          */
         public shouldSwitchContext(): boolean {
-            if (this.quantumCounter >= this.quantum) {
-                this.quantumCounter = 0;
-                console.log("Should switch context.");
-                return true;
-            } else if (_CurrentPCB.state === PROCESS_TERMINATED) {
-                console.log("Should switch context. Dequeing PCB.");
-                return true;
-            }
+            console.log("Current algorithm: " + this.getAlgorithm());
+            switch (this.getAlgorithm()) {
+                case ROUND_ROBIN:
+                    if (this.quantumCounter >= this.quantum) {
+                        this.quantumCounter = 0;
+                        console.log("Should switch context.");
+                        return true;
+                    }
+                    else if (_CurrentPCB.state === PROCESS_TERMINATED) {
+                        console.log("Should switch context. Dequeing PCB.");
+                        return true;
+                    }
+                    break;
 
-            console.log("Should not switch context.");
-            return false;
+                case FCFS:
+                    if (_CurrentPCB.state === PROCESS_TERMINATED) {
+                        return true;
+                    }
+                    break;
+
+                case PRIORITY:
+                    break;
+                default:
+                    return false;
+            }
         }
 
         /**

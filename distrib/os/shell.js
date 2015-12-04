@@ -615,6 +615,20 @@ var TSOS;
             _StdOut.putText(_krnFileSystemDriver.listFiles());
         };
         Shell.prototype.shellSetCPUSchedule = function (args) {
+            switch (args[0]) {
+                case 'rr':
+                    _CpuScheduler.setAlgorithm(ROUND_ROBIN);
+                    break;
+                case 'fcfs':
+                    _CpuScheduler.setAlgorithm(FCFS);
+                    break;
+                case 'priority':
+                    _CpuScheduler.setAlgorithm(PRIORITY);
+                    break;
+                default:
+                    _StdOut.putText("No dice. Try rr, fcfs, or priority.");
+            }
+            _StdOut.putText("CPU Scheduling determined by: " + _CpuScheduler.getAlgorithm());
         };
         Shell.prototype.shellGetCPUSchedule = function () {
             _StdOut.putText("CPU Scheduling determined by: " + _CpuScheduler.getAlgorithm());

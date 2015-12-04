@@ -19,6 +19,7 @@ var TSOS;
          */
         CpuScheduler.prototype.setAlgorithm = function (algorithm) {
             this.algorithm = algorithm;
+            this.quantumCounter = 1;
         };
         /**
          * Returns the value of the Round Robin quantum
@@ -53,17 +54,29 @@ var TSOS;
          * @returns {boolean}
          */
         CpuScheduler.prototype.shouldSwitchContext = function () {
-            if (this.quantumCounter >= this.quantum) {
-                this.quantumCounter = 0;
-                console.log("Should switch context.");
-                return true;
+            console.log("Current algorithm: " + this.getAlgorithm());
+            switch (this.getAlgorithm()) {
+                case ROUND_ROBIN:
+                    if (this.quantumCounter >= this.quantum) {
+                        this.quantumCounter = 0;
+                        console.log("Should switch context.");
+                        return true;
+                    }
+                    else if (_CurrentPCB.state === PROCESS_TERMINATED) {
+                        console.log("Should switch context. Dequeing PCB.");
+                        return true;
+                    }
+                    break;
+                case FCFS:
+                    if (_CurrentPCB.state === PROCESS_TERMINATED) {
+                        return true;
+                    }
+                    break;
+                case PRIORITY:
+                    break;
+                default:
+                    return false;
             }
-            else if (_CurrentPCB.state === PROCESS_TERMINATED) {
-                console.log("Should switch context. Dequeing PCB.");
-                return true;
-            }
-            console.log("Should not switch context.");
-            return false;
         };
         /**
          * Switching context. Move to the next process,
