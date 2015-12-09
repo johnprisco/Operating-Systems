@@ -1,3 +1,5 @@
+///<reference path="../globals.ts" />
+
 module TSOS {
     export class CpuScheduler {
         public quantum: number        = 6;

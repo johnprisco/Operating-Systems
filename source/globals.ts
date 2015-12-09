@@ -68,6 +68,8 @@ const PROCESS_RUNNING     = "Running";
 const PROCESS_WAITING     = "Waiting";
 const PROCESS_READY       = "Ready";
 const PROCESS_TERMINATED  = "Terminated";
+const PROCESS_IN_MEMORY   = "Memory";
+const PROCESS_ON_DISK     = "On Disk";
 
 var _Trace: boolean = true;  // Default the OS trace to be on.
 

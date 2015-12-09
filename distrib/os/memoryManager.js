@@ -1,3 +1,4 @@
+///<reference path="../globals.ts" />
 var TSOS;
 (function (TSOS) {
     var MemoryManager = (function () {
@@ -102,6 +103,12 @@ var TSOS;
                     console.log("Something broke, currentPartition is incorrect. currentPartition: "
                         + this.currentPartition);
             }
+        };
+        MemoryManager.prototype.rollOut = function () {
+            // Moving a program from memory to disk
+        };
+        MemoryManager.prototype.rollIn = function () {
+            // Moving a program to memory from disk
         };
         return MemoryManager;
     })();

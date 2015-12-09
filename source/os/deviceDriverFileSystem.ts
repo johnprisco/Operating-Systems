@@ -1,3 +1,5 @@
+///<reference path="../globals.ts" />
+
 module TSOS {
     export class DeviceDriverFileSystem extends DeviceDriver {
 
@@ -158,6 +160,24 @@ module TSOS {
             sessionStorage.setItem(tsb, text);
             return true;
 
+        }
+
+        public writeProgramFile(text: string): boolean {
+            var tsb = this.searchForFileWithName("PID" + _ResidentList.length);
+
+            while (text.length > 124) {
+                // we need to find a new block
+                var temp = text.slice(0, 124);
+                var nextBlock = this.findNextAvailableFileBlock();
+                temp = "1" + nextBlock + temp;
+                sessionStorage.setItem(tsb, temp);
+                tsb = nextBlock;
+                text = text.slice(124, text.length);
+            }
+
+            text = "1~~~" + Utils.rightPadString(text).slice(0, 124);
+            sessionStorage.setItem(tsb, text);
+            return true;
         }
 
         public readFile(filename: string): string {

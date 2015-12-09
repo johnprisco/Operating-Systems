@@ -1,3 +1,5 @@
+///<reference path="../globals.ts" />
+
 module TSOS {
     export class MemoryManager {
         public memory: TSOS.Memory;
@@ -114,6 +116,14 @@ module TSOS {
                     console.log("Something broke, currentPartition is incorrect. currentPartition: "
                     + this.currentPartition)
             }
+        }
+        
+        public rollOut() {
+            // Moving a program from memory to disk
+        }
+        
+        public rollIn() {
+            // Moving a program to memory from disk
         }
     }
 }

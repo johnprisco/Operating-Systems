@@ -57,6 +57,8 @@ var PROCESS_RUNNING = "Running";
 var PROCESS_WAITING = "Waiting";
 var PROCESS_READY = "Ready";
 var PROCESS_TERMINATED = "Terminated";
+var PROCESS_IN_MEMORY = "Memory";
+var PROCESS_ON_DISK = "On Disk";
 var _Trace = true; // Default the OS trace to be on.
 // The OS Kernel and its queues.
 var _Kernel;

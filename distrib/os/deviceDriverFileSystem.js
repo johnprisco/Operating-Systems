@@ -1,3 +1,4 @@
+///<reference path="../globals.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -124,6 +125,21 @@ var TSOS;
             var tsb = this.searchForFileWithName(filename);
             text = TSOS.Utils.stringToHex(text);
             // check if text is greater than the space available and handle appropriately
+            while (text.length > 124) {
+                // we need to find a new block
+                var temp = text.slice(0, 124);
+                var nextBlock = this.findNextAvailableFileBlock();
+                temp = "1" + nextBlock + temp;
+                sessionStorage.setItem(tsb, temp);
+                tsb = nextBlock;
+                text = text.slice(124, text.length);
+            }
+            text = "1~~~" + TSOS.Utils.rightPadString(text).slice(0, 124);
+            sessionStorage.setItem(tsb, text);
+            return true;
+        };
+        DeviceDriverFileSystem.prototype.writeProgramFile = function (text) {
+            var tsb = this.searchForFileWithName("PID" + _ResidentList.length);
             while (text.length > 124) {
                 // we need to find a new block
                 var temp = text.slice(0, 124);

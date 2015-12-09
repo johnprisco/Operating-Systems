@@ -402,30 +402,27 @@ var TSOS;
             TSOS.Utils.updateStatus(args);
         };
         Shell.prototype.shellLoad = function () {
-            if (_MemoryManager.isFull) {
-                _StdOut.putText("Memory is full, another program cannot be loaded.");
+            var input = document.getElementById('taProgramInput').value;
+            var regex = /[0-9A-F\s]/i;
+            var commands = input.split(" ");
+            console.log("Commands array: " + commands);
+            // Handle the case where there is no user input
+            if (input == "") {
+                _StdOut.putText("Put some text in the User Program Input field first.");
+                return;
             }
-            else {
-                var input = document.getElementById('taProgramInput').value;
-                var regex = /[0-9A-F\s]/i;
-                var commands = input.split(" ");
-                console.log("Commands array: " + commands);
-                // Handle the case where there is no user input
-                if (input == "") {
-                    _StdOut.putText("Put some text in the User Program Input field first.");
+            if (commands.length > 256) {
+                _StdOut.putText("This program will not fit in a 256-byte partition.");
+                return;
+            }
+            // Handle the case where there is non-hex input
+            for (var i = 0; i < input.length; i++) {
+                if (regex.test(input.charAt(i)) === false) {
+                    _StdOut.putText("There are non-hexadecimal characters inputted.");
                     return;
                 }
-                if (commands.length > 256) {
-                    _StdOut.putText("This program will not fit in a 256-byte partition in memory.");
-                    return;
-                }
-                // Handle the case where there is non-hex input
-                for (var i = 0; i < input.length; i++) {
-                    if (regex.test(input.charAt(i)) === false) {
-                        _StdOut.putText("There are non-hexadecimal characters inputted.");
-                        return;
-                    }
-                }
+            }
+            if (!_MemoryManager.isFull) {
                 // If we've gotten this far, we can try loading the program into memory.
                 for (var i = 0; i < commands.length; i++) {
                     // Put the byte at position i at position i in the block
@@ -436,12 +433,23 @@ var TSOS;
                 _CurrentPCB = new TSOS.ProcessControlBlock();
                 _ResidentList.push(_CurrentPCB);
                 _CurrentPCB.init(); // Init after pushing to properly determine length of _ResidentList
+                _CurrentPCB.location = PROCESS_IN_MEMORY;
                 // Update the counter to save the current partition
                 _MemoryManager.setNextPartition();
                 console.log("Current partition: " + _MemoryManager.currentPartition);
                 // Print the memory and PID for the new process
                 _MemoryManager.updateHostDisplay();
                 _StdOut.putText("Process assigned ID " + _CurrentPCB.pid);
+            }
+            else {
+                _krnFileSystemDriver.createFile("PID" + _ResidentList.length);
+                _krnFileSystemDriver.writeProgramFile(input.replace(/\s+/g, ''));
+                _CurrentPCB = new TSOS.ProcessControlBlock();
+                _ResidentList.push(_CurrentPCB);
+                _CurrentPCB.init();
+                _CurrentPCB.location = PROCESS_ON_DISK;
+                // TODO: Update file system display
+                _StdOut.putText("Process Assigned ID " + _CurrentPCB.pid);
             }
         };
         Shell.prototype.shellRun = function (args) {
@@ -493,9 +501,9 @@ var TSOS;
                         _ReadyQueue.enqueue(temp);
                     }
                 }
-                for (var i in _ReadyQueue.q) {
-                    console.log("Printing ready queue: " + _ReadyQueue.q[i].pid);
-                }
+                //for (var i in _ReadyQueue.q) {
+                //    console.log("Printing ready queue: " + _ReadyQueue.q[i].pid);
+                //}
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(RUN_PROGRAM_IRQ, ""));
                 console.log("All programs running.");
                 _StdOut.putText("All programs running.");
