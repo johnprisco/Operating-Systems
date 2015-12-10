@@ -443,7 +443,7 @@ var TSOS;
             }
             else {
                 _krnFileSystemDriver.createFile("PID" + _ResidentList.length);
-                _krnFileSystemDriver.writeProgramFile(input.replace(/\s+/g, ''));
+                _krnFileSystemDriver.writeProgramFile("PID" + _ResidentList.length, input.replace(/\s+/g, ''));
                 _CurrentPCB = new TSOS.ProcessControlBlock();
                 _ResidentList.push(_CurrentPCB);
                 _CurrentPCB.init();
@@ -501,9 +501,6 @@ var TSOS;
                         _ReadyQueue.enqueue(temp);
                     }
                 }
-                //for (var i in _ReadyQueue.q) {
-                //    console.log("Printing ready queue: " + _ReadyQueue.q[i].pid);
-                //}
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(RUN_PROGRAM_IRQ, ""));
                 console.log("All programs running.");
                 _StdOut.putText("All programs running.");

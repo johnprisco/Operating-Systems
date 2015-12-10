@@ -162,8 +162,8 @@ module TSOS {
 
         }
 
-        public writeProgramFile(text: string): boolean {
-            var tsb = this.searchForFileWithName("PID" + _ResidentList.length);
+        public writeProgramFile(filename: string, text: string): boolean {
+            var tsb = this.searchForFileWithName(filename);
 
             while (text.length > 124) {
                 // we need to find a new block
@@ -184,13 +184,13 @@ module TSOS {
             var str = "";
             var tsb = this.searchForFileWithName(filename);
             var data = sessionStorage.getItem(tsb);
-            var nextTsb = data.slice(1,4);
+            var nextTsb = data.slice(1, 4);
 
             while (nextTsb != "~~~") {
                 data = data.slice(4, data.length);
                 str += Utils.hexToString(data);
                 var data = sessionStorage.getItem(nextTsb);
-                nextTsb = data.slice(1,4);
+                nextTsb = data.slice(1, 4);
             }
 
             data = data.slice(4, data.length);
@@ -198,10 +198,42 @@ module TSOS {
             return str;
         }
 
+        public readProgramData(filename: string) {
+            var str = "";
+            console.log("Searching for filename: " + filename);
+            var tsb = this.searchForFileWithName(filename);
+            console.log("Successfully found tsb: " + tsb);
+            console.log("Attempting to get item at tsb: " + tsb);
+            var data = sessionStorage.getItem(tsb);
+            console.log("At tsb, found data: " + data);
+            console.log("Attempting to find nextTsb");
+            var nextTsb = data.slice(1, 4);
+            console.log("Found nextTsb at: " + nextTsb);
+
+            while (nextTsb != "~~~") {
+                data = data.slice(4, data.length);
+                str += data;
+                var data = sessionStorage.getItem(nextTsb);
+                nextTsb = data.slice(1, 4);
+            }
+
+            data = data.slice(4, data.length);
+            str += data;
+
+            var strArray = [];
+            console.log("length of data string is " + str.length);
+            for (var i = 0; i < str.length; i = i + 2) {
+                strArray.push(str.charAt(i) + str.charAt(i + 1));
+            }
+
+            console.log("Exited strArray loop.");
+            return strArray;
+        }
+
         public deleteFile(filename: string): boolean {
             var tsb = this.searchForFileWithName(filename);
             var data = sessionStorage.getItem(tsb);
-            var nextTsb = data.slice(1,4);
+            var nextTsb = data.slice(1, 4);
 
             while (nextTsb != "~~~") {
                 sessionStorage.setItem(tsb, this.initialValue);

@@ -542,10 +542,10 @@ module TSOS {
                 _StdOut.putText("Process assigned ID " + _CurrentPCB.pid);
             } else {
                 _krnFileSystemDriver.createFile("PID" + _ResidentList.length);
-                _krnFileSystemDriver.writeProgramFile(input.replace(/\s+/g, ''));
+                _krnFileSystemDriver.writeProgramFile("PID" + _ResidentList.length, input.replace(/\s+/g, ''));
 
                 _CurrentPCB = new ProcessControlBlock();
-                _ResidentList.push(_CurrentPCB)
+                _ResidentList.push(_CurrentPCB);
                 _CurrentPCB.init();
                 _CurrentPCB.location = PROCESS_ON_DISK;
                 // TODO: Update file system display
@@ -607,10 +607,6 @@ module TSOS {
                         _ReadyQueue.enqueue(temp);
                     }
                 }
-
-                //for (var i in _ReadyQueue.q) {
-                //    console.log("Printing ready queue: " + _ReadyQueue.q[i].pid);
-                //}
 
                 _KernelInterruptQueue.enqueue(new Interrupt(RUN_PROGRAM_IRQ, ""));
                 console.log("All programs running.");

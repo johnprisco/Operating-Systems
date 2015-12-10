@@ -138,8 +138,8 @@ var TSOS;
             sessionStorage.setItem(tsb, text);
             return true;
         };
-        DeviceDriverFileSystem.prototype.writeProgramFile = function (text) {
-            var tsb = this.searchForFileWithName("PID" + _ResidentList.length);
+        DeviceDriverFileSystem.prototype.writeProgramFile = function (filename, text) {
+            var tsb = this.searchForFileWithName(filename);
             while (text.length > 124) {
                 // we need to find a new block
                 var temp = text.slice(0, 124);
@@ -167,6 +167,33 @@ var TSOS;
             data = data.slice(4, data.length);
             str += TSOS.Utils.hexToString(data);
             return str;
+        };
+        DeviceDriverFileSystem.prototype.readProgramData = function (filename) {
+            var str = "";
+            console.log("Searching for filename: " + filename);
+            var tsb = this.searchForFileWithName(filename);
+            console.log("Successfully found tsb: " + tsb);
+            console.log("Attempting to get item at tsb: " + tsb);
+            var data = sessionStorage.getItem(tsb);
+            console.log("At tsb, found data: " + data);
+            console.log("Attempting to find nextTsb");
+            var nextTsb = data.slice(1, 4);
+            console.log("Found nextTsb at: " + nextTsb);
+            while (nextTsb != "~~~") {
+                data = data.slice(4, data.length);
+                str += data;
+                var data = sessionStorage.getItem(nextTsb);
+                nextTsb = data.slice(1, 4);
+            }
+            data = data.slice(4, data.length);
+            str += data;
+            var strArray = [];
+            console.log("length of data string is " + str.length);
+            for (var i = 0; i < str.length; i = i + 2) {
+                strArray.push(str.charAt(i) + str.charAt(i + 1));
+            }
+            console.log("Exited strArray loop.");
+            return strArray;
         };
         DeviceDriverFileSystem.prototype.deleteFile = function (filename) {
             var tsb = this.searchForFileWithName(filename);

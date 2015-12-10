@@ -104,11 +104,39 @@ var TSOS;
                         + this.currentPartition);
             }
         };
-        MemoryManager.prototype.rollOut = function () {
-            // Moving a program from memory to disk
+        MemoryManager.prototype.rollOut = function (program) {
+            // Moving a program in memory to disk
+            _krnFileSystemDriver.createFile("PID" + program.pid);
+            var text = "";
+            for (var i = program.memoryBase; i < program.memoryLimit; i++) {
+                text += this.getMemoryFrom(i);
+            }
+            _krnFileSystemDriver.writeProgramFile("PID" + program.pid, text);
+            program.location = PROCESS_ON_DISK;
+            program.memoryBase = null;
+            program.memoryLimit = null;
+            // TODO: update host displays for memory and file system
         };
-        MemoryManager.prototype.rollIn = function () {
+        MemoryManager.prototype.rollIn = function (program) {
             // Moving a program to memory from disk
+            var data = _krnFileSystemDriver.readProgramData("PID" + program.pid);
+            console.log("Roll In Program data: " + data);
+            for (var i = 0; i < data.length; i++) {
+                //console.log("data[" + i + "]: " + data[i]);
+                _MemoryManager.setMemoryAt(i, data[i]);
+            }
+            program.location = PROCESS_IN_MEMORY;
+            program.memoryBase = 0;
+            program.memoryLimit = 256;
+            _krnFileSystemDriver.deleteFile("PID" + program.pid);
+            // TODO: update host displays for memory and file system
+        };
+        MemoryManager.prototype.findPCBInFirstPartition = function () {
+            for (var i = 0; i < _ResidentList.length; i++) {
+                if (_ResidentList[i].memoryBase === 0) {
+                    return _ResidentList[i];
+                }
+            }
         };
         return MemoryManager;
     })();
