@@ -471,6 +471,10 @@ var TSOS;
                 _StdOut.putText("Process assigned ID " + _CurrentPCB.pid);
             }
             else {
+                if (!_krnFileSystemDriver.isFormatted) {
+                    _StdOut.putText("Memory is full. To load another program, you must format the hard drive.");
+                    return;
+                }
                 _krnFileSystemDriver.createFile("PID" + _ResidentList.length);
                 _krnFileSystemDriver.writeProgramFile("PID" + _ResidentList.length, input.replace(/\s+/g, ''));
                 _CurrentPCB = new TSOS.ProcessControlBlock();
@@ -598,6 +602,10 @@ var TSOS;
         };
         // Call methods from fsDD in these as necessary.
         Shell.prototype.shellCreateFile = function (args) {
+            if (!_krnFileSystemDriver.isFormatted) {
+                _StdOut.putText("Try formatting the hard drive before doing that.");
+                return;
+            }
             // TODO: Consider using switch case here to print the appropriate message
             // TODO: depending on what is returned by the driver.
             if (_krnFileSystemDriver.createFile(args[0])) {
@@ -608,10 +616,18 @@ var TSOS;
             }
         };
         Shell.prototype.shellReadFile = function (args) {
+            if (!_krnFileSystemDriver.isFormatted) {
+                _StdOut.putText("Try formatting the hard drive before doing that.");
+                return;
+            }
             // Check the args so it doesn't break the program
             _StdOut.putText(_krnFileSystemDriver.readFile(args[0]));
         };
         Shell.prototype.shellWriteFile = function (args) {
+            if (!_krnFileSystemDriver.isFormatted) {
+                _StdOut.putText("Try formatting the hard drive before doing that.");
+                return;
+            }
             var textToWrite = "";
             for (var i = 1; i < args.length; i++) {
                 if (args.length === 2) {
@@ -642,6 +658,10 @@ var TSOS;
             }
         };
         Shell.prototype.shellDeleteFile = function (args) {
+            if (!_krnFileSystemDriver.isFormatted) {
+                _StdOut.putText("Try formatting the hard drive before doing that.");
+                return;
+            }
             if (_krnFileSystemDriver.deleteFile(args[0])) {
                 _StdOut.putText("Success!");
             }
@@ -653,6 +673,10 @@ var TSOS;
             _krnFileSystemDriver.format();
         };
         Shell.prototype.shellListFiles = function () {
+            if (!_krnFileSystemDriver.isFormatted) {
+                _StdOut.putText("Try formatting the hard drive before doing that.");
+                return;
+            }
             _StdOut.putText(_krnFileSystemDriver.listFiles());
         };
         Shell.prototype.shellSetCPUSchedule = function (args) {

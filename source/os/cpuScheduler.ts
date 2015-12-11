@@ -85,13 +85,15 @@ module TSOS {
                         return true;
                     }
                     break;
-
                 case FCFS:
                     if (_CurrentPCB.state === PROCESS_TERMINATED) {
                         return true;
                     }
                     break;
                 case PRIORITY:
+                    if (_CurrentPCB.state === PROCESS_TERMINATED) {
+                        return true;
+                    }
                     break;
                 default:
                     return false;
@@ -111,9 +113,11 @@ module TSOS {
                 var temp = _CurrentPCB;
                 temp.state = PROCESS_WAITING;
 
-                if (_ReadyQueue.q[1].location === PROCESS_ON_DISK) {
-                    _MemoryManager.rollOut(_MemoryManager.findPCBInFirstPartition());
-                    _MemoryManager.rollIn(_ReadyQueue.q[1]);
+                if (_ReadyQueue.getSize() > 0) {
+                    if (_ReadyQueue.q[1].location === PROCESS_ON_DISK) {
+                        _MemoryManager.rollOut(_MemoryManager.findPCBInFirstPartition());
+                        _MemoryManager.rollIn(_ReadyQueue.q[1]);
+                    }
                 }
 
                 _ReadyQueue.dequeue();

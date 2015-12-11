@@ -571,6 +571,11 @@ module TSOS {
                 _MemoryManager.updateHostDisplay();
                 _StdOut.putText("Process assigned ID " + _CurrentPCB.pid);
             } else {
+                if (!_krnFileSystemDriver.isFormatted) {
+                    _StdOut.putText("Memory is full. To load another program, you must format the hard drive.");
+                    return;
+                }
+
                 _krnFileSystemDriver.createFile("PID" + _ResidentList.length);
                 _krnFileSystemDriver.writeProgramFile("PID" + _ResidentList.length, input.replace(/\s+/g, ''));
 
@@ -712,6 +717,10 @@ module TSOS {
 
         // Call methods from fsDD in these as necessary.
         public shellCreateFile(args) {
+            if (!_krnFileSystemDriver.isFormatted) {
+                _StdOut.putText("Try formatting the hard drive before doing that.");
+                return;
+            }
 
             // TODO: Consider using switch case here to print the appropriate message
             // TODO: depending on what is returned by the driver.
@@ -724,11 +733,20 @@ module TSOS {
         }
 
         public shellReadFile(args) {
+            if (!_krnFileSystemDriver.isFormatted) {
+                _StdOut.putText("Try formatting the hard drive before doing that.");
+                return;
+            }
             // Check the args so it doesn't break the program
             _StdOut.putText(_krnFileSystemDriver.readFile(args[0]));
         }
 
         public shellWriteFile(args) {
+            if (!_krnFileSystemDriver.isFormatted) {
+                _StdOut.putText("Try formatting the hard drive before doing that.");
+                return;
+            }
+
             var textToWrite = "";
 
             for (var i = 1; i < args.length; i++) {
@@ -761,6 +779,11 @@ module TSOS {
         }
 
         public shellDeleteFile(args) {
+            if (!_krnFileSystemDriver.isFormatted) {
+                _StdOut.putText("Try formatting the hard drive before doing that.");
+                return;
+            }
+
             if (_krnFileSystemDriver.deleteFile(args[0])) {
                 _StdOut.putText("Success!");
             } else {
@@ -773,6 +796,11 @@ module TSOS {
         }
 
         public shellListFiles() {
+            if (!_krnFileSystemDriver.isFormatted) {
+                _StdOut.putText("Try formatting the hard drive before doing that.");
+                return;
+            }
+
             _StdOut.putText(_krnFileSystemDriver.listFiles());
         }
 
