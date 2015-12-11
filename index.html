@@ -47,6 +47,7 @@
     <script type="text/javascript" src="distrib/os/kernel.js"></script>
 
     <!-- Other Routines -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js"></script>
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment this line below to enable GLaDOS testing -->
    <!--<script type="text/javascript" src="http://www.labouseur.com/courses/os/projects/glados.js"></script>-->
@@ -148,52 +149,20 @@
 
         <label style="padding-top:10px;">Ready Queue</label>
         <table class="table" id="pcb-status-table" style="width:300px; border-style:solid;">
-            <tr>
-                <th>PID</th>
-                <th>State</th>
-                <th>PC</th>
-                <th>Acc</th>
-                <th>X</th>
-                <th>Y</th>
-                <th>Z</th>
-                <th>Turnaround Time</th>
-                <th>Wait Time</th>
-            </tr>
-            <tr>
-                <td id="pid-pcb-0"></td>
-                <td id="state-pcb-0"></td>
-                <td id="pc-pcb-0"></td>
-                <td id="acc-pcb-0"></td>
-                <td id="x-pcb-0"></td>
-                <td id="y-pcb-0"></td>
-                <td id="z-pcb-0"></td>
-                <td id="turn-pcb-0"></td>
-                <td id="wait-pcb-0"></td>
-            </tr>
-
-            <tr>
-                <td id="pid-pcb-1"></td>
-                <td id="state-pcb-1"></td>
-                <td id="pc-pcb-1"></td>
-                <td id="acc-pcb-1"></td>
-                <td id="x-pcb-1"></td>
-                <td id="y-pcb-1"></td>
-                <td id="z-pcb-1"></td>
-                <td id="turn-pcb-1"></td>
-                <td id="wait-pcb-1"></td>
-            </tr>
-
-            <tr>
-                <td id="pid-pcb-2"></td>
-                <td id="state-pcb-2"></td>
-                <td id="pc-pcb-2"></td>
-                <td id="acc-pcb-2"></td>
-                <td id="x-pcb-2"></td>
-                <td id="y-pcb-2"></td>
-                <td id="z-pcb-2"></td>
-                <td id="turn-pcb-2"></td>
-                <td id="wait-pcb-2"></td>
-            </tr>
+                <tr>
+                    <th>PID</th>
+                    <th>State</th>
+                    <th>PC</th>
+                    <th>Acc</th>
+                    <th>X</th>
+                    <th>Y</th>
+                    <th>Z</th>
+                    <th>Memory Base</th>
+                    <th>Memory Limit</th>
+                    <th>Location</th>
+                    <th>Turnaround Time</th>
+                    <th>Wait Time</th>
+                </tr>
         </table>
     </div>
 </div>

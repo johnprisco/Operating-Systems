@@ -87,7 +87,7 @@ module TSOS {
             this.updateHostDisplay(op);
             Utils.updateReadyQueueDisplay();
 
-            if (_CpuScheduler.algorithm = ROUND_ROBIN) {
+            if (_CpuScheduler.algorithm === ROUND_ROBIN) {
                 _CpuScheduler.quantumCounter++;
             }
 

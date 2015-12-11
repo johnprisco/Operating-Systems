@@ -1,3 +1,5 @@
+///<reference path="../globals.ts" />
+
 module TSOS {
     export class DeviceDriverFileSystem extends DeviceDriver {
 
@@ -84,6 +86,33 @@ module TSOS {
             return null;
         }
 
+        public findDirectoryBlockForFile(filename: string): string {
+            var hexFilename = Utils.stringToHex(filename);
+            var paddedHexFilename = Utils.rightPadString(hexFilename).slice(0,124);
+
+            for (var sector = 0; sector < this.sectors; sector++) {
+                for (var block = 1; block < this.blocks; block++) {
+                    var tsb = "0" + sector.toString() + block.toString();
+
+                    var currentData = sessionStorage.getItem(tsb);
+
+                    // check if its in use
+
+                    if (currentData.charAt(0) === "1") {
+                        console.log("We've found an in-use block.");
+                        // compare hex filename to stored file name
+                        // if there's a match, return the tsb where that file starts.
+                        console.log("paddedHexFilename: " + paddedHexFilename);
+                        console.log("current Data: " + currentData.slice(4,128));
+                        if (paddedHexFilename === currentData.slice(4,128)) {
+                            console.log("Trying to return: " + currentData.slice(1,4));
+                            return tsb;
+                        }
+                    }
+                }
+            }
+        }
+
         public findNextAvailableDirectoryBlock(): string {
             for (var sector = 0; sector < this.sectors; sector++) {
                 for (var block = 1; block < this.blocks; block++) {
@@ -133,21 +162,107 @@ module TSOS {
 
         }
 
+        public writeProgramFile(filename: string, text: string): boolean {
+            var tsb = this.searchForFileWithName(filename);
+
+            while (text.length > 124) {
+                // we need to find a new block
+                var temp = text.slice(0, 124);
+                var nextBlock = this.findNextAvailableFileBlock();
+                temp = "1" + nextBlock + temp;
+                sessionStorage.setItem(tsb, temp);
+                tsb = nextBlock;
+                text = text.slice(124, text.length);
+            }
+
+            text = "1~~~" + Utils.rightPadString(text).slice(0, 124);
+            sessionStorage.setItem(tsb, text);
+            return true;
+        }
+
         public readFile(filename: string): string {
             var str = "";
             var tsb = this.searchForFileWithName(filename);
             var data = sessionStorage.getItem(tsb);
-            var nextTsb = data.slice(1,4);
+            var nextTsb = data.slice(1, 4);
 
             while (nextTsb != "~~~") {
                 data = data.slice(4, data.length);
                 str += Utils.hexToString(data);
                 var data = sessionStorage.getItem(nextTsb);
-                nextTsb = data.slice(1,4);
+                nextTsb = data.slice(1, 4);
             }
 
             data = data.slice(4, data.length);
             str += Utils.hexToString(data);
+            return str;
+        }
+
+        public readProgramData(filename: string) {
+            var str = "";
+            console.log("Searching for filename: " + filename);
+            var tsb = this.searchForFileWithName(filename);
+            console.log("Successfully found tsb: " + tsb);
+            console.log("Attempting to get item at tsb: " + tsb);
+            var data = sessionStorage.getItem(tsb);
+            console.log("At tsb, found data: " + data);
+            console.log("Attempting to find nextTsb");
+            var nextTsb = data.slice(1, 4);
+            console.log("Found nextTsb at: " + nextTsb);
+
+            while (nextTsb != "~~~") {
+                data = data.slice(4, data.length);
+                str += data;
+                var data = sessionStorage.getItem(nextTsb);
+                nextTsb = data.slice(1, 4);
+            }
+
+            data = data.slice(4, data.length);
+            str += data;
+
+            var strArray = [];
+            console.log("length of data string is " + str.length);
+            for (var i = 0; i < str.length; i = i + 2) {
+                strArray.push(str.charAt(i) + str.charAt(i + 1));
+            }
+
+            console.log("Exited strArray loop.");
+            return strArray;
+        }
+
+        public deleteFile(filename: string): boolean {
+            var tsb = this.searchForFileWithName(filename);
+            var data = sessionStorage.getItem(tsb);
+            var nextTsb = data.slice(1, 4);
+
+            while (nextTsb != "~~~") {
+                sessionStorage.setItem(tsb, this.initialValue);
+                // set the next tsb
+                tsb = nextTsb;
+                data = sessionStorage.getItem(tsb);
+                nextTsb = data.slice(1,4);
+            }
+
+            var dirBlock = this.findDirectoryBlockForFile(filename);
+            sessionStorage.setItem(dirBlock, this.initialValue);
+            sessionStorage.setItem(tsb, this.initialValue);
+
+            return true;
+        }
+
+        public listFiles(): string {
+            var str = "";
+            for (var sector = 0; sector < this.sectors; sector++) {
+                for (var block = 1; block < this.blocks; block++) {
+                    var tsb = "0" + sector.toString() + block.toString();
+                    var currentData = sessionStorage.getItem(tsb);
+
+                    if (currentData.charAt(0) === "1") {
+                        str += Utils.hexToString(currentData.slice(4, 128)) + " ";
+                    }
+                }
+            }
+
             return str;
         }
     }

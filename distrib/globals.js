@@ -49,12 +49,16 @@ var _DefaultFontSize = 13;
 var _FontHeightMargin = 4; // Additional space added to font size when advancing a line.
 // The possible states of scheduling
 var ROUND_ROBIN = "Round Robin";
+var FCFS = "First Come, First Served";
+var PRIORITY = "Priority";
 // The possible states of a process
 var PROCESS_NEW = "New";
 var PROCESS_RUNNING = "Running";
 var PROCESS_WAITING = "Waiting";
 var PROCESS_READY = "Ready";
 var PROCESS_TERMINATED = "Terminated";
+var PROCESS_IN_MEMORY = "Memory";
+var PROCESS_ON_DISK = "On Disk";
 var _Trace = true; // Default the OS trace to be on.
 // The OS Kernel and its queues.
 var _Kernel;

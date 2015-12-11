@@ -58,6 +58,8 @@ var _FontHeightMargin: number = 4;              // Additional space added to fon
 
 // The possible states of scheduling
 const ROUND_ROBIN = "Round Robin";
+const FCFS        = "First Come, First Served";
+const PRIORITY    = "Priority";
 
 
 // The possible states of a process
@@ -66,6 +68,8 @@ const PROCESS_RUNNING     = "Running";
 const PROCESS_WAITING     = "Waiting";
 const PROCESS_READY       = "Ready";
 const PROCESS_TERMINATED  = "Terminated";
+const PROCESS_IN_MEMORY   = "Memory";
+const PROCESS_ON_DISK     = "On Disk";
 
 var _Trace: boolean = true;  // Default the OS trace to be on.
 

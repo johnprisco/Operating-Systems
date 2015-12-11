@@ -83,7 +83,7 @@ var TSOS;
             _MemoryManager.updateHostDisplay();
             this.updateHostDisplay(op);
             TSOS.Utils.updateReadyQueueDisplay();
-            if (_CpuScheduler.algorithm = ROUND_ROBIN) {
+            if (_CpuScheduler.algorithm === ROUND_ROBIN) {
                 _CpuScheduler.quantumCounter++;
             }
             _Kernel.krnTrace('CPU cycle');

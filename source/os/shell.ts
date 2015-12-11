@@ -407,6 +407,30 @@ module TSOS {
                     case "kill":
                         _StdOut.putText("Terminates the process with the PID specified in the argument.");
                         break;
+                    case "create":
+                        _StdOut.putText("Creates a new file with name <filename>.");
+                        break;
+                    case "read":
+                        _StdOut.putText("Reads the data stored in file <filename>.");
+                        break;
+                    case "write":
+                        _StdOut.putText("Writes to file <filename> with the text specified. Will overwrite any text present.");
+                        break;
+                    case "delete":
+                        _StdOut.putText("Removes file <filename> from the file system.");
+                        break;
+                    case "format":
+                        _StdOut.putText("Initializes the hard drive for PriscOS to write files.");
+                        break;
+                    case "ls":
+                        _StdOut.putText("Lists the names of files stored in the file system.");
+                        break;
+                    case "setschedule":
+                        _StdOut.putText("Sets the CPU scheduling algorithm to [rr, priority, fcfs].");
+                        break;
+                    case "getschedule":
+                        _StdOut.putText("Prints the current CPU scheduling algorithm to the console.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -496,34 +520,33 @@ module TSOS {
             Utils.updateStatus(args);
         }
 
-        public shellLoad() {
-            if (_MemoryManager.isFull) {
-                _StdOut.putText("Memory is full, another program cannot be loaded.");
-            } else {
-                var input = (<HTMLInputElement>document.getElementById('taProgramInput')).value;
-                var regex:RegExp = /[0-9A-F\s]/i;
+        public shellLoad(args) {
+            var input = (<HTMLInputElement>document.getElementById('taProgramInput')).value;
+            var regex: RegExp = /[0-9A-F\s]/i;
+            var priorityRegex: RegExp = /^\d+$/;
 
-                var commands = input.split(" ");
-                console.log("Commands array: " + commands);
-                // Handle the case where there is no user input
-                if (input == "") {
-                    _StdOut.putText("Put some text in the User Program Input field first.");
+            var commands = input.split(" ");
+            console.log("Commands array: " + commands);
+            // Handle the case where there is no user input
+            if (input == "") {
+                _StdOut.putText("Put some text in the User Program Input field first.");
+                return;
+            }
+
+            if (commands.length > 256) {
+                _StdOut.putText("This program will not fit in a 256-byte partition.");
+                return;
+            }
+
+            // Handle the case where there is non-hex input
+            for (var i = 0; i < input.length; i++) {
+                if (regex.test(input.charAt(i)) === false) {
+                    _StdOut.putText("There are non-hexadecimal characters inputted.");
                     return;
                 }
+            }
 
-                if (commands.length > 256) {
-                    _StdOut.putText("This program will not fit in a 256-byte partition in memory.");
-                    return;
-                }
-
-                // Handle the case where there is non-hex input
-                for (var i = 0; i < input.length; i++) {
-                    if (regex.test(input.charAt(i)) === false) {
-                        _StdOut.putText("There are non-hexadecimal characters inputted.");
-                        return;
-                    }
-                }
-
+            if (!_MemoryManager.isFull) {
                 // If we've gotten this far, we can try loading the program into memory.
                 for (var i = 0; i < commands.length; i++) {
                     // Put the byte at position i at position i in the block
@@ -534,6 +557,12 @@ module TSOS {
                 _CurrentPCB = new ProcessControlBlock();
                 _ResidentList.push(_CurrentPCB);
                 _CurrentPCB.init(); // Init after pushing to properly determine length of _ResidentList
+                _CurrentPCB.location = PROCESS_IN_MEMORY;
+
+                if (args.length > 0) {
+                    _CurrentPCB.priority = parseInt(args[0]);
+                    console.log("Set PCB priority to " + parseInt(args[0]));
+                }
 
                 // Update the counter to save the current partition
                 _MemoryManager.setNextPartition();
@@ -541,6 +570,26 @@ module TSOS {
                 // Print the memory and PID for the new process
                 _MemoryManager.updateHostDisplay();
                 _StdOut.putText("Process assigned ID " + _CurrentPCB.pid);
+            } else {
+                if (!_krnFileSystemDriver.isFormatted) {
+                    _StdOut.putText("Memory is full. To load another program, you must format the hard drive.");
+                    return;
+                }
+
+                _krnFileSystemDriver.createFile("PID" + _ResidentList.length);
+                _krnFileSystemDriver.writeProgramFile("PID" + _ResidentList.length, input.replace(/\s+/g, ''));
+
+                _CurrentPCB = new ProcessControlBlock();
+                _ResidentList.push(_CurrentPCB);
+                _CurrentPCB.init();
+                _CurrentPCB.location = PROCESS_ON_DISK;
+
+                if (args.length > 0) {
+                    _CurrentPCB.priority = parseInt(args[0]);
+                }
+
+                // TODO: Update file system display
+                _StdOut.putText("Process Assigned ID " + _CurrentPCB.pid);
             }
         }
 
@@ -589,6 +638,11 @@ module TSOS {
             if (_ResidentList.length === 0) {
                 _StdOut.putText("There are no programs to run.");
             } else {
+                if (_CpuScheduler.getAlgorithm() === PRIORITY) {
+                    _ResidentList = Utils.sortByPriority(_ResidentList);
+                    _CpuScheduler.setAlgorithm(FCFS);
+                }
+
                 // Add all the loaded processes to the ready queue
                 while (_ResidentList.length > 0) {
                     var temp = _ResidentList.shift();
@@ -597,10 +651,6 @@ module TSOS {
                         temp.state = PROCESS_READY;
                         _ReadyQueue.enqueue(temp);
                     }
-                }
-
-                for (var i in _ReadyQueue.q) {
-                    console.log("Printing ready queue: " + _ReadyQueue.q[i].pid);
                 }
 
                 _KernelInterruptQueue.enqueue(new Interrupt(RUN_PROGRAM_IRQ, ""));
@@ -667,6 +717,10 @@ module TSOS {
 
         // Call methods from fsDD in these as necessary.
         public shellCreateFile(args) {
+            if (!_krnFileSystemDriver.isFormatted) {
+                _StdOut.putText("Try formatting the hard drive before doing that.");
+                return;
+            }
 
             // TODO: Consider using switch case here to print the appropriate message
             // TODO: depending on what is returned by the driver.
@@ -679,23 +733,42 @@ module TSOS {
         }
 
         public shellReadFile(args) {
+            if (!_krnFileSystemDriver.isFormatted) {
+                _StdOut.putText("Try formatting the hard drive before doing that.");
+                return;
+            }
             // Check the args so it doesn't break the program
             _StdOut.putText(_krnFileSystemDriver.readFile(args[0]));
         }
 
         public shellWriteFile(args) {
+            if (!_krnFileSystemDriver.isFormatted) {
+                _StdOut.putText("Try formatting the hard drive before doing that.");
+                return;
+            }
+
             var textToWrite = "";
 
             for (var i = 1; i < args.length; i++) {
+                if (args.length === 2) {
+                    console.log("args.length === 2");
+                    textToWrite = args[i];
+                    textToWrite = textToWrite.slice(1, args[i].length);
+                    textToWrite = textToWrite.slice(0, args[i].length - 2);
+                    console.log("writing: " + textToWrite);
+                    break;
+                }
+
                 if (i === 1) {
                     console.log("Trying to write: " + args[i].slice(1, args[i].length));
                     textToWrite += args[i].slice(1, args[i].length);
                 } else if (i === args.length - 1) {
-                    console.log("Trying to write: " + args[i].slice(0, i - 1));
-                    textToWrite += " " + args[i].slice(0, i);
+                    console.log("Trying to write: " + args[i].slice(0, args[i].length - 1));
+                    textToWrite += " " + args[i].slice(0, args[i].length - 1);
                 } else {
                     textToWrite += " " + args[i];
                 }
+
             }
 
             if (_krnFileSystemDriver.writeFile(args[0], textToWrite)) {
@@ -706,7 +779,16 @@ module TSOS {
         }
 
         public shellDeleteFile(args) {
+            if (!_krnFileSystemDriver.isFormatted) {
+                _StdOut.putText("Try formatting the hard drive before doing that.");
+                return;
+            }
 
+            if (_krnFileSystemDriver.deleteFile(args[0])) {
+                _StdOut.putText("Success!");
+            } else {
+                _StdOut.putText("Something broke.");
+            }
         }
 
         public shellFormatDrive() {
@@ -714,11 +796,30 @@ module TSOS {
         }
 
         public shellListFiles() {
+            if (!_krnFileSystemDriver.isFormatted) {
+                _StdOut.putText("Try formatting the hard drive before doing that.");
+                return;
+            }
 
+            _StdOut.putText(_krnFileSystemDriver.listFiles());
         }
 
         public shellSetCPUSchedule(args) {
+            switch (args[0]) {
+                case 'rr':
+                    _CpuScheduler.setAlgorithm(ROUND_ROBIN);
+                    break;
+                case 'fcfs':
+                    _CpuScheduler.setAlgorithm(FCFS);
+                    break;
+                case 'priority':
+                    _CpuScheduler.setAlgorithm(PRIORITY);
+                    break;
+                default:
+                    _StdOut.putText("No dice. Try rr, fcfs, or priority as your algorithm.");
+            }
 
+            _StdOut.putText("CPU Scheduling determined by: " + _CpuScheduler.getAlgorithm());
         }
 
         public shellGetCPUSchedule() {

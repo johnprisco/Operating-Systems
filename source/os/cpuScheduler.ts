@@ -1,3 +1,5 @@
+///<reference path="../globals.ts" />
+
 module TSOS {
     export class CpuScheduler {
         public quantum: number        = 6;
@@ -22,6 +24,7 @@ module TSOS {
          */
         public setAlgorithm(algorithm: string) {
             this.algorithm = algorithm;
+            this.quantumCounter = 1;
         }
 
         /**
@@ -48,6 +51,15 @@ module TSOS {
             console.log("We schedulin'.");
             _Mode = 1; // User mode now
             _CurrentPCB = _ReadyQueue.q[0];
+
+            if (_CurrentPCB.location === PROCESS_ON_DISK) {
+                console.log("CurrentPCB is on Disk.");
+                _MemoryManager.rollOut(_MemoryManager.findPCBInFirstPartition());
+                console.log("Successfully rolled out.");
+                _MemoryManager.rollIn(_CurrentPCB);
+                console.log("Successfully rolled in.");
+            }
+
             _CPU.setToPCB(_CurrentPCB);
             _CurrentPCB.state = PROCESS_RUNNING;
             _CPU.isExecuting = true;
@@ -60,17 +72,32 @@ module TSOS {
          * @returns {boolean}
          */
         public shouldSwitchContext(): boolean {
-            if (this.quantumCounter >= this.quantum) {
-                this.quantumCounter = 0;
-                console.log("Should switch context.");
-                return true;
-            } else if (_CurrentPCB.state === PROCESS_TERMINATED) {
-                console.log("Should switch context. Dequeing PCB.");
-                return true;
+            console.log("Current algorithm: " + this.getAlgorithm());
+            switch (this.getAlgorithm()) {
+                case ROUND_ROBIN:
+                    if (this.quantumCounter >= this.quantum) {
+                        this.quantumCounter = 0;
+                        console.log("Should switch context.");
+                        return true;
+                    }
+                    else if (_CurrentPCB.state === PROCESS_TERMINATED) {
+                        console.log("Should switch context. Dequeing PCB.");
+                        return true;
+                    }
+                    break;
+                case FCFS:
+                    if (_CurrentPCB.state === PROCESS_TERMINATED) {
+                        return true;
+                    }
+                    break;
+                case PRIORITY:
+                    if (_CurrentPCB.state === PROCESS_TERMINATED) {
+                        return true;
+                    }
+                    break;
+                default:
+                    return false;
             }
-
-            console.log("Should not switch context.");
-            return false;
         }
 
         /**
@@ -80,10 +107,19 @@ module TSOS {
          */
         public switchContext(): void {
             console.log("Switching context.");
+            // TODO: Account for scheduling algorithms
 
             if (_CurrentPCB.state !== PROCESS_TERMINATED) {
                 var temp = _CurrentPCB;
                 temp.state = PROCESS_WAITING;
+
+                if (_ReadyQueue.getSize() > 0) {
+                    if (_ReadyQueue.q[1].location === PROCESS_ON_DISK) {
+                        _MemoryManager.rollOut(_MemoryManager.findPCBInFirstPartition());
+                        _MemoryManager.rollIn(_ReadyQueue.q[1]);
+                    }
+                }
+
                 _ReadyQueue.dequeue();
                 _ReadyQueue.enqueue(temp);
                 this.schedule();

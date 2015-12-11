@@ -179,17 +179,56 @@ var TSOS;
         // Hacky method to display the Ready Queue in the host
         // It will be fixed in time.
         Utils.updateReadyQueueDisplay = function () {
-            for (var i in _ReadyQueue.q) {
-                document.getElementById('pid-pcb-' + i).innerHTML = _ReadyQueue.q[i].pid.toString();
-                document.getElementById('state-pcb-' + i).innerHTML = _ReadyQueue.q[i].state.toString();
-                document.getElementById('pc-pcb-' + i).innerHTML = _ReadyQueue.q[i].programCounter.toString();
-                document.getElementById('acc-pcb-' + i).innerHTML = _ReadyQueue.q[i].acc.toString();
-                document.getElementById('x-pcb-' + i).innerHTML = _ReadyQueue.q[i].x.toString();
-                document.getElementById('y-pcb-' + i).innerHTML = _ReadyQueue.q[i].y.toString();
-                document.getElementById('z-pcb-' + i).innerHTML = _ReadyQueue.q[i].z.toString();
-                document.getElementById('turn-pcb-' + i).innerHTML = _ReadyQueue.q[i].turnaroundTime.toString();
-                document.getElementById('wait-pcb-' + i).innerHTML = _ReadyQueue.q[i].waitTime.toString();
+            var table = document.getElementById("pcb-status-table");
+            table.innerHTML = "";
+            var row = table.insertRow(0);
+            // var cell = row.insertCell(0);
+            row.innerHTML = "<tr><th>PID</th> <th>State</th> <th>PC</th> <th>Acc</th> <th>X</th> <th>Y</th> <th>Z</th> <th>Memory Base</th> <th>Memory Limit</th> <th>Location</th> <th>Turnaround Time</th> <th>Wait Time</th> </tr>";
+            //for (var i in _ReadyQueue.q) {
+            for (var i = 0; i < _ReadyQueue.q.length; i++) {
+                var row = table.insertRow(i + 1);
+                var pid = row.insertCell(0);
+                var state = row.insertCell(1);
+                var programCounter = row.insertCell(2);
+                var acc = row.insertCell(3);
+                var x = row.insertCell(4);
+                var y = row.insertCell(5);
+                var z = row.insertCell(6);
+                var memoryBase = row.insertCell(7);
+                var memoryLimit = row.insertCell(8);
+                var location = row.insertCell(9);
+                var turnaroundTime = row.insertCell(10);
+                var waitTime = row.insertCell(11);
+                pid.innerHTML = _ReadyQueue.q[i].pid.toString();
+                state.innerHTML = _ReadyQueue.q[i].state.toString();
+                programCounter.innerHTML = _ReadyQueue.q[i].programCounter.toString();
+                acc.innerHTML = _ReadyQueue.q[i].acc.toString();
+                x.innerHTML = _ReadyQueue.q[i].x.toString();
+                y.innerHTML = _ReadyQueue.q[i].y.toString();
+                z.innerHTML = _ReadyQueue.q[i].z.toString();
+                memoryBase.innerHTML = _ReadyQueue.q[i].memoryBase.toString();
+                memoryLimit.innerHTML = _ReadyQueue.q[i].memoryLimit.toString();
+                location.innerHTML = _ReadyQueue.q[i].location.toString();
+                turnaroundTime.innerHTML = _ReadyQueue.q[i].turnaroundTime.toString();
+                waitTime.innerHTML = _ReadyQueue.q[i].waitTime.toString();
             }
+        };
+        // Used to sort the Resident List when the scheduling algorithm is priority
+        Utils.sortByPriority = function (array) {
+            for (var i = 0; i < array.length; i++) {
+                var min = array[i].priority;
+                var index = i;
+                for (var j = i + 1; j < array.length; j++) {
+                    if (array[j].priority < min) {
+                        min = array[j].priority;
+                        index = j;
+                    }
+                }
+                var temp = array[i];
+                array[i] = array[index];
+                array[index] = temp;
+            }
+            return array;
         };
         return Utils;
     })();

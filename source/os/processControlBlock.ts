@@ -16,7 +16,9 @@ module TSOS {
                     public memoryLimit: number    = 256,
                     public state: string          = PROCESS_NEW,
                     public turnaroundTime: number = 0,
-                    public waitTime: number       = 0
+                    public waitTime: number       = 0,
+                    public location: string       = "",
+                    public priority: number       = 5
         ) {
 
 
