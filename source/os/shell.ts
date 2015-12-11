@@ -496,9 +496,10 @@ module TSOS {
             Utils.updateStatus(args);
         }
 
-        public shellLoad() {
+        public shellLoad(args) {
             var input = (<HTMLInputElement>document.getElementById('taProgramInput')).value;
-            var regex:RegExp = /[0-9A-F\s]/i;
+            var regex: RegExp = /[0-9A-F\s]/i;
+            var priorityRegex: RegExp = /^\d+$/;
 
             var commands = input.split(" ");
             console.log("Commands array: " + commands);
@@ -534,6 +535,11 @@ module TSOS {
                 _CurrentPCB.init(); // Init after pushing to properly determine length of _ResidentList
                 _CurrentPCB.location = PROCESS_IN_MEMORY;
 
+                if (args.length > 0) {
+                    _CurrentPCB.priority = parseInt(args[0]);
+                    console.log("Set PCB priority to " + parseInt(args[0]));
+                }
+
                 // Update the counter to save the current partition
                 _MemoryManager.setNextPartition();
                 console.log("Current partition: " + _MemoryManager.currentPartition);
@@ -548,6 +554,11 @@ module TSOS {
                 _ResidentList.push(_CurrentPCB);
                 _CurrentPCB.init();
                 _CurrentPCB.location = PROCESS_ON_DISK;
+
+                if (args.length > 0) {
+                    _CurrentPCB.priority = parseInt(args[0]);
+                }
+
                 // TODO: Update file system display
                 _StdOut.putText("Process Assigned ID " + _CurrentPCB.pid);
             }
@@ -598,6 +609,11 @@ module TSOS {
             if (_ResidentList.length === 0) {
                 _StdOut.putText("There are no programs to run.");
             } else {
+                if (_CpuScheduler.getAlgorithm() === PRIORITY) {
+                    _ResidentList = Utils.sortByPriority(_ResidentList);
+                    _CpuScheduler.setAlgorithm(FCFS);
+                }
+
                 // Add all the loaded processes to the ready queue
                 while (_ResidentList.length > 0) {
                     var temp = _ResidentList.shift();

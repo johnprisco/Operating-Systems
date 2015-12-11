@@ -214,5 +214,26 @@ module TSOS {
                 document.getElementById('wait-pcb-' + i).innerHTML  = _ReadyQueue.q[i].waitTime.toString();
             }
         }
+
+        // Used to sort the Resident List when the scheduling algorithm is priority
+        public static sortByPriority(array: Array<ProcessControlBlock>): Array<ProcessControlBlock> {
+            for (var i = 0; i < array.length; i++) {
+                var min = array[i].priority;
+                var index = i;
+
+                for (var j = i + 1; j < array.length; j++) {
+                    if (array[j].priority < min) {
+                        min = array[j].priority;
+                        index = j;
+                    }
+                }
+                var temp = array[i];
+                array[i] = array[index];
+                array[index] = temp;
+            }
+
+            return array;
+        }
+
     }
 }
