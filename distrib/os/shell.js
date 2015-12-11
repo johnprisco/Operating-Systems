@@ -316,6 +316,30 @@ var TSOS;
                     case "kill":
                         _StdOut.putText("Terminates the process with the PID specified in the argument.");
                         break;
+                    case "create":
+                        _StdOut.putText("Creates a new file with name <filename>.");
+                        break;
+                    case "read":
+                        _StdOut.putText("Reads the data stored in file <filename>.");
+                        break;
+                    case "write":
+                        _StdOut.putText("Writes to file <filename> with the text specified. Will overwrite any text present.");
+                        break;
+                    case "delete":
+                        _StdOut.putText("Removes file <filename> from the file system.");
+                        break;
+                    case "format":
+                        _StdOut.putText("Initializes the hard drive for PriscOS to write files.");
+                        break;
+                    case "ls":
+                        _StdOut.putText("Lists the names of files stored in the file system.");
+                        break;
+                    case "setschedule":
+                        _StdOut.putText("Sets the CPU scheduling algorithm to [rr, priority, fcfs].");
+                        break;
+                    case "getschedule":
+                        _StdOut.putText("Prints the current CPU scheduling algorithm to the console.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
