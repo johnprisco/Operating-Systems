@@ -60,13 +60,13 @@ var TSOS;
                     var currentData = sessionStorage.getItem(tsb);
                     // check if its in use
                     if (currentData.charAt(0) === "1") {
-                        console.log("We've found an in-use block.");
+                        void 0;
                         // compare hex filename to stored file name
                         // if there's a match, return the tsb where that file starts.
-                        console.log("paddedHexFilename: " + paddedHexFilename);
-                        console.log("current Data: " + currentData.slice(4, 128));
+                        void 0;
+                        void 0;
                         if (paddedHexFilename === currentData.slice(4, 128)) {
-                            console.log("Trying to return: " + currentData.slice(1, 4));
+                            void 0;
                             return currentData.slice(1, 4);
                         }
                     }
@@ -84,13 +84,13 @@ var TSOS;
                     var currentData = sessionStorage.getItem(tsb);
                     // check if its in use
                     if (currentData.charAt(0) === "1") {
-                        console.log("We've found an in-use block.");
+                        void 0;
                         // compare hex filename to stored file name
                         // if there's a match, return the tsb where that file starts.
-                        console.log("paddedHexFilename: " + paddedHexFilename);
-                        console.log("current Data: " + currentData.slice(4, 128));
+                        void 0;
+                        void 0;
                         if (paddedHexFilename === currentData.slice(4, 128)) {
-                            console.log("Trying to return: " + currentData.slice(1, 4));
+                            void 0;
                             return tsb;
                         }
                     }
@@ -170,15 +170,15 @@ var TSOS;
         };
         DeviceDriverFileSystem.prototype.readProgramData = function (filename) {
             var str = "";
-            console.log("Searching for filename: " + filename);
+            void 0;
             var tsb = this.searchForFileWithName(filename);
-            console.log("Successfully found tsb: " + tsb);
-            console.log("Attempting to get item at tsb: " + tsb);
+            void 0;
+            void 0;
             var data = sessionStorage.getItem(tsb);
-            console.log("At tsb, found data: " + data);
-            console.log("Attempting to find nextTsb");
+            void 0;
+            void 0;
             var nextTsb = data.slice(1, 4);
-            console.log("Found nextTsb at: " + nextTsb);
+            void 0;
             while (nextTsb != "~~~") {
                 data = data.slice(4, data.length);
                 str += data;
@@ -188,11 +188,11 @@ var TSOS;
             data = data.slice(4, data.length);
             str += data;
             var strArray = [];
-            console.log("length of data string is " + str.length);
+            void 0;
             for (var i = 0; i < str.length; i = i + 2) {
                 strArray.push(str.charAt(i) + str.charAt(i + 1));
             }
-            console.log("Exited strArray loop.");
+            void 0;
             return strArray;
         };
         DeviceDriverFileSystem.prototype.deleteFile = function (filename) {

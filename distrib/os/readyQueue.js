@@ -17,7 +17,7 @@ var TSOS;
          * @returns {ProcessControlBlock} a PCB at the index in the ReadyQueue
          */
         ReadyQueue.prototype.getPCBAt = function (index) {
-            console.log("Trying to get element at index: " + index + " with pid " + this.q[index]);
+            void 0;
             return this.q[index];
         };
         return ReadyQueue;
