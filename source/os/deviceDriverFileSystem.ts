@@ -24,6 +24,7 @@ module TSOS {
             }
 
             this.isFormatted = true;
+            this.updateHostDisplay();
             _StdOut.putText("Hard drive has been formatted.");
 
         }
@@ -51,6 +52,7 @@ module TSOS {
             str = Utils.rightPadString(str);
             sessionStorage.setItem(nextAvailableDirectoryBlock, str);
             sessionStorage.setItem(nextAvailableFileBlock, Utils.rightPadString("1~~~"));
+            this.updateHostDisplay();
             return true;
             // write filename at next available DIR block with TSB set to the next available file block
             //return false;
@@ -158,6 +160,7 @@ module TSOS {
 
             text = "1~~~" + Utils.rightPadString(text).slice(0, 124);
             sessionStorage.setItem(tsb, text);
+            this.updateHostDisplay();
             return true;
 
         }
@@ -177,6 +180,7 @@ module TSOS {
 
             text = "1~~~" + Utils.rightPadString(text).slice(0, 124);
             sessionStorage.setItem(tsb, text);
+            this.updateHostDisplay();
             return true;
         }
 
@@ -246,7 +250,7 @@ module TSOS {
             var dirBlock = this.findDirectoryBlockForFile(filename);
             sessionStorage.setItem(dirBlock, this.initialValue);
             sessionStorage.setItem(tsb, this.initialValue);
-
+            this.updateHostDisplay();
             return true;
         }
 
@@ -264,6 +268,19 @@ module TSOS {
             }
 
             return str;
+        }
+
+        public updateHostDisplay(): void {
+            var div = document.getElementById('hd-table');
+            div.innerHTML = "";
+            for (var track = 0; track < this.tracks; track++) {
+                for (var sector = 0; sector < this.sectors; sector++) {
+                    for (var block = 0; block < this.blocks; block++) {
+                        var tsb = track.toString() + sector.toString() + block.toString();
+                        div.innerHTML += "<br><b>" + tsb + "</b> " + sessionStorage.getItem(tsb);
+                    }
+                }
+            }
         }
     }
 }

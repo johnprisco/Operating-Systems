@@ -100,7 +100,8 @@ var TSOS;
                     this.currentPartition = 0;
                     break;
                 default:
-                    void 0;
+                    console.log("Something broke, currentPartition is incorrect. currentPartition: "
+                        + this.currentPartition);
             }
         };
         MemoryManager.prototype.rollOut = function (program) {
@@ -112,14 +113,14 @@ var TSOS;
             }
             _krnFileSystemDriver.writeProgramFile("PID" + program.pid, text);
             program.location = PROCESS_ON_DISK;
-            program.memoryBase = null;
-            program.memoryLimit = null;
+            program.memoryBase = -1;
+            program.memoryLimit = -1;
             // TODO: update host displays for memory and file system
         };
         MemoryManager.prototype.rollIn = function (program) {
             // Moving a program to memory from disk
             var data = _krnFileSystemDriver.readProgramData("PID" + program.pid);
-            void 0;
+            console.log("Roll In Program data: " + data);
             for (var i = 0; i < data.length; i++) {
                 //console.log("data[" + i + "]: " + data[i]);
                 _MemoryManager.setMemoryAt(i, data[i]);
@@ -136,6 +137,7 @@ var TSOS;
                     return _ResidentList[i];
                 }
             }
+            return null;
         };
         return MemoryManager;
     })();

@@ -82,12 +82,13 @@ var TSOS;
             this.executeOperation(op);
             _MemoryManager.updateHostDisplay();
             this.updateHostDisplay(op);
+            _krnFileSystemDriver.updateHostDisplay();
             TSOS.Utils.updateReadyQueueDisplay();
             if (_CpuScheduler.algorithm === ROUND_ROBIN) {
                 _CpuScheduler.quantumCounter++;
             }
             _Kernel.krnTrace('CPU cycle');
-            void 0;
+            console.log("Current PID: " + _CurrentPCB.pid);
         };
         /**
          * Returns the next byte in memory
@@ -200,23 +201,23 @@ var TSOS;
          * Moving the program counter as specified by the next byte, if the Z flag is zero
          */
         Cpu.prototype.branchBytes = function () {
-            void 0;
+            console.log("Program Counter before branchBytes(): " + this.PC);
             if (this.Zflag == 0) {
                 var byte = this.getByte();
                 //console.log("Getting byte: " + byte);
                 //console.log("Byte as Decimal: " + Utils.hexToDecimal(byte));
                 if ((this.PC + TSOS.Utils.hexToDecimal(byte)) >= 256) {
-                    void 0;
+                    console.log("Branch greater.");
                     this.PC += TSOS.Utils.hexToDecimal(byte) - 256;
                 }
                 else {
-                    void 0;
+                    console.log("Branch else.");
                     this.PC += TSOS.Utils.hexToDecimal(byte);
                 }
             }
             this.PC += 2;
             this.updatePCB(_CurrentPCB);
-            void 0;
+            console.log("Program Counter after branchBytes(): " + this.PC);
         };
         /**
          * Incrementing the value stored at the address specified by the next two bytes
@@ -243,14 +244,14 @@ var TSOS;
                 return;
             }
             if (this.Xreg == 2) {
-                void 0;
+                console.log("Xreg = 2");
                 var str = "";
                 var y = this.Yreg;
                 // console.log("Initial y: " + y);
                 var val = _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + y);
                 // console.log("Initial val: " + val);
                 while (val != "00") {
-                    void 0;
+                    console.log("Val: " + val);
                     str += String.fromCharCode(TSOS.Utils.hexToDecimal(val));
                     y += 1;
                     val = _MemoryManager.getMemoryFrom(_CurrentPCB.memoryBase + y);

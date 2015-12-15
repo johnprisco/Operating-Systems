@@ -41,15 +41,21 @@ var TSOS;
          * We get the first PCB off the Ready Queue and set the CPU to start
          */
         CpuScheduler.prototype.schedule = function () {
-            void 0;
+            console.log("We schedulin'.");
             _Mode = 1; // User mode now
             _CurrentPCB = _ReadyQueue.q[0];
             if (_CurrentPCB.location === PROCESS_ON_DISK) {
-                void 0;
-                _MemoryManager.rollOut(_MemoryManager.findPCBInFirstPartition());
-                void 0;
-                _MemoryManager.rollIn(_CurrentPCB);
-                void 0;
+                var firstPartition = _MemoryManager.findPCBInFirstPartition();
+                if (firstPartition === null) {
+                    _MemoryManager.rollIn(_CurrentPCB);
+                }
+                else {
+                    console.log("CurrentPCB is on Disk.");
+                    _MemoryManager.rollOut(_MemoryManager.findPCBInFirstPartition());
+                    console.log("Successfully rolled out.");
+                    _MemoryManager.rollIn(_CurrentPCB);
+                    console.log("Successfully rolled in.");
+                }
             }
             _CPU.setToPCB(_CurrentPCB);
             _CurrentPCB.state = PROCESS_RUNNING;
@@ -62,16 +68,16 @@ var TSOS;
          * @returns {boolean}
          */
         CpuScheduler.prototype.shouldSwitchContext = function () {
-            void 0;
+            console.log("Current algorithm: " + this.getAlgorithm());
             switch (this.getAlgorithm()) {
                 case ROUND_ROBIN:
                     if (this.quantumCounter >= this.quantum) {
                         this.quantumCounter = 0;
-                        void 0;
+                        console.log("Should switch context.");
                         return true;
                     }
                     else if (_CurrentPCB.state === PROCESS_TERMINATED) {
-                        void 0;
+                        console.log("Should switch context. Dequeing PCB.");
                         return true;
                     }
                     break;
@@ -95,16 +101,26 @@ var TSOS;
          * put it back on the Ready Queue.
          */
         CpuScheduler.prototype.switchContext = function () {
-            void 0;
+            console.log("Switching context.");
             // TODO: Account for scheduling algorithms
             if (_CurrentPCB.state !== PROCESS_TERMINATED) {
                 var temp = _CurrentPCB;
                 temp.state = PROCESS_WAITING;
-                if (_ReadyQueue.getSize() > 0) {
+                if (_ReadyQueue.getSize() > 1) {
                     if (_ReadyQueue.q[1].location === PROCESS_ON_DISK) {
-                        _MemoryManager.rollOut(_MemoryManager.findPCBInFirstPartition());
-                        _MemoryManager.rollIn(_ReadyQueue.q[1]);
+                        var firstPartition = _MemoryManager.findPCBInFirstPartition();
+                        if (firstPartition === null) {
+                            _MemoryManager.rollIn(_ReadyQueue.q[1]);
+                        }
+                        else {
+                            _MemoryManager.rollOut(firstPartition);
+                            _MemoryManager.rollIn(_ReadyQueue.q[1]);
+                        }
                     }
+                }
+                else {
+                    _MemoryManager.rollOut(temp);
+                    _MemoryManager.rollIn(_ReadyQueue[0]);
                 }
                 _ReadyQueue.dequeue();
                 _ReadyQueue.enqueue(temp);

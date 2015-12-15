@@ -26,6 +26,7 @@ var TSOS;
                 }
             }
             this.isFormatted = true;
+            this.updateHostDisplay();
             _StdOut.putText("Hard drive has been formatted.");
         };
         DeviceDriverFileSystem.prototype.createFile = function (filename) {
@@ -47,6 +48,7 @@ var TSOS;
             str = TSOS.Utils.rightPadString(str);
             sessionStorage.setItem(nextAvailableDirectoryBlock, str);
             sessionStorage.setItem(nextAvailableFileBlock, TSOS.Utils.rightPadString("1~~~"));
+            this.updateHostDisplay();
             return true;
             // write filename at next available DIR block with TSB set to the next available file block
             //return false;
@@ -60,13 +62,13 @@ var TSOS;
                     var currentData = sessionStorage.getItem(tsb);
                     // check if its in use
                     if (currentData.charAt(0) === "1") {
-                        void 0;
+                        console.log("We've found an in-use block.");
                         // compare hex filename to stored file name
                         // if there's a match, return the tsb where that file starts.
-                        void 0;
-                        void 0;
+                        console.log("paddedHexFilename: " + paddedHexFilename);
+                        console.log("current Data: " + currentData.slice(4, 128));
                         if (paddedHexFilename === currentData.slice(4, 128)) {
-                            void 0;
+                            console.log("Trying to return: " + currentData.slice(1, 4));
                             return currentData.slice(1, 4);
                         }
                     }
@@ -84,13 +86,13 @@ var TSOS;
                     var currentData = sessionStorage.getItem(tsb);
                     // check if its in use
                     if (currentData.charAt(0) === "1") {
-                        void 0;
+                        console.log("We've found an in-use block.");
                         // compare hex filename to stored file name
                         // if there's a match, return the tsb where that file starts.
-                        void 0;
-                        void 0;
+                        console.log("paddedHexFilename: " + paddedHexFilename);
+                        console.log("current Data: " + currentData.slice(4, 128));
                         if (paddedHexFilename === currentData.slice(4, 128)) {
-                            void 0;
+                            console.log("Trying to return: " + currentData.slice(1, 4));
                             return tsb;
                         }
                     }
@@ -136,6 +138,7 @@ var TSOS;
             }
             text = "1~~~" + TSOS.Utils.rightPadString(text).slice(0, 124);
             sessionStorage.setItem(tsb, text);
+            this.updateHostDisplay();
             return true;
         };
         DeviceDriverFileSystem.prototype.writeProgramFile = function (filename, text) {
@@ -151,6 +154,7 @@ var TSOS;
             }
             text = "1~~~" + TSOS.Utils.rightPadString(text).slice(0, 124);
             sessionStorage.setItem(tsb, text);
+            this.updateHostDisplay();
             return true;
         };
         DeviceDriverFileSystem.prototype.readFile = function (filename) {
@@ -170,15 +174,15 @@ var TSOS;
         };
         DeviceDriverFileSystem.prototype.readProgramData = function (filename) {
             var str = "";
-            void 0;
+            console.log("Searching for filename: " + filename);
             var tsb = this.searchForFileWithName(filename);
-            void 0;
-            void 0;
+            console.log("Successfully found tsb: " + tsb);
+            console.log("Attempting to get item at tsb: " + tsb);
             var data = sessionStorage.getItem(tsb);
-            void 0;
-            void 0;
+            console.log("At tsb, found data: " + data);
+            console.log("Attempting to find nextTsb");
             var nextTsb = data.slice(1, 4);
-            void 0;
+            console.log("Found nextTsb at: " + nextTsb);
             while (nextTsb != "~~~") {
                 data = data.slice(4, data.length);
                 str += data;
@@ -188,11 +192,11 @@ var TSOS;
             data = data.slice(4, data.length);
             str += data;
             var strArray = [];
-            void 0;
+            console.log("length of data string is " + str.length);
             for (var i = 0; i < str.length; i = i + 2) {
                 strArray.push(str.charAt(i) + str.charAt(i + 1));
             }
-            void 0;
+            console.log("Exited strArray loop.");
             return strArray;
         };
         DeviceDriverFileSystem.prototype.deleteFile = function (filename) {
@@ -209,6 +213,7 @@ var TSOS;
             var dirBlock = this.findDirectoryBlockForFile(filename);
             sessionStorage.setItem(dirBlock, this.initialValue);
             sessionStorage.setItem(tsb, this.initialValue);
+            this.updateHostDisplay();
             return true;
         };
         DeviceDriverFileSystem.prototype.listFiles = function () {
@@ -223,6 +228,18 @@ var TSOS;
                 }
             }
             return str;
+        };
+        DeviceDriverFileSystem.prototype.updateHostDisplay = function () {
+            var div = document.getElementById('hd-table');
+            div.innerHTML = "";
+            for (var track = 0; track < this.tracks; track++) {
+                for (var sector = 0; sector < this.sectors; sector++) {
+                    for (var block = 0; block < this.blocks; block++) {
+                        var tsb = track.toString() + sector.toString() + block.toString();
+                        div.innerHTML += "<br><b>" + tsb + "</b> " + sessionStorage.getItem(tsb);
+                    }
+                }
+            }
         };
         return DeviceDriverFileSystem;
     })(TSOS.DeviceDriver);

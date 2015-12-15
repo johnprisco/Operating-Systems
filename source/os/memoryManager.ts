@@ -128,8 +128,8 @@ module TSOS {
 
             _krnFileSystemDriver.writeProgramFile("PID" + program.pid, text);
             program.location = PROCESS_ON_DISK;
-            program.memoryBase = null;
-            program.memoryLimit = null;
+            program.memoryBase = -1;
+            program.memoryLimit = -1;
             // TODO: update host displays for memory and file system
         }
         
@@ -157,6 +157,7 @@ module TSOS {
                     return _ResidentList[i];
                 }
             }
+            return null;
         }
     }
 }
