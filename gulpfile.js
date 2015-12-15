@@ -25,7 +25,7 @@ gulp.task('compile-typescript', function() {
         .pipe(typescript({
         	emitError: false
         }))
-		//.pipe(stripDebug())
+		.pipe(stripDebug())
         .pipe(gulp.dest(typescriptPaths.dest));
 });
 

@@ -430,7 +430,7 @@ var TSOS;
             var regex = /[0-9A-F\s]/i;
             var priorityRegex = /^\d+$/;
             var commands = input.split(" ");
-            console.log("Commands array: " + commands);
+            void 0;
             // Handle the case where there is no user input
             if (input == "") {
                 _StdOut.putText("Put some text in the User Program Input field first.");
@@ -451,7 +451,7 @@ var TSOS;
                 // If we've gotten this far, we can try loading the program into memory.
                 for (var i = 0; i < commands.length; i++) {
                     // Put the byte at position i at position i in the block
-                    console.log("Load command: " + commands[i] + " at " + (_MemoryManager.base + i));
+                    void 0;
                     _MemoryManager.loadMemoryAt(_MemoryManager.base + i, commands[i]);
                 }
                 // Create new PCB and store it in the array tracking all of the PCBs.
@@ -461,11 +461,11 @@ var TSOS;
                 _CurrentPCB.location = PROCESS_IN_MEMORY;
                 if (args.length > 0) {
                     _CurrentPCB.priority = parseInt(args[0]);
-                    console.log("Set PCB priority to " + parseInt(args[0]));
+                    void 0;
                 }
                 // Update the counter to save the current partition
                 _MemoryManager.setNextPartition();
-                console.log("Current partition: " + _MemoryManager.currentPartition);
+                void 0;
                 // Print the memory and PID for the new process
                 _MemoryManager.updateHostDisplay();
                 _StdOut.putText("Process assigned ID " + _CurrentPCB.pid);
@@ -501,7 +501,7 @@ var TSOS;
             else {
                 // Let's start executing.
                 var temp = _ResidentList[args[0]];
-                console.log("Attempting to enqueue program with pid: " + temp.pid);
+                void 0;
                 if (temp.state === PROCESS_TERMINATED) {
                     _StdOut.putText("This process is terminated.");
                 }
@@ -511,7 +511,7 @@ var TSOS;
                     if (!_CPU.isExecuting) {
                         _KernelInterruptQueue.enqueue(new TSOS.Interrupt(RUN_PROGRAM_IRQ, ""));
                     }
-                    console.log("Program running.");
+                    void 0;
                     _StdOut.putText("Program running.");
                 }
             }
@@ -542,7 +542,7 @@ var TSOS;
                     }
                 }
                 _KernelInterruptQueue.enqueue(new TSOS.Interrupt(RUN_PROGRAM_IRQ, ""));
-                console.log("All programs running.");
+                void 0;
                 _StdOut.putText("All programs running.");
             }
         };
@@ -576,7 +576,7 @@ var TSOS;
                 _StdOut.putText("That's not a valid PID.");
             }
             else {
-                console.log("Trying to pass PID " + args[0]);
+                void 0;
                 var pid = args[0];
                 if (_CurrentPCB.pid === parseInt(pid)) {
                     _CurrentPCB.state = PROCESS_TERMINATED;
@@ -588,7 +588,7 @@ var TSOS;
                 else {
                     // Check _ReadyQueue for that PID
                     for (var i in _ReadyQueue.q) {
-                        console.log("ReadyQueue at i pid: " + _ReadyQueue.q[i].pid);
+                        void 0;
                         if (_ReadyQueue.q[i].pid === parseInt(pid)) {
                             _ReadyQueue.q[i].state = PROCESS_TERMINATED;
                             _ReadyQueue.q.splice(i, 1);
@@ -631,19 +631,19 @@ var TSOS;
             var textToWrite = "";
             for (var i = 1; i < args.length; i++) {
                 if (args.length === 2) {
-                    console.log("args.length === 2");
+                    void 0;
                     textToWrite = args[i];
                     textToWrite = textToWrite.slice(1, args[i].length);
                     textToWrite = textToWrite.slice(0, args[i].length - 2);
-                    console.log("writing: " + textToWrite);
+                    void 0;
                     break;
                 }
                 if (i === 1) {
-                    console.log("Trying to write: " + args[i].slice(1, args[i].length));
+                    void 0;
                     textToWrite += args[i].slice(1, args[i].length);
                 }
                 else if (i === args.length - 1) {
-                    console.log("Trying to write: " + args[i].slice(0, args[i].length - 1));
+                    void 0;
                     textToWrite += " " + args[i].slice(0, args[i].length - 1);
                 }
                 else {

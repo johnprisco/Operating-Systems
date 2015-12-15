@@ -100,8 +100,7 @@ var TSOS;
                     this.currentPartition = 0;
                     break;
                 default:
-                    console.log("Something broke, currentPartition is incorrect. currentPartition: "
-                        + this.currentPartition);
+                    void 0;
             }
         };
         MemoryManager.prototype.rollOut = function (program) {
@@ -120,7 +119,7 @@ var TSOS;
         MemoryManager.prototype.rollIn = function (program) {
             // Moving a program to memory from disk
             var data = _krnFileSystemDriver.readProgramData("PID" + program.pid);
-            console.log("Roll In Program data: " + data);
+            void 0;
             for (var i = 0; i < data.length; i++) {
                 //console.log("data[" + i + "]: " + data[i]);
                 _MemoryManager.setMemoryAt(i, data[i]);

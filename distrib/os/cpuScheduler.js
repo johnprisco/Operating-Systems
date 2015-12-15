@@ -41,7 +41,7 @@ var TSOS;
          * We get the first PCB off the Ready Queue and set the CPU to start
          */
         CpuScheduler.prototype.schedule = function () {
-            console.log("We schedulin'.");
+            void 0;
             _Mode = 1; // User mode now
             _CurrentPCB = _ReadyQueue.q[0];
             if (_CurrentPCB.location === PROCESS_ON_DISK) {
@@ -50,11 +50,11 @@ var TSOS;
                     _MemoryManager.rollIn(_CurrentPCB);
                 }
                 else {
-                    console.log("CurrentPCB is on Disk.");
+                    void 0;
                     _MemoryManager.rollOut(_MemoryManager.findPCBInFirstPartition());
-                    console.log("Successfully rolled out.");
+                    void 0;
                     _MemoryManager.rollIn(_CurrentPCB);
-                    console.log("Successfully rolled in.");
+                    void 0;
                 }
             }
             _CPU.setToPCB(_CurrentPCB);
@@ -68,16 +68,16 @@ var TSOS;
          * @returns {boolean}
          */
         CpuScheduler.prototype.shouldSwitchContext = function () {
-            console.log("Current algorithm: " + this.getAlgorithm());
+            void 0;
             switch (this.getAlgorithm()) {
                 case ROUND_ROBIN:
                     if (this.quantumCounter >= this.quantum) {
                         this.quantumCounter = 0;
-                        console.log("Should switch context.");
+                        void 0;
                         return true;
                     }
                     else if (_CurrentPCB.state === PROCESS_TERMINATED) {
-                        console.log("Should switch context. Dequeing PCB.");
+                        void 0;
                         return true;
                     }
                     break;
@@ -101,7 +101,7 @@ var TSOS;
          * put it back on the Ready Queue.
          */
         CpuScheduler.prototype.switchContext = function () {
-            console.log("Switching context.");
+            void 0;
             // TODO: Account for scheduling algorithms
             if (_CurrentPCB.state !== PROCESS_TERMINATED) {
                 var temp = _CurrentPCB;
