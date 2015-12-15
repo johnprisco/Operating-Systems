@@ -48,3 +48,8 @@ h3 {
   font-size: 8pt;
   text-align: center;
 }
+
+.os-name {
+  font-size: 18px;
+  padding-right: 5px;
+}

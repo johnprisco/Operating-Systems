@@ -53,11 +53,16 @@ module TSOS {
             _CurrentPCB = _ReadyQueue.q[0];
 
             if (_CurrentPCB.location === PROCESS_ON_DISK) {
-                console.log("CurrentPCB is on Disk.");
-                _MemoryManager.rollOut(_MemoryManager.findPCBInFirstPartition());
-                console.log("Successfully rolled out.");
-                _MemoryManager.rollIn(_CurrentPCB);
-                console.log("Successfully rolled in.");
+                var firstPartition = _MemoryManager.findPCBInFirstPartition();
+                if (firstPartition === null) {
+                    _MemoryManager.rollIn(_CurrentPCB);
+                } else {
+                    console.log("CurrentPCB is on Disk.");
+                    _MemoryManager.rollOut(_MemoryManager.findPCBInFirstPartition());
+                    console.log("Successfully rolled out.");
+                    _MemoryManager.rollIn(_CurrentPCB);
+                    console.log("Successfully rolled in.");
+                }
             }
 
             _CPU.setToPCB(_CurrentPCB);
@@ -113,11 +118,19 @@ module TSOS {
                 var temp = _CurrentPCB;
                 temp.state = PROCESS_WAITING;
 
-                if (_ReadyQueue.getSize() > 0) {
+                if (_ReadyQueue.getSize() > 1) {
                     if (_ReadyQueue.q[1].location === PROCESS_ON_DISK) {
-                        _MemoryManager.rollOut(_MemoryManager.findPCBInFirstPartition());
-                        _MemoryManager.rollIn(_ReadyQueue.q[1]);
+                        var firstPartition = _MemoryManager.findPCBInFirstPartition();
+                        if (firstPartition === null) {
+                            _MemoryManager.rollIn(_ReadyQueue.q[1]);
+                        } else {
+                            _MemoryManager.rollOut(firstPartition);
+                            _MemoryManager.rollIn(_ReadyQueue.q[1]);
+                        }
                     }
+                } else {
+                    _MemoryManager.rollOut(temp);
+                    _MemoryManager.rollIn(_ReadyQueue[0]);
                 }
 
                 _ReadyQueue.dequeue();

@@ -61,6 +61,7 @@
        <nav class="navbar navbar-default">
            <div class="container-fluid">
                <div class="navbar-header">
+                   <span class="os-name">Prisc<strong>OS</strong></span>
                    <button type="button" class="btn btn-primary navbar-btn"
                            id="btnStartOS" name="btnStartOS"
                            onclick="TSOS.Control.hostBtnStartOS_click(this);">
@@ -103,7 +104,7 @@
                    id  ="taHostLog"
                    rows="26"
                    cols="36"
-                   style="height: 345px; resize: none;"
+                   style="height: 200px; resize: none;"
                    disabled >
          </textarea>
       </label>
@@ -120,33 +121,35 @@
              </textarea>
            </label>
         </div>
+
+       <label style="padding-top:10px;">CPU Status</label>
+       <table class="table" id="cpu-status-table" style="width:300px; border-style:solid;">
+           <tr>
+               <th>PC</th>
+               <th>IR</th>
+               <th>Acc</th>
+               <th>X</th>
+               <th>Y</th>
+               <th>Z</th>
+           </tr>
+           <tr>
+               <td id="pc-cpu"></td>
+               <td id="ir-cpu"></td>
+               <td id="acc-cpu"></td>
+               <td id="x-cpu"></td>
+               <td id="y-cpu"></td>
+               <td id="z-cpu"></td>
+           </tr>
+       </table>
+
    </div>
 
 
-    <div class="pcb-status" style="margin-left:810px;">
+    <div class="pcb-status" style="margin-left:840px;">
         <label style="padding-top: 5px;">Memory</label>
-        <div class="memory-container" id="memory-table" style="overflow:scroll; height:160px; font-family: monospace;" ></div>
-
-        <label style="padding-top:10px;">CPU Status</label>
-        <table class="table" id="cpu-status-table" style="width:300px; border-style:solid;">
-            <tr>
-                <th>PC</th>
-                <th>IR</th>
-                <th>Acc</th>
-                <th>X</th>
-                <th>Y</th>
-                <th>Z</th>
-            </tr>
-            <tr>
-                <td id="pc-cpu"></td>
-                <td id="ir-cpu"></td>
-                <td id="acc-cpu"></td>
-                <td id="x-cpu"></td>
-                <td id="y-cpu"></td>
-                <td id="z-cpu"></td>
-            </tr>
-        </table>
-
+        <div class="memory-container" id="memory-table" style="overflow:scroll; height:165px; font-family: monospace;" ></div>
+        <label style="padding-top: 5px;">Hard Disk</label>
+        <div class="hd-container" id="hd-table" style="overflow:scroll; height: 165px; width: 500px; font-family: monospace;"></div>
         <label style="padding-top:10px;">Ready Queue</label>
         <table class="table" id="pcb-status-table" style="width:300px; border-style:solid;">
                 <tr>

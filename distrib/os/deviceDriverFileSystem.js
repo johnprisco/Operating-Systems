@@ -26,6 +26,7 @@ var TSOS;
                 }
             }
             this.isFormatted = true;
+            this.updateHostDisplay();
             _StdOut.putText("Hard drive has been formatted.");
         };
         DeviceDriverFileSystem.prototype.createFile = function (filename) {
@@ -47,6 +48,7 @@ var TSOS;
             str = TSOS.Utils.rightPadString(str);
             sessionStorage.setItem(nextAvailableDirectoryBlock, str);
             sessionStorage.setItem(nextAvailableFileBlock, TSOS.Utils.rightPadString("1~~~"));
+            this.updateHostDisplay();
             return true;
             // write filename at next available DIR block with TSB set to the next available file block
             //return false;
@@ -136,6 +138,7 @@ var TSOS;
             }
             text = "1~~~" + TSOS.Utils.rightPadString(text).slice(0, 124);
             sessionStorage.setItem(tsb, text);
+            this.updateHostDisplay();
             return true;
         };
         DeviceDriverFileSystem.prototype.writeProgramFile = function (filename, text) {
@@ -151,6 +154,7 @@ var TSOS;
             }
             text = "1~~~" + TSOS.Utils.rightPadString(text).slice(0, 124);
             sessionStorage.setItem(tsb, text);
+            this.updateHostDisplay();
             return true;
         };
         DeviceDriverFileSystem.prototype.readFile = function (filename) {
@@ -209,6 +213,7 @@ var TSOS;
             var dirBlock = this.findDirectoryBlockForFile(filename);
             sessionStorage.setItem(dirBlock, this.initialValue);
             sessionStorage.setItem(tsb, this.initialValue);
+            this.updateHostDisplay();
             return true;
         };
         DeviceDriverFileSystem.prototype.listFiles = function () {
@@ -223,6 +228,18 @@ var TSOS;
                 }
             }
             return str;
+        };
+        DeviceDriverFileSystem.prototype.updateHostDisplay = function () {
+            var div = document.getElementById('hd-table');
+            div.innerHTML = "";
+            for (var track = 0; track < this.tracks; track++) {
+                for (var sector = 0; sector < this.sectors; sector++) {
+                    for (var block = 0; block < this.blocks; block++) {
+                        var tsb = track.toString() + sector.toString() + block.toString();
+                        div.innerHTML += "<br><b>" + tsb + "</b> " + sessionStorage.getItem(tsb);
+                    }
+                }
+            }
         };
         return DeviceDriverFileSystem;
     })(TSOS.DeviceDriver);

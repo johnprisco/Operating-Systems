@@ -82,6 +82,7 @@ var TSOS;
             this.executeOperation(op);
             _MemoryManager.updateHostDisplay();
             this.updateHostDisplay(op);
+            _krnFileSystemDriver.updateHostDisplay();
             TSOS.Utils.updateReadyQueueDisplay();
             if (_CpuScheduler.algorithm === ROUND_ROBIN) {
                 _CpuScheduler.quantumCounter++;

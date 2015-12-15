@@ -85,6 +85,7 @@ module TSOS {
 
             _MemoryManager.updateHostDisplay();
             this.updateHostDisplay(op);
+            _krnFileSystemDriver.updateHostDisplay();
             Utils.updateReadyQueueDisplay();
 
             if (_CpuScheduler.algorithm === ROUND_ROBIN) {
