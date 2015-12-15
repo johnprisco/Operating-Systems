@@ -805,6 +805,11 @@ module TSOS {
         }
 
         public shellSetCPUSchedule(args) {
+            if (_CPU.isExecuting) {
+                _StdOut.putText("The CPU Scheduler cannot be changed while the CPU is executing.");
+                return;
+            }
+
             switch (args[0]) {
                 case 'rr':
                     _CpuScheduler.setAlgorithm(ROUND_ROBIN);
