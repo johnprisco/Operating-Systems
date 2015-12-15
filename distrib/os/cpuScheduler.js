@@ -51,7 +51,7 @@ var TSOS;
                 }
                 else {
                     void 0;
-                    _MemoryManager.rollOut(_MemoryManager.findPCBInFirstPartition());
+                    _MemoryManager.rollOut(firstPartition);
                     void 0;
                     _MemoryManager.rollIn(_CurrentPCB);
                     void 0;
@@ -80,16 +80,13 @@ var TSOS;
                         void 0;
                         return true;
                     }
+                    return false;
                     break;
                 case FCFS:
-                    if (_CurrentPCB.state === PROCESS_TERMINATED) {
-                        return true;
-                    }
+                    return (_CurrentPCB.state === PROCESS_TERMINATED);
                     break;
                 case PRIORITY:
-                    if (_CurrentPCB.state === PROCESS_TERMINATED) {
-                        return true;
-                    }
+                    return (_CurrentPCB.state === PROCESS_TERMINATED);
                     break;
                 default:
                     return false;
@@ -106,22 +103,20 @@ var TSOS;
             if (_CurrentPCB.state !== PROCESS_TERMINATED) {
                 var temp = _CurrentPCB;
                 temp.state = PROCESS_WAITING;
-                if (_ReadyQueue.getSize() > 1) {
-                    if (_ReadyQueue.q[1].location === PROCESS_ON_DISK) {
-                        var firstPartition = _MemoryManager.findPCBInFirstPartition();
-                        if (firstPartition === null) {
-                            _MemoryManager.rollIn(_ReadyQueue.q[1]);
-                        }
-                        else {
-                            _MemoryManager.rollOut(firstPartition);
-                            _MemoryManager.rollIn(_ReadyQueue.q[1]);
-                        }
-                    }
-                }
-                else {
-                    _MemoryManager.rollOut(temp);
-                    _MemoryManager.rollIn(_ReadyQueue[0]);
-                }
+                //if (_ReadyQueue.getSize() > 1) {
+                //    if (_ReadyQueue.q[1].location === PROCESS_ON_DISK) {
+                //        var firstPartition = _MemoryManager.findPCBInFirstPartition();
+                //        if (firstPartition === null) {
+                //            _MemoryManager.rollIn(_ReadyQueue.q[1]);
+                //        } else {
+                //            _MemoryManager.rollOut(firstPartition);
+                //            _MemoryManager.rollIn(_ReadyQueue.q[1]);
+                //        }
+                //    }
+                //} else {
+                //    _MemoryManager.rollOut(temp);
+                //    _MemoryManager.rollIn(_ReadyQueue[0]);
+                //}
                 _ReadyQueue.dequeue();
                 _ReadyQueue.enqueue(temp);
                 this.schedule();
